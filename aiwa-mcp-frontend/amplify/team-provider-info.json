@@ -1,0 +1,15 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-aiwa-staging-13248-authRole",
+      "UnauthRoleArn": "arn:aws:iam::935875533840:role/amplify-aiwa-staging-13248-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::935875533840:role/amplify-aiwa-staging-13248-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-aiwa-staging-13248-deployment",
+      "UnauthRoleName": "amplify-aiwa-staging-13248-unauthRole",
+      "StackName": "amplify-aiwa-staging-13248",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:935875533840:stack/amplify-aiwa-staging-13248/8e286950-8483-11ef-b0cb-02fbc5a7c217",
+      "AmplifyAppId": "d1cbwqgwvk5mtn"
+    }
+  }
+}
