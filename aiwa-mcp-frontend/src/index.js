@@ -3,14 +3,17 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import Auth from './Auth/Auth.js';
 import reportWebVitals from './reportWebVitals';
-import InstanceRoutes from './Features/Instance';
+import ConsoleRoutes from './Console';
+import Main from './Main';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="instances/*" element={<InstanceRoutes />} /> {/* Instance routes */}
+        <Route path="/" element={<Main />} /> {/* Instance routes */}
+        <Route path="/login" element={<Auth />} /> {/* Instance routes */}
+        <Route path="console/*" element={<ConsoleRoutes />} /> {/* Instance routes */}
         {/* Add other main routes here if needed */}
       </Routes>
     </BrowserRouter>
