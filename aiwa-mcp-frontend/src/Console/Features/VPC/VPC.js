@@ -1,61 +1,73 @@
-import React, { useState } from "react";
-import { Flex, Button, TextField, View, Heading } from "@aws-amplify/ui-react";
-import { NavBarHeader2, SideBar } from "../../ui-components";
+import React, { useState, useEffect } from "react";
+import { Flex, Button, View, Heading } from "@aws-amplify/ui-react";
+import { SideBar, NavBarHeader2 } from "../../../ui-components";
+import CustomerTable from "./table/CustomerTable";
 
 
-function VPC_Create() {
-  // 상태 설정 (이름과 CIDR 블록)
-  const [vpcName, setVpcName] = useState("");
-  const [cidrBlock, setCidrBlock] = useState("");
+function VPC() {
+  const [vpcList, setVpcList] = useState([]);
+  const [selectedVpcs, setSelectedVpcs] = useState([]);
 
-  // 버튼 클릭 시 동작하는 함수
-  const handleCreateVPC = () => {
-    console.log("VPC Name:", vpcName);
-    console.log("CIDR Block:", cidrBlock);
-    alert(`VPC가 생성되었습니다: \n이름: ${vpcName} \nCIDR: ${cidrBlock}`);
+  useEffect(() => {
+    // 여기서 VPC 목록을 가져오는 API 호출을 수행합니다.
+    // 예시 데이터로 대체합니다.
+    const mockVpcList = [
+      { id: 1, name: "VPC-1", cidrBlock: "10.0.0.0/16", status: "available" },
+      { id: 2, name: "VPC-2", cidrBlock: "172.16.0.0/16", status: "pending" },
+      { id: 3, name: "VPC-3", cidrBlock: "192.168.0.0/16", status: "deleting" },
+      { id: 4, name: "VPC-4", cidrBlock: "10.1.0.0/16", status: "deleted" },
+    ];
+    setVpcList(mockVpcList);
+  }, []);
+
+
+  const columns = [
+    // { field: 'name', headerName: 'VPC Name', flex: 1 },
+    // { field: 'cidrBlock', headerName: 'CIDR Block', flex: 1 },
+    // { 
+    //   field: 'status', 
+    //   headerName: 'Status', 
+    //   flex: 1,
+
+    // },
+ 
+  ];
+
+  const handleSelectionChange = (newSelection) => {
+    setSelectedVpcs(newSelection);
+  };
+
+  const handleEdit = (id) => {
+    console.log(`Editing VPC with id: ${id}`);
+    // Implement edit functionality here
+  };
+
+  const handleDelete = (id) => {
+    console.log(`Deleting VPC with id: ${id}`);
+    // Implement delete functionality here
   };
 
   return (
     <div>
-        <Flex direction="row" height="100vh">
-          {/* 왼쪽: SideBar */}
-          <SideBar />
-
-          {/* 오른쪽: VPC Create Form */}
-          <Flex
-            direction="column"
-            justifyContent="right"
-            width="30%"
-            padding="20px"
-            gap="20px"
-          >
-            <Heading level={2}>VPC 생성</Heading>
-
-            <TextField
-              label="VPC 이름"
-              placeholder="VPC 이름을 입력하세요"
-              value={vpcName}
-              onChange={(e) => setVpcName(e.target.value)}
-            />
-
-            <TextField
-              label="CIDR 블록"
-              placeholder="예: 10.0.0.0/16"
-              value={cidrBlock}
-              onChange={(e) => setCidrBlock(e.target.value)}
-            />
-
-            <Button
-              variation="primary"
-              onClick={handleCreateVPC}
-              isDisabled={!vpcName || !cidrBlock} // 둘 다 입력되었을 때만 활성화
-            >
-              Create
-            </Button>
+      <NavBarHeader2 />
+      <Flex direction="row">
+        <SideBar />
+        <Flex direction="column" style={{ width: '100%', padding: '20px' }}>
+          <Flex justifyContent="space-between" alignItems="center" marginBottom="20px">
+            <Heading level={4}>VPC List</Heading>
+            {/* Button removed as per instructions */}
           </Flex>
+          <CustomerTable
+            rows={vpcList}
+            columns={columns}
+            pageSize={5}
+            checkboxSelection={true}
+            onSelectionModelChange={handleSelectionChange}
+          />
         </Flex>
+      </Flex>
     </div>
   );
 }
 
-export default VPC_Create;
+export default VPC;
