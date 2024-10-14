@@ -97,9 +97,10 @@ function Console({overrides}) {
                     }
                 }}  
             /> */}
-            <Flex direction="row">
-                <SideBar />
-            </Flex>
+            <NavBarHeader2 />
+                <Flex direction="row">
+                    <SideBar />
+                </Flex>
         </div>
     );
 }

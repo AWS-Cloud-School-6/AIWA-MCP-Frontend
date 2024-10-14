@@ -11,9 +11,9 @@ import { Button, Flex, Icon, Text, View } from "@aws-amplify/ui-react";
 import ListboxComponent from "./ListboxComponent";
 export default function NavBarHeader2(props) {
   const { EC2, frame4377, search, sfs, test, overrides, ...rest } = props;
-  const homeOnClick = useNavigateAction({ type: "url", url: "home" });
-  const networkOnClick = useNavigateAction({ type: "url", url: "Network" });
-  const eCTwoOnClick = useNavigateAction({ type: "url", url: "EC2" });
+  const homeOnClick = useNavigateAction({ type: "url", url: "/" });
+  const networkOnClick = useNavigateAction({ type: "url", url: "vpc" });
+  const eCTwoOnClick = useNavigateAction({ type: "url", url: "ec2" });
   return (
     <Flex
       gap="205px"
