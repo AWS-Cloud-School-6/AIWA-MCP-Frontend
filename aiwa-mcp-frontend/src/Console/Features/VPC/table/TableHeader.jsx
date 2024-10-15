@@ -3,31 +3,21 @@ import styles from './CustomerTable.module.css';
 
 function TableHeader({ onSelectAll, allSelected }) {
   return (
-    <div className={styles.tableHeaderRow}>
-      <div 
-        className={styles.checkbox}
-        onClick={onSelectAll}
-        style={{ cursor: 'pointer' }}
-      >
-        {allSelected && (
-          <div className={styles.checkmark}>✓</div>
-        )}
+    <div className={`${styles.tableRow} ${styles.tableHeaderRow}`} style={{ textAlign: 'center' }}>
+      <div className={`${styles.cell} ${styles.checkboxCell}`} >
+        <input
+          type="checkbox"
+          checked={allSelected}
+          onChange={onSelectAll}
+          className={styles.checkbox}
+        />
       </div>
-      <div className={styles.columnHeader}>
-        <span>#</span>
-        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/25e3b38015f0815edb27bcfba79dd27d3e23807ac6822ecfe6baa61b1c465230?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-      </div>
-      <div className={styles.columnHeader}>
-        <span>name</span>
-        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/9c9faabf8940ddbb184e98109c46a621198db915b672211fd53c0730fdb46217?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-      </div>
-      <div className={styles.columnHeader}>description</div>
-      <div className={styles.columnHeader}>
-        <span>Status</span>
-        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/9c9faabf8940ddbb184e98109c46a621198db915b672211fd53c0730fdb46217?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-      </div>
-      <div className={styles.columnHeader}>CIDR</div>
-      <div className={styles.columnHeader}>Routing Table</div>
+      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '10%' }}>#</div>
+      <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '5%' }}>Name</div>
+      <div className={`${styles.cell} ${styles.descriptionCell}`} style={{ width: '20%' }}>Description</div>
+      <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '10%' }}>Status</div>
+      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '15%' }}>CIDR</div>
+      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '30%' }}>Routing Table</div>
     </div>
   );
 }

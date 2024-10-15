@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Flex, Button, TextField, View, Heading } from "@aws-amplify/ui-react";
+import { useNavigate } from 'react-router-dom';
+import { Flex, Button, TextField, Heading } from "@aws-amplify/ui-react";
 import { SideBar, NavBarHeader2 } from "../../../ui-components";
 
 
@@ -7,12 +8,23 @@ function VPC_Create() {
   // 상태 설정 (이름과 CIDR 블록)
   const [vpcName, setVpcName] = useState("");
   const [cidrBlock, setCidrBlock] = useState("");
+  const navigate = useNavigate();
 
   // 버튼 클릭 시 동작하는 함수
   const handleCreateVPC = () => {
-    console.log("VPC Name:", vpcName);
-    console.log("CIDR Block:", cidrBlock);
-    alert(`VPC가 생성되었습니다: \n이름: ${vpcName} \nCIDR: ${cidrBlock}`);
+    if (!vpcName || !cidrBlock) {
+      alert("VPC 이름과 CIDR 블록을 모두 입력해주세요.");
+      return;
+    }
+
+    // 새로운 VPC 객체 생성
+    const newVPC = {
+      name: vpcName,
+      cidr: cidrBlock,
+    };
+
+    // CustomerTable 컴포넌트로 새로운 VPC 정보를 전달
+    navigate('/console/vpc', { state: { newVPC } });
   };
 
   return (
@@ -40,7 +52,7 @@ function VPC_Create() {
             />
 
             <TextField
-              label="CIDR 블록"
+              label="IPv4 CIDR 블록"
               placeholder="예: 10.0.0.0/16"
               value={cidrBlock}
               onChange={(e) => setCidrBlock(e.target.value)}
