@@ -1,25 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import Auth from './Auth/Auth.js';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { Authenticator } from '@aws-amplify/ui-react';
+
 import reportWebVitals from './reportWebVitals';
 import ConsoleRoutes from './Console';
+import Auth from './Auth/Auth.js';
 import Main from './Main/Main';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import ProtectedRoute from './ProtectedRoute';
 
 
+
+function App() {
+  const navigate = useNavigate(); // React Router hook to handle navigation
+
+  return (
+    <Authenticator.Provider>
+      <Routes>
+        <Route path="/" element={<Main />} /> {/* Instance routes */}
+        <Route path="/login" element={<Auth />} /> {/* Instance routes */}
+        <Route path="console/*" element={<ProtectedRoute><ConsoleRoutes /></ProtectedRoute>} /> {/* Instance routes */}
+      </Routes>
+    </Authenticator.Provider>
+  );
+}
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Main />} /> {/* Instance routes */}
-        <Route path="/login" element={<Auth />} /> {/* Instance routes */}
-        <Route path="console/*" element={<ConsoleRoutes />} /> {/* Instance routes */}
-        {/* Add other main routes here if needed */}
-      </Routes>
+      <App />
     </BrowserRouter>
-  </React.StrictMode >
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
