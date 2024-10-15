@@ -18,7 +18,7 @@ function App() {
             formFields={formFields}
             components={components}
         >
-            <Navigate to="/console" />
+            {/* <Navigate to="/console" /> */}
             {({ signOut }) => (
                 <button onClick={signOut}>Sign out</button>
             )}
