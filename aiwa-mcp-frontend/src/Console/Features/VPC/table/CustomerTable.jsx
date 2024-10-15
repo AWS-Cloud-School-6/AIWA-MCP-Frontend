@@ -1,27 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from './CustomerTable.module.css';
 import TableHeader from './TableHeader';
 import CustomerRow from './CustomerRow';
 import TablePagination from './TablePagination';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom'; 
 import ActionButtons from './ActionButtons';
 
-const customers = [
-  { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", rate: 70, balance: -270, deposit: 500 },
-  { id: 2, name: "Ahmad Rosser", number: "5684236527", description: "VPC 생성 중...", status: "pending", rate: 70, balance: 270, deposit: 500 },
-  { id: 3, name: "Zain Calzoni", number: "5684236528", description: "VPC 삭제 중...", status: "deleting", rate: 70, balance: -20, deposit: 500 },
-  { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", rate: 70, balance: 600, deposit: 500 },
-//   { id: 5, name: "Kaiya Vetrovs", number: "5684236530", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla...", status: "Open", rate: 70, balance: -350, deposit: 500 },
-//   { id: 6, name: "Ryan Westervelt", number: "5684236531", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla...", status: "Paid", rate: 70, balance: -270, deposit: 500 },
-//   { id: 7, name: "Corey Stanton", number: "5684236532", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla...", status: "Due", rate: 70, balance: 30, deposit: 500 },
-//   { id: 8, name: "Adison Aminoff", number: "5684236533", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla...", status: "Open", rate: 70, balance: -270, deposit: 500 },
-//   { id: 9, name: "Alfredo Aminoff", number: "5684236534", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla...", status: "Inactive", rate: 70, balance: 460, deposit: 500 },
-//   { id: 10, name: "Allison Botosh", number: "5684236535", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla...", status: "Open", rate: 70, balance: 0, deposit: 500 },
+const initialCustomers = [
+  { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
+  { id: 2, name: "Ahmad Rosser", number: "5684236527", description: "VPC 생성 중...", status: "pending", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
+  { id: 3, name: "Zain Calzoni", number: "5684236528", description: "VPC 삭제 중...", status: "deleting", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
+  { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
 ];
 
 function CustomerTable({customer, onEdit, onDelete}) {
   const navigate = useNavigate();
-  const [selectedVpcs, setSelectedVpcs] = useState("");
+  const location = useLocation();
+  const [selectedVpcs, setSelectedVpcs] = useState([]);
+  const [allVPCs, setAllVPCs] = useState(() => {
+    const savedVPCs = localStorage.getItem('allVPCs');
+    return savedVPCs ? JSON.parse(savedVPCs) : initialCustomers;
+  });
+  const [displayedVPCs, setDisplayedVPCs] = useState(allVPCs);
+
+  const addNewVPC = useCallback((newVPC) => {
+    setAllVPCs(prevVPCs => {
+      const existingVPC = prevVPCs.find(vpc => vpc.name === newVPC.name);
+      if (existingVPC) {
+        console.log("VPC with this name already exists");
+        return prevVPCs;
+      }
+      const updatedVPCs = [...prevVPCs, newVPC];
+      localStorage.setItem('allVPCs', JSON.stringify(updatedVPCs));
+      return updatedVPCs;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (location.state && location.state.newVPC) {
+      const { name, cidr } = location.state.newVPC;
+      const newVPC = {
+        id: allVPCs.length + 1,
+        name: name,
+        number: Math.floor(Math.random() * 10000000000).toString(),   // 추후 여기에 vpc id 값 넣기
+        description: "새로 생성된 VPC",
+        status: "available",
+        cidr: cidr,
+        routingTable: "none"
+      };
+      addNewVPC(newVPC);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate, allVPCs.length, addNewVPC]);
+
+  useEffect(() => {
+    setDisplayedVPCs(allVPCs);
+  }, [allVPCs]);
 
   const handleCheckboxChange = (id) => {
     setSelectedVpcs(prev => 
@@ -30,23 +64,49 @@ function CustomerTable({customer, onEdit, onDelete}) {
   };
 
   const handleSelectAll = () => {
-    if (selectedVpcs.length === customers.length) {
+    if (selectedVpcs.length === displayedVPCs.length) {
       setSelectedVpcs([]);
     } else {
-      setSelectedVpcs(customers.map(customer => customer.id));
+      setSelectedVpcs(displayedVPCs.map(vpc => vpc.id));
     }
   };  
 
-  const handleEdit = (id) => {
-    console.log(`Editing VPC with id: ${id}`);
-    // 여기에 편집 로직 구현
+  const handleEdit = () => {
+    if (selectedVpcs.length !== 1) {
+      alert("Please select only one VPC to edit.");
+      return;
+    }
+    const selectedVpc = displayedVPCs.find(vpc => vpc.id === selectedVpcs[0]);
+    if (selectedVpc) {
+      navigate(`/console/vpc/edit/${selectedVpc.name}`);
+    } else {
+      console.error("Selected VPC not found");
+    }
   };
 
   const handleDelete = () => {
-    console.log(`Deleting VPCs with ids: ${selectedVpcs.join(', ')}`);
-    // 여기에 삭제 로직 구현
+    if (selectedVpcs.length === 0) {
+      alert("Please select at least one VPC to delete.");
+      return;
+    }
+    const confirmDelete = window.confirm(`Are you sure you want to delete ${selectedVpcs.length} VPC(s)?`);
+    if (confirmDelete) {
+      const updatedVPCs = allVPCs.filter(vpc => !selectedVpcs.includes(vpc.id));
+      setAllVPCs(updatedVPCs);
+      localStorage.setItem('allVPCs', JSON.stringify(updatedVPCs));
+      setSelectedVpcs([]);
+    }
   };
   
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredVPCs = allVPCs.filter(vpc => 
+      vpc.name.toLowerCase().includes(searchTerm)
+    );
+    setDisplayedVPCs(filteredVPCs);
+    setSelectedVpcs([]);
+  };
+
   return (
     <section className={styles.dataTable}>
       <header className={styles.tableHeader}>
@@ -56,7 +116,13 @@ function CustomerTable({customer, onEdit, onDelete}) {
           </button>
           <div className={styles.searchInputWrapper}>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d322eb2c900627c1c0432bf23dfda65d4720f3b4b6381543703e324a72370a2e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-            <input type="text" className={styles.searchInput} placeholder="Search..." aria-label="Search customers" />
+            <input 
+              type="text" 
+              className={styles.searchInput} 
+              placeholder="Search..." 
+              aria-label="Search VPCs"
+              onChange={handleSearch}
+            />
           </div>
         </div>
 
@@ -68,22 +134,22 @@ function CustomerTable({customer, onEdit, onDelete}) {
 
           <ActionButtons 
             selectedCount={selectedVpcs.length}
-            onEdit={() => handleEdit(selectedVpcs[0])}
+            onEdit={handleEdit}
             onDelete={handleDelete}
           />
         </div>
       </header>
       <TableHeader 
         onSelectAll={handleSelectAll}
-        allSelected={selectedVpcs.length === customers.length}
+        allSelected={selectedVpcs.length === displayedVPCs.length}
       />
-      {customers.map((customer, index) => (
+      {displayedVPCs.map((vpc, index) => (
         <CustomerRow 
-          key={customer.id} 
-          customer={customer} 
+          key={vpc.id} 
+          customer={vpc} 
           isEven={index % 2 === 1}
-          isSelected={selectedVpcs.includes(customer.id)}
-          onCheckboxChange={() => handleCheckboxChange(customer.id)}
+          isSelected={selectedVpcs.includes(vpc.id)}
+          onCheckboxChange={() => handleCheckboxChange(vpc.id)}
         />
       ))}
       <TablePagination />  

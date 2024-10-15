@@ -6,14 +6,11 @@
 
 /* eslint-disable */
 import * as React from "react";
-import { getOverrideProps, useNavigateAction } from "./utils";
+import { getOverrideProps } from "./utils";
 import { Button, Flex, Icon, Text, View } from "@aws-amplify/ui-react";
 import ListboxComponent from "./ListboxComponent";
 export default function NavBarHeader2(props) {
   const { EC2, frame4377, search, sfs, test, overrides, ...rest } = props;
-  const homeOnClick = useNavigateAction({ type: "url", url: "/" });
-  const networkOnClick = useNavigateAction({ type: "url", url: "vpc" });
-  const eCTwoOnClick = useNavigateAction({ type: "url", url: "ec2" });
   return (
     <Flex
       gap="205px"
@@ -101,9 +98,6 @@ export default function NavBarHeader2(props) {
           padding="0px 0px 0px 0px"
           whiteSpace="pre-wrap"
           children="Home"
-          onClick={() => {
-            homeOnClick();
-          }}
           {...getOverrideProps(overrides, "Home")}
         ></Text>
         <Text
@@ -125,9 +119,6 @@ export default function NavBarHeader2(props) {
           padding="0px 0px 0px 0px"
           whiteSpace="pre-wrap"
           children="Network"
-          onClick={() => {
-            networkOnClick();
-          }}
           {...getOverrideProps(overrides, "Network")}
         ></Text>
         <Text
@@ -149,9 +140,6 @@ export default function NavBarHeader2(props) {
           padding="0px 0px 0px 0px"
           whiteSpace="pre-wrap"
           children="EC2"
-          onClick={() => {
-            eCTwoOnClick();
-          }}
           {...getOverrideProps(overrides, "EC2")}
         ></Text>
       </Flex>
