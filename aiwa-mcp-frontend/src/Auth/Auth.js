@@ -7,6 +7,7 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import components from './components';
 import formFields from './formFields';
 import awsmobile from '../aws-exports';
+import { Navigate } from 'react-router-dom';
 Amplify.configure(awsmobile);
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
             formFields={formFields}
             components={components}
         >
+            <Navigate to="/console" />
             {({ signOut }) => (
                 <button onClick={signOut}>Sign out</button>
             )}

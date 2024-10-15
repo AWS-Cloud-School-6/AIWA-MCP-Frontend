@@ -1,10 +1,7 @@
 
 const formFields = {
     signIn: {
-        email: {
-            placeholder: 'Enter your email',
-            label: 'Email'
-        },
+
     },
     signUp: {
         name: {
