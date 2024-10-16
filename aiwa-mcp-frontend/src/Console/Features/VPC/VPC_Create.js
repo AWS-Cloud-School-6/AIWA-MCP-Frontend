@@ -5,7 +5,8 @@ import { SideBar, NavBarHeader2 } from "../../../ui-components";
 import axios from 'axios';
 import { useUserContext } from '../../../UserContext';
 
-const API_URL = 'http://13.125.198.144:8080/api/vpc/create?userId=';
+const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1997676819.ap-northeast-2.elb.amazonaws.com:80/api/vpc/create?userId=';
+
 function VPC_Create() {
   // 상태 설정 (이름과 CIDR 블록)
   const [vpcName, setVpcName] = useState("");

@@ -5,6 +5,10 @@ import VPCRow from './VPCRow';
 import TablePagination from './TablePagination';
 import { useNavigate, useLocation } from 'react-router-dom'; 
 import ActionButtons from './ActionButtons';
+import axios from 'axios';
+import { useUserContext } from '../../../../UserContext';
+
+const API_URL = 'http://13.125.198.144:8080';
 
 const initialCustomers = [
   { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
@@ -23,6 +27,9 @@ function VPCTable({customer, onEdit, onDelete}) {
   });
   const [displayedVPCs, setDisplayedVPCs] = useState(allVPCs);
 
+  // 유저 정보 가져오기
+  const { currentUser } = useUserContext();
+
   // 리렌더링될 때마다 새로운 함수가 생성되지 않도록 구현
   const addNewVPC = useCallback((newVPC) => {
     setAllVPCs(prevVPCs => {
@@ -39,20 +46,31 @@ function VPCTable({customer, onEdit, onDelete}) {
 
   useEffect(() => {
     if (location.state && location.state.newVPC) {
-      const { name, cidr } = location.state.newVPC;
-      const newVPC = {
-        id: allVPCs.length + 1,
-        name: name,
-        number: Math.floor(Math.random() * 10000000000).toString(),   // 추후 여기에 vpc id 값 넣기
-        description: "새로 생성된 VPC",
-        status: "available",
-        cidr: cidr,
-        routingTable: "none"
+      const fetchVPCData = async () => {
+        try {
+          const response = await axios.get(`${API_URL}/api/aws/resources/${currentUser.id}`);
+          if (response.data && response.data.length > 0) {
+            const latestVPC = response.data[response.data.length - 1]; // 가장 최근에 생성된 VPC
+            const newVPC = {
+              id: latestVPC.id,
+              name: latestVPC.name,
+              number: latestVPC.number,
+              description: latestVPC.description,
+              status: latestVPC.status,
+              cidr: latestVPC.cidr,
+              routingTable: latestVPC.routingTable
+            };
+            addNewVPC(newVPC);
+          }
+        } catch (error) {
+          console.error("Error fetching VPC data:", error);
+        }
       };
-      addNewVPC(newVPC);
+
+      fetchVPCData();
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location, navigate, allVPCs.length, addNewVPC]);
+  }, [location, navigate, addNewVPC, currentUser.id]);
 
   useEffect(() => {
     setDisplayedVPCs(allVPCs);

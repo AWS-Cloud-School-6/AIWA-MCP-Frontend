@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { Flex, View, Text, Icon } from '@aws-amplify/ui-react';
+import { Flex, View, Text, Icon, TextField, Button } from '@aws-amplify/ui-react';
 import { ListboxComponent, NavBarHeader2, SideBar } from '../ui-components';
 import React from 'react';
 import { getOverrideProps } from "../ui-components/utils";
+import axios from 'axios'; 
+import { useUserContext } from '../UserContext';
+
+
+const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1997676819.ap-northeast-2.elb.amazonaws.com:80/api';
 
 const ConsoleListboxComponent = (props) => {
     const handleChevronClick = () => {
@@ -24,6 +29,83 @@ const ConsoleListboxComponent = (props) => {
     );    
 }
 
+function MyPage() {
+  const [email, setEmail] = useState('');
+  const [access_key, setaccess_key] = useState('');
+  const [secret_key, setsecret_key] = useState('');
+
+  const { currentUser } = useUserContext();
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(API_URL + '/members/update-credentials', {
+        email: currentUser?.id, // Use the current user's email from context
+        access_key,
+        secret_key
+      });    
+      console.log('API 응답:', response.data);
+      alert('키 성공적으로 제출');
+    } catch (error) {
+      if (error.response && error.response.status === 500) {
+        console.error('서버 내부 오류:', error.response.data);
+        alert('서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else if (error.code === 'ERR_BAD_RESPONSE') {
+        console.error('잘못된 응답:', error.message);
+        alert('서버로부터 잘못된 응답을 받았습니다. 관리자에게 문의해주세요.');
+      } else {
+        console.error('API 요청 실패:', error);
+        alert('키 제출 실패: ' + error.message);
+      }
+    }
+  };
+
+    // const handleSubmit = () => {
+    //     const mykey = {
+    //         "access_key": access_key,
+    //         "secret_key": secret_key
+    //     }
+    //     axios.post(API_URL + '/members/update-credentials', mykey)
+    //     .then((response) => {
+    //         console.log(response);
+    //     }).catch((error) => {
+    //         console.log(error);
+    //     });
+    // }
+
+  return (
+    <Flex direction="column" padding="2rem">
+      <Text fontSize="2xl" fontWeight="bold" marginBottom="1rem">마이페이지</Text>
+      {/* Import useUserContext at the top of the file */}
+      {/* import { useUserContext } from '../UserContext'; */}
+      
+      {/* Inside the MyPage component, add: */}
+      {/* const { currentUser } = useUserContext(); */}
+      
+      <Text
+        fontWeight="bold"
+        marginBottom="1rem"
+      >
+        이메일: {currentUser?.id || 'Loading...'}
+      </Text>
+      <TextField
+        label="Access Key"
+        placeholder="Access Key를 입력하세요"
+        value={access_key}
+        onChange={(e) => setaccess_key(e.target.value)}
+        marginBottom="1rem"
+      />
+      <TextField
+        label="Secret Key"
+        placeholder="Secret Key를 입력하세요"
+        type="password"
+        value={secret_key}
+        onChange={(e) => setsecret_key(e.target.value)}
+        marginBottom="1rem"
+      />
+      <Button onClick={handleSubmit}>제출</Button>
+    </Flex>
+  );
+}
 
 function Console({overrides}) {
     // 드롭다운 상태 관리
@@ -100,6 +182,7 @@ function Console({overrides}) {
             <NavBarHeader2 />
                 <Flex direction="row">
                     <SideBar />
+                    <MyPage /> {/* 마이페이지 컴포넌트 추가 */}
                 </Flex>
         </div>
     );
