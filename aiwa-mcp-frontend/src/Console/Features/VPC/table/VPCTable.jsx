@@ -3,7 +3,7 @@ import styles from './VPCTable.module.css';
 import TableHeader from './TableHeader';
 import VPCRow from './VPCRow';
 import TablePagination from './TablePagination';
-import { useNavigate, useLocation } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
@@ -11,13 +11,13 @@ import { useUserContext } from '../../../../UserContext';
 const API_URL = 'http://13.125.198.144:8080';
 
 const initialCustomers = [
-  { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
-  { id: 2, name: "Ahmad Rosser", number: "5684236527", description: "VPC 생성 중...", status: "pending", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
-  { id: 3, name: "Zain Calzoni", number: "5684236528", description: "VPC 삭제 중...", status: "deleting", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
-  { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
+  { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
+  { id: 2, name: "Ahmad Rosser", number: "5684236527", description: "VPC 생성 중...", status: "pending", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
+  { id: 3, name: "Zain Calzoni", number: "5684236528", description: "VPC 삭제 중...", status: "deleting", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
+  { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
 ];
 
-function VPCTable({customer, onEdit, onDelete}) {
+function VPCTable({ customer, onEdit, onDelete }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedVpcs, setSelectedVpcs] = useState([]);
@@ -45,31 +45,29 @@ function VPCTable({customer, onEdit, onDelete}) {
   }, []);
 
   useEffect(() => {
-    if (location.state && location.state.newVPC) {
-      const fetchVPCData = async () => {
-        try {
-          const response = await axios.get(`${API_URL}/api/aws/resources/${currentUser.id}`);
-          if (response.data && response.data.length > 0) {
-            const latestVPC = response.data[response.data.length - 1]; // 가장 최근에 생성된 VPC
-            const newVPC = {
-              id: latestVPC.id,
-              name: latestVPC.name,
-              number: latestVPC.number,
-              description: latestVPC.description,
-              status: latestVPC.status,
-              cidr: latestVPC.cidr,
-              routingTable: latestVPC.routingTable
-            };
-            addNewVPC(newVPC);
-          }
-        } catch (error) {
-          console.error("Error fetching VPC data:", error);
+    const fetchVPCData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/aws/resources/${currentUser.id}`);
+        if (response.vpcs && response.vpcs.length > 0) {
+          const latestVPC = response.vpcs[response.data.length - 1]; // 가장 최근에 생성된 VPC
+          const newVPC = {
+            group: latestVPC.id,
+            name: latestVPC.name,
+            number: latestVPC.number,
+            // description: latestVPC.description,
+            status: latestVPC.status,
+            cidr: latestVPC.cidr,
+            routingTable: latestVPC.routingTable
+          };
+          addNewVPC(newVPC);
         }
-      };
+      } catch (error) {
+        console.error("Error fetching VPC data:", error);
+      }
+    };
 
-      fetchVPCData();
-      navigate(location.pathname, { replace: true, state: {} });
-    }
+    fetchVPCData();
+    navigate(location.pathname, { replace: true, state: {} });
   }, [location, navigate, addNewVPC, currentUser.id]);
 
   useEffect(() => {
@@ -77,7 +75,7 @@ function VPCTable({customer, onEdit, onDelete}) {
   }, [allVPCs]);
 
   const handleCheckboxChange = (id) => {
-    setSelectedVpcs(prev => 
+    setSelectedVpcs(prev =>
       prev.includes(id) ? prev.filter(vpcId => vpcId !== id) : [...prev, id]
     );
   };
@@ -88,7 +86,7 @@ function VPCTable({customer, onEdit, onDelete}) {
     } else {
       setSelectedVpcs(displayedVPCs.map(vpc => vpc.id));
     }
-  };  
+  };
 
   const handleEdit = () => {
     if (selectedVpcs.length !== 1) {
@@ -116,10 +114,10 @@ function VPCTable({customer, onEdit, onDelete}) {
       setSelectedVpcs([]);
     }
   };
-  
+
   const handleSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
-    const filteredVPCs = allVPCs.filter(vpc => 
+    const filteredVPCs = allVPCs.filter(vpc =>
       vpc.name.toLowerCase().includes(searchTerm)
     );
     setDisplayedVPCs(filteredVPCs);
@@ -135,10 +133,10 @@ function VPCTable({customer, onEdit, onDelete}) {
           </button>
           <div className={styles.searchInputWrapper}>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d322eb2c900627c1c0432bf23dfda65d4720f3b4b6381543703e324a72370a2e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-            <input 
-              type="text" 
-              className={styles.searchInput} 
-              placeholder="Search..." 
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search..."
               aria-label="Search VPCs"
               onChange={handleSearch}
             />
@@ -151,27 +149,27 @@ function VPCTable({customer, onEdit, onDelete}) {
             Create VPC
           </button>
 
-          <ActionButtons 
+          <ActionButtons
             selectedCount={selectedVpcs.length}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
         </div>
       </header>
-      <TableHeader 
+      <TableHeader
         onSelectAll={handleSelectAll}
         allSelected={selectedVpcs.length === displayedVPCs.length}
       />
       {displayedVPCs.map((vpc, index) => (
-        <VPCRow 
-          key={vpc.id} 
-          customer={vpc} 
+        <VPCRow
+          key={vpc.id}
+          customer={vpc}
           isEven={index % 2 === 1}
           isSelected={selectedVpcs.includes(vpc.id)}
           onCheckboxChange={() => handleCheckboxChange(vpc.id)}
         />
       ))}
-      <TablePagination />  
+      <TablePagination />
     </section>
   );
 }
