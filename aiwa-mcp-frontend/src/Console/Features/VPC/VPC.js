@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Flex, Button, View, Heading } from "@aws-amplify/ui-react";
 import { SideBar, NavBarHeader2 } from "../../../ui-components";
-import CustomerTable from "./table/CustomerTable";
+import VPCTable from "./table/VPCTable";
 
 
 function VPC() {
@@ -16,7 +16,7 @@ function VPC() {
           <Flex justifyContent="space-between" alignItems="center" marginBottom="20px">
             <Heading level={4}>VPC List</Heading>
           </Flex>
-          <CustomerTable />
+          <VPCTable />
         </Flex>
       </Flex>
     </div>

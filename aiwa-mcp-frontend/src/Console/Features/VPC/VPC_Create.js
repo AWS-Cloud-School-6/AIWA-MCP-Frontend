@@ -31,7 +31,7 @@ function VPC_Create() {
         console.log(error);
       });
 
-    // CustomerTable 컴포넌트로 새로운 VPC 정보를 전달
+    // VPCTable 컴포넌트로 새로운 VPC 정보를 전달
     navigate('/console/vpc', { state: { newVPC } });
   };
 

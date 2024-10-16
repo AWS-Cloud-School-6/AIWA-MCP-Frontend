@@ -1,0 +1,395 @@
+.dataTable {
+    max-width: none !important;
+    border-radius: 8px;
+    background: var(--White, #fff);
+    box-shadow: 0 0 0 1px rgba(152, 161, 178, 0.1), 0 1px 4px 0 rgba(69, 75, 87, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .tableControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: rgba(244, 247, 252, 0.75);
+  }
+  
+  .searchContainer {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  
+  .actionButtons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .filterButton,
+  .EC2Button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .filterButton {
+    background-color: #fff;
+    color: #464f60;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(104, 113, 130, 0.16);
+  }
+  
+  .EC2Button {
+    background-color: #2264e5;
+    color: #fff;
+  }
+  
+  @media (max-width: 991px) {
+    .tableHeader {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+  
+  .searchInputWrapper {
+    align-items: center;
+    border-radius: 6px;
+    background: var(--White, #fff);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(104, 113, 130, 0.16);
+    display: flex;
+    gap: 8px;
+    padding: 6px 12px;
+    flex-grow: 1;
+  }
+  
+  .searchInput {
+    border: none;
+    background: transparent;
+    color: var(--Gray-300, #a1a9b8);
+    font: 400 14px/1 Inter, sans-serif;
+    width: 100%;
+  }
+  
+  .icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+  
+  .tableHeaderRow {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  
+  .tableHeaderRow .cell {
+    font-weight: bold;
+    text-align: center;
+    background-color: #f5f5f5;
+  }
+  
+  .typeCell, .AZCell, .descriptionCell {
+    text-align: left;
+  }
+  
+  .idCell, .statusCell, .timeCell  {
+    text-align: center;
+  }
+  
+  .checkboxCell {
+    width: 50px; /* 체크박스 열의 너비를 약간 늘립니다 */
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  
+  .idCell {
+    width: 80px; /* ID 열의 너비를 약간 늘립니다 */
+    flex-shrink: 0;
+  }
+  
+  .typeCell {
+    width: 200px; /* Name 열의 너비를 늘립니다 */
+    flex-shrink: 0;
+  }
+  
+  .descriptionCell {
+    flex-grow: 1;
+    min-width: 100px; /* Description 열의 최소 너비를 늘립니다 */
+  }
+  
+  .statusCell {
+    width: 100px; /* Status 열의 너비를 늘립니다 */
+    flex-shrink: 0;
+  }
+  
+  .timeCell {
+    width: 150px; /* CIDR 열의 너비를 약간 늘립니다 */
+    flex-shrink: 0;
+  }
+  
+  .AZCell {
+    width: 200px; /* Routing Table 열의 너비를 약간 늘립니다 */
+    flex-shrink: 0;
+  }
+  
+  .columnHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .icon {
+    margin-left: 5px;
+    width: 12px;
+    height: 12px;
+  }
+  
+  .VPCRow,
+  .VPCRowEven {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 20px;
+    font-family: Inter, sans-serif;
+    padding: 12px 50px 12px 10px;
+  }
+  
+  .VPCRowEven {
+    background-color: rgba(249, 250, 252, 1);
+  }
+  
+  @media (max-width: 991px) {
+    .VPCRow,
+    .VPCRowEven {
+      padding-right: 20px;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .customerInfo {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .customerName {
+    font-weight: normal;
+  }
+  
+  .customerNumber {
+    font-size: 0.8em;
+    color: #666;
+  }
+  
+  .customerDescription {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .customerDescription p {
+    color: var(--Gray-700, #464f60);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    margin: 0;
+  }
+  
+  .tag {
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    display: inline-block;
+    font-weight: bold;
+  }
+  
+  /* .available {
+    background: var(--Indigo-0, #f0f1fa);
+    color: var(--Indigo-500, #4f5aed);
+  }
+  
+  .pending {
+    background: var(--Green-0, #e1fcef);
+    color: var(--Green-500, #14804a);
+  }
+  
+  .deleting {
+    background: var(--Gray-50, #e9edf5);
+    color: var(--Gray-600, #ff6923);
+  }
+
+  .deleted {
+    background: var(--Gray-50, #e9edf5);
+    color: var(--Gray-600, #f12c2c);
+  } */
+
+  .runnning {
+    background: var(--Indigo-0, #f0f1fa);
+    color: var(--Indigo-500, #4f5aed);
+  }
+  
+  .pending {
+    background: var(--Green-0, #e1fcef);
+    color: var(--Green-500, #14804a);
+  }
+  
+  .stopping {
+    background: var(--Gray-50, #e9edf5);
+    color: var(--Gray-600, #ff6923);
+  }
+
+  .stopped {
+    background: var(--Gray-50, #e9edf5);
+    color: var(--Gray-600, #f12c2c);
+  }
+
+  .stopped {
+    background: var(--Gray-50, #e9edf5);
+    color: var(--Gray-600, #f12c2c);
+  }
+
+
+  .due {
+    background: var(--Red-0, #faf0f3);
+    color: var(--Red-500, #d12953);
+  }
+  
+  .financialInfo {
+    display: flex;
+    gap: 40px;
+    text-align: right;
+  }
+  
+  .amount {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .amount span:first-child {
+    color: var(--Gray-700, #464f60);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-size: 14px;
+    line-height: 1;
+  }
+  
+  .currency {
+    color: var(--Gray-500, #687182);
+    font-size: 12px;
+    letter-spacing: 0.36px;
+  }
+  
+  .negative {
+    color: var(--Red-500, #d12953);
+  }
+  
+  .positive {
+    color: var(--Green-500, #14804a);
+  }
+  
+  .tablePagination {
+    background-color: rgba(244, 247, 252, 0.75);
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+  }
+  @media (max-width: 991px) {
+    .tablePagination {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+  }
+  
+  .paginationInfo {
+    color: var(--Gray-500, #687182);
+    letter-spacing: 0.36px;
+    font: 500 12px Inter, sans-serif;
+  }
+  
+  .rowsPerPage {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--Gray-500, #687182);
+    font: 500 12px Inter, sans-serif;
+  }
+  
+  .rowsPerPageSelect {
+    background: var(--White, #fff);
+    border: 1px solid var(--Gray-300, #d0d5dd);
+    border-radius: 4px;
+    padding: 2px 4px;
+    font: inherit;
+    color: inherit;
+  }
+  
+  .paginationControls {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .paginationButton {
+    border-radius: 6px;
+    background: var(--White, #fff);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(70, 79, 96, 0.16), 0 2px 5px 0 rgba(89, 96, 120, 0.1);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--Gray-700, #464f60);
+  }
+  
+  .paginationButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .tableRow {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid #e0e0e0;
+  }

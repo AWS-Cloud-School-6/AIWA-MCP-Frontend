@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './CustomerTable.module.css';
+import styles from './VPCTable.module.css';
 
-function CustomerRow({ customer, isEven, isSelected, onCheckboxChange }) {
-  const rowClass = isEven ? styles.customerRowEven : styles.customerRow;
+function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
+  const rowClass = isEven ? styles.VPCRowEven : styles.VPCRow;
 
   return (
     <div className={`${styles.tableRow} ${rowClass}`}>
@@ -40,4 +40,4 @@ function CustomerRow({ customer, isEven, isSelected, onCheckboxChange }) {
   );
 }
 
-export default CustomerRow;
+export default VPCRow;

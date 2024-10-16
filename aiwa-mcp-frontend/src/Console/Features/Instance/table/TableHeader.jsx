@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './VPCTable.module.css';
+import styles from './EC2Table.module.css';
 
 function TableHeader({ onSelectAll, allSelected }) {
   return (
