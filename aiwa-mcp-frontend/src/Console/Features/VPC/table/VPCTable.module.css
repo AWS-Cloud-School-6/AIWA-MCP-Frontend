@@ -30,7 +30,7 @@
   }
   
   .filterButton,
-  .addCustomerButton {
+  .AddVPCButton {
     align-items: center;
     border-radius: 6px;
     background: var(--White, #fff);
@@ -42,7 +42,7 @@
     cursor: pointer;
   }
   
-  .addCustomerButton {
+  .AddVPCButton {
     background: var(--Blue-500, #2264e5);
     color: var(--White, #fff);
     font: 500 14px/1 Inter, sans-serif;
@@ -163,8 +163,8 @@
     height: 12px;
   }
   
-  .customerRow,
-  .customerRowEven {
+  .VPCRow,
+  .VPCRowEven {
     display: flex;
     width: 100%;
     align-items: center;
@@ -173,13 +173,13 @@
     padding: 12px 50px 12px 10px;
   }
   
-  .customerRowEven {
+  .VPCRowEven {
     background-color: rgba(249, 250, 252, 1);
   }
   
   @media (max-width: 991px) {
-    .customerRow,
-    .customerRowEven {
+    .VPCRow,
+    .VPCRowEven {
       padding-right: 20px;
       flex-wrap: wrap;
     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import styles from './CustomerTable.module.css';
+import styles from './VPCTable.module.css';
 import TableHeader from './TableHeader';
-import CustomerRow from './CustomerRow';
+import VPCRow from './VPCRow';
 import TablePagination from './TablePagination';
 import { useNavigate, useLocation } from 'react-router-dom'; 
 import ActionButtons from './ActionButtons';
@@ -13,7 +13,7 @@ const initialCustomers = [
   { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none"},
 ];
 
-function CustomerTable({customer, onEdit, onDelete}) {
+function VPCTable({customer, onEdit, onDelete}) {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedVpcs, setSelectedVpcs] = useState([]);
@@ -23,6 +23,7 @@ function CustomerTable({customer, onEdit, onDelete}) {
   });
   const [displayedVPCs, setDisplayedVPCs] = useState(allVPCs);
 
+  // 리렌더링될 때마다 새로운 함수가 생성되지 않도록 구현
   const addNewVPC = useCallback((newVPC) => {
     setAllVPCs(prevVPCs => {
       const existingVPC = prevVPCs.find(vpc => vpc.name === newVPC.name);
@@ -127,7 +128,7 @@ function CustomerTable({customer, onEdit, onDelete}) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className={styles.addCustomerButton} onClick={() => navigate('/console/vpc/create')} style={{ marginRight: '10px' }}>
+          <button className={styles.AddVPCButton} onClick={() => navigate('/console/vpc/create')} style={{ marginRight: '10px' }}>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
             Create VPC
           </button>
@@ -144,7 +145,7 @@ function CustomerTable({customer, onEdit, onDelete}) {
         allSelected={selectedVpcs.length === displayedVPCs.length}
       />
       {displayedVPCs.map((vpc, index) => (
-        <CustomerRow 
+        <VPCRow 
           key={vpc.id} 
           customer={vpc} 
           isEven={index % 2 === 1}
@@ -157,4 +158,4 @@ function CustomerTable({customer, onEdit, onDelete}) {
   );
 }
 
-export default CustomerTable;
+export default VPCTable;
