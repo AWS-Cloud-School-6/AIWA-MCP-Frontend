@@ -43,12 +43,12 @@ function Subnet_Create() {
         const newSubnet = {
             subnetName,
             cidrBlock,
-            vpcId: selectedVPC, // Include selected VPC ID
+            vpcName: selectedVPC, // Include selected VPC ID
             availabilityZone: selectedAZ, // Include selected Availability Zone
         };
 
         try {
-            const response = await axios.post(`${API_URL}/vpc/create?userId=${currentUser.id}`, newSubnet);
+            const response = await axios.post(`${API_URL}/subnet/create?userId=${currentUser.id}`, newSubnet);
             console.log(response.data);
             navigate('/console/vpc');
         } catch (error) {
@@ -57,8 +57,8 @@ function Subnet_Create() {
     };
 
     // Handle VPC selection
-    const handleVPCSelect = (vpcId) => {
-        setSelectedVPC(vpcId);
+    const handleVPCSelect = (vpcName) => {
+        setSelectedVPC(vpcName);
     };
 
     // Handle Availability Zone selection
@@ -112,14 +112,14 @@ function Subnet_Create() {
                         <Menu
                             trigger={
                                 <MenuButton style={{ textAlign: 'left', width: '100%', justifyContent: 'flex-start' }}>
-                                    {selectedVPC === "non-selected" ? "VPC 선택" : `Selected VPC: ${selectedVPC}`}
+                                    {selectedVPC === "non-selected" ? "VPC 선택" : `${selectedVPC}`}
                                 </MenuButton>
                             }
                             style={{ textAlign: 'left' }}  // Ensure left alignment for the menu
                         >
                             {latestVPC.length > 0 ? (
                                 latestVPC.map((vpc) => (
-                                    <MenuItem key={vpc.vpcId} onClick={() => handleVPCSelect(vpc.vpcId)}>
+                                    <MenuItem key={vpc.vpcId} onClick={() => handleVPCSelect(vpc.tags.Name)}>
                                         VPC ID: {vpc.vpcId} - {vpc.tags.Name || 'Unnamed'}
                                     </MenuItem>
                                 ))
@@ -162,7 +162,7 @@ function Subnet_Create() {
                     <Menu
                         trigger={
                             <MenuButton style={{ textAlign: 'left', width: '100%', justifyContent: 'flex-start' }}>
-                                {selectedAZ === "non-selected" ? "AZ 선택" : `Selected AZ: ${selectedAZ}`}
+                                {selectedAZ === "non-selected" ? "AZ 선택" : ` ${selectedAZ}`}
                             </MenuButton>
                         }
                         style={{ textAlign: 'left' }}  // Ensure left alignment for the menu

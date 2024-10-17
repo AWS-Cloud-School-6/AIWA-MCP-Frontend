@@ -98,6 +98,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     } else {
       setSelectedSubnets(displayedSubnets.map(subnet => subnet.id));
     }
+    setSelectAll(!selectAll);
   };
 
   const handleEdit = () => {
