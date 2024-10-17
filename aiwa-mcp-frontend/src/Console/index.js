@@ -3,11 +3,11 @@ import React from 'react';
 import { Routes, Route, Router } from 'react-router-dom';
 import InstanceRoutes from './Features/Instance';
 import VPCRoutes from './Features/VPC';
-import SubnetRoutes from './Features/Subnet';
+import SubnetRoutes from './Features/VPC/Subnet';
 import Console from './Console';
 import Profile from './Profile/Profile';
 import Auth from '../Auth/Auth.js';
-import { NavBarHeader2 } from '../ui-components';
+
 
 function ConsoleRoutes() {
     return (

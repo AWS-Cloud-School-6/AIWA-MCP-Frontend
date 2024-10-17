@@ -6,7 +6,8 @@ import TablePagination from './TablePagination';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
-import { useUserContext } from '../../../../UserContext';
+import { useUserContext } from '../../../../../UserContext';
+
 
 const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80';
 
@@ -86,9 +87,9 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   //   setDisplayedSubnets(allSubnets);
   // }, [allSubnets]);
 
-  const handleCheckboxChange = (id) => {
+  const handleCheckboxChange = (number) => {
     setSelectedSubnets(prev =>
-      prev.includes(id) ? prev.filter(subnetId => subnetId !== id) : [...prev, id]
+      prev.includes(number) ? prev.filter(subnetNumber => subnetNumber !== number) : [...prev, number]
     );
   };
 
@@ -96,9 +97,8 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     if (selectedSubnets.length === displayedSubnets.length) {
       setSelectedSubnets([]);
     } else {
-      setSelectedSubnets(displayedSubnets.map(subnet => subnet.id));
+      setSelectedSubnets(displayedSubnets.map(subnet => subnet.number));
     }
-    setSelectAll(!selectAll);
   };
 
   const handleEdit = () => {
@@ -106,7 +106,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
       alert("Please select only one subnet to edit.");
       return;
     }
-    const selectedSubnets = displayedSubnets.find(subnet => subnet.id === selectedSubnets[0]);
+    const selectedSubnets = displayedSubnets.find(subnet => subnet.number === selectedSubnets[0]);
     if (selectedSubnets) {
       navigate(`/console/subnet/edit/${selectedSubnets.name}`);
     } else {
@@ -121,7 +121,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     }
     const confirmDelete = window.confirm(`Are you sure you want to delete ${selectedSubnets.length} Subnet(s)?`);
     if (confirmDelete) {
-      const updatedSubnets = allSubnets.filter(subnet => !selectedSubnets.includes(subnet.id));
+      const updatedSubnets = allSubnets.filter(subnet => !selectedSubnets.includes(subnet.number));
       setAllSubnets(updatedSubnets);
       localStorage.setItem('allSubnets', JSON.stringify(updatedSubnets));
       setSelectedSubnets([]);
@@ -180,15 +180,15 @@ function SubnetTable({ customer, onEdit, onDelete }) {
       <div className={styles.scrollableTable}>
         <TableHeader
           onSelectAll={handleSelectAll}
-          allSelected={selectedSubnets.length === displayedSubnets.length}
+          allSelected={selectedSubnets.length === displayedSubnets.length && displayedSubnets.length > 0}
         />
         {displayedSubnets.map((subnet, index) => (
           <SubnetRow
-            key={subnet.id}
+            key={subnet.number}
             customer={subnet}
             isEven={index % 2 === 1}
-            isSelected={selectedSubnets.includes(subnet.id)}
-            onCheckboxChange={() => handleCheckboxChange(subnet.id)}
+            isSelected={selectedSubnets.includes(subnet.number)}
+            onCheckboxChange={() => handleCheckboxChange(subnet.number)}
           />
         ))}
       </div>
