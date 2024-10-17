@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Flex, Button, TextField, Heading, Menu, MenuItem, MenuButton, Text } from "@aws-amplify/ui-react";
-import { SideBar } from "../../../ui-components";
 import axios from 'axios';
-import { useUserContext } from '../../../UserContext';
-import NavBar from '../../NavBar/NavBar';
-import { API_URL } from '../../../index';
+import { useUserContext } from '../../../../UserContext';
+import NavBar from '../../../NavBar/NavBar';
+import { API_URL } from '../../../../index';
 
 function Subnet_Create() {
     // 상태 설정 (이름과 CIDR 블록)
@@ -77,8 +76,7 @@ function Subnet_Create() {
             <NavBar />
             <Flex direction="row" height="100vh">
                 {/* 왼쪽: SideBar */}
-                <SideBar />
-
+          
                 {/* 오른쪽: VPC Create Form */}
                 <Flex
                     direction="column"
