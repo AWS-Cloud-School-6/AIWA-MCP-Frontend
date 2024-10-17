@@ -56,6 +56,15 @@
   letter-spacing: 0.28px;
 }
 
+.AddVPCButton:disabled {
+  background-color: #d3d3d3;
+  /* Light gray for disabled button */
+  color: #a9a9a9;
+  /* Darker gray for text */
+  cursor: not-allowed;
+  /* Change cursor to indicate disabled state */
+}
+
 .filterButton {
   background-color: #fff;
   color: #464f60;

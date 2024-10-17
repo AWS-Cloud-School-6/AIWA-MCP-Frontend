@@ -7,11 +7,11 @@ function ActionButtons({ selectedCount, onEdit, onDelete }) {
   return (
     <div className={styles.actionButtons} style={{ display: 'flex', flexDirection: 'row' }}>
       {(
-        <button onClick={onEdit} className={styles.AddVPCButton} style={{ marginRight: '10px' }}>
+        <button onClick={onEdit} className={styles.AddVPCButton} disabled={selectedCount !== 1} style={{ marginRight: '10px' }} >
           Edit
         </button>
       )}
-      <button onClick={onDelete} className={styles.AddVPCButton}>
+      <button onClick={onDelete} disabled={selectedCount !== 1} className={styles.AddVPCButton}>
         Delete
       </button>
     </div>
