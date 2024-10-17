@@ -18,11 +18,11 @@ function App() {
             formFields={formFields}
             components={components}
         >
-            {/* <Navigate to="/console" /> */}  
+         <Navigate to="/console" />
             
-            {({ signOut }) => (
+            {/* {({ signOut }) => (
                 <button onClick={signOut}>Sign out</button>
-            )}
+            )} */}
         </Authenticator>
     );
 }

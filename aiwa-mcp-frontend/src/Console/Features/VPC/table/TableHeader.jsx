@@ -12,12 +12,12 @@ function TableHeader({ onSelectAll, allSelected }) {
           className={styles.checkbox}
         />
       </div>
-      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '6.5%' }}>#</div>
-      <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '20.5%' }}>Name</div>
+      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '5%' }}>#</div>
+      <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '30%' }}>Name</div>
       {/* <div className={`${styles.cell} ${styles.descriptionCell}`} style={{ width: '20%' }}>Description</div> */}
-      <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '9.5%' }}>Status</div>
-      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '24%' }}>CIDR</div>
-      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '22.5%' }}>Routing Table</div>
+      <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '10%' }}>Status</div>
+      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '20%' }}>CIDR</div>
+      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '30%' }}>Routing Table</div>
     </div>
   );
 }
