@@ -29,6 +29,10 @@ function VPCTable() {
   // 유저 정보 가져오기
   const { currentUser } = useUserContext();
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 
   const fetchVPCData = async () => {
     try {
