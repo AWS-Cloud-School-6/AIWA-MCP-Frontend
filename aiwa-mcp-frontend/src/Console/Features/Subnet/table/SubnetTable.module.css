@@ -1,12 +1,5 @@
 .dataTable {
-  max-width: 900px;
-  width: 100%;
-  margin: 0;
-  /* 중앙 정렬을 위한 auto 마진 제거 */
-  margin-left: 0;
-  /* 왼쪽 정렬을 위해 왼쪽 마진을 0으로 설정 */
-  margin-right: auto;
-  /* 오른쪽 여백을 자동으로 설정하여 왼쪽 정렬 유지 */
+  max-width: none !important;
   border-radius: 8px;
   background: var(--White, #fff);
   box-shadow: 0 0 0 1px rgba(152, 161, 178, 0.1), 0 1px 4px 0 rgba(69, 75, 87, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.08);
@@ -14,6 +7,19 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+.scrollableTable {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+}
+
+
+
 
 .tableHeader {
   background-color: rgba(244, 247, 252, 0.75);
@@ -37,7 +43,7 @@
 }
 
 .filterButton,
-.AddVPCButton {
+.AddSubnetButton {
   align-items: center;
   border-radius: 6px;
   background: var(--White, #fff);
@@ -49,7 +55,7 @@
   cursor: pointer;
 }
 
-.AddVPCButton {
+.AddSubnetButton {
   background: var(--Blue-500, #2264e5);
   color: var(--White, #fff);
   font: 500 14px/1 Inter, sans-serif;
@@ -81,12 +87,6 @@
   color: var(--Gray-300, #a1a9b8);
   font: 400 14px/1 Inter, sans-serif;
   width: 100%;
-}
-
-.icon {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
 }
 
 .tableHeaderRow {
@@ -121,9 +121,13 @@
 
 .idCell,
 .statusCell,
+.vpcCell,
 .cidrCell {
   text-align: center;
 }
+
+.availableipCell,
+.azCell,
 
 .checkboxCell {
   width: 50px;
@@ -164,9 +168,27 @@
   flex-shrink: 0;
 }
 
+.vpcCell {
+  width: 150px;
+  /* VPC 열의 너비를 약간 늘립니다 */
+  flex-shrink: 0;
+}
+
 .cidrCell {
   width: 150px;
   /* CIDR 열의 너비를 약간 늘립니다 */
+  flex-shrink: 0;
+}
+
+.availableipCell {
+  width: 150px;
+  /* availableip 열의 너비를 약간 늘립니다 */
+  flex-shrink: 0;
+}
+
+.azCell {
+  width: 150px;
+  /* az 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
 }
 
@@ -189,8 +211,8 @@
   height: 12px;
 }
 
-.VPCRow,
-.VPCRowEven {
+.SubnetRow,
+.SubnetRowEven {
   display: flex;
   width: 100%;
   align-items: center;
@@ -199,14 +221,14 @@
   padding: 12px 50px 12px 10px;
 }
 
-.VPCRowEven {
+.SubnetRowEven {
   background-color: rgba(249, 250, 252, 1);
 }
 
 @media (max-width: 991px) {
 
-  .VPCRow,
-  .VPCRowEven {
+  .SubnetRow,
+  .SubnetRowEven {
     padding-right: 20px;
     flex-wrap: wrap;
   }

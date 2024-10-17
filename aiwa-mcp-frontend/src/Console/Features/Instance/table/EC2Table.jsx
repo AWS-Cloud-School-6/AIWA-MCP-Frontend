@@ -13,47 +13,47 @@ import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import axios from 'axios';
 import styles from './EC2Table.module.css';
-import { API_URL } from '../../../../index';
+import { API_URL } from '../../../../index.js';
 
 
 
 // 예제 데이터 추가
 const sampleInstances = [
-  {
-    InstanceId: 'i-1234567890abcdef0',
-    InstanceType: 't2.micro',
-    State: { Name: 'running' },
-    LaunchTime: '2023-04-01T12:00:00.000Z',
-    Placement: { AvailabilityZone: 'us-east-1a' }
-  },
-  {
-    InstanceId: 'i-0987654321fedcba0',
-    InstanceType: 't2.small',
-    State: { Name: 'stopped' },
-    LaunchTime: '2023-03-15T09:30:00.000Z',
-    Placement: { AvailabilityZone: 'us-east-1b' }
-  },
-  {
-    InstanceId: 'i-abcdef1234567890',
-    InstanceType: 't3.medium',
-    State: { Name: 'running' },
-    LaunchTime: '2023-04-10T15:45:00.000Z',
-    Placement: { AvailabilityZone: 'us-east-1c' }
-  },
-  {
-    InstanceId: 'i-fedcba0987654321',
-    InstanceType: 'm5.large',
-    State: { Name: 'terminated' },
-    LaunchTime: '2023-02-28T18:20:00.000Z',
-    Placement: { AvailabilityZone: 'us-east-1d' }
-  },
-  {
-    InstanceId: 'i-11223344556677889',
-    InstanceType: 'c5.xlarge',
-    State: { Name: 'running' },
-    LaunchTime: '2023-04-05T10:15:00.000Z',
-    Placement: { AvailabilityZone: 'us-east-1a' }
-  }
+    {
+        InstanceId: 'i-1234567890abcdef0',
+        InstanceType: 't2.micro',
+        State: { Name: 'running' },
+        LaunchTime: '2023-04-01T12:00:00.000Z',
+        Placement: { AvailabilityZone: 'us-east-1a' }
+    },
+    {
+        InstanceId: 'i-0987654321fedcba0',
+        InstanceType: 't2.small',
+        State: { Name: 'stopped' },
+        LaunchTime: '2023-03-15T09:30:00.000Z',
+        Placement: { AvailabilityZone: 'us-east-1b' }
+    },
+    {
+        InstanceId: 'i-abcdef1234567890',
+        InstanceType: 't3.medium',
+        State: { Name: 'running' },
+        LaunchTime: '2023-04-10T15:45:00.000Z',
+        Placement: { AvailabilityZone: 'us-east-1c' }
+    },
+    {
+        InstanceId: 'i-fedcba0987654321',
+        InstanceType: 'm5.large',
+        State: { Name: 'terminated' },
+        LaunchTime: '2023-02-28T18:20:00.000Z',
+        Placement: { AvailabilityZone: 'us-east-1d' }
+    },
+    {
+        InstanceId: 'i-11223344556677889',
+        InstanceType: 'c5.xlarge',
+        State: { Name: 'running' },
+        LaunchTime: '2023-04-05T10:15:00.000Z',
+        Placement: { AvailabilityZone: 'us-east-1a' }
+    }
 ];
 
 function EC2Table() {
@@ -105,11 +105,13 @@ function EC2Table() {
                     </select>
                 </div>
                 <div className={styles.actionButtons}>
-                    <button onClick={fetchInstances} className={styles.filterButton} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
-                        <path d="M23 4v6h-6"/>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                    </svg>
+                    <button onClick={fetchInstances} className={styles.filterButton} style={{
+                        display: 'flex', justifyContent: 'center', alignItems: 'center'
+                    }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', padding: '0', margin: '0' }}>
+                            <path d="M23 4v6h-6" />
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                        </svg>
                     </button>
                     <Menu menuButton={<MenuButton className={styles.filterButton}>Actions ▾</MenuButton>}>
                         <MenuItem disabled>Connect</MenuItem>
@@ -136,28 +138,30 @@ function EC2Table() {
                 <div className={`${styles.cell} ${styles.AZCell}`}>Availability Zone</div>
             </div>
 
-            {filteredInstances.length > 0 ? (
-                filteredInstances.map((instance, index) => (
-                    <div key={instance.InstanceId} className={index % 2 === 0 ? styles.VPCRow : styles.VPCRowEven}>
-                        <div className={`${styles.cell} ${styles.idCell}`}>{instance.InstanceId}</div>
-                        <div className={`${styles.cell} ${styles.typeCell}`}>{instance.InstanceType}</div>
-                        <div className={`${styles.cell} ${styles.statusCell}`}>
-                            <span className={`${styles.tag} ${styles[instance.State.Name.toLowerCase()]}`}>
-                                {instance.State.Name}
-                            </span>
+            {
+                filteredInstances.length > 0 ? (
+                    filteredInstances.map((instance, index) => (
+                        <div key={instance.InstanceId} className={index % 2 === 0 ? styles.VPCRow : styles.VPCRowEven}>
+                            <div className={`${styles.cell} ${styles.idCell}`}>{instance.InstanceId}</div>
+                            <div className={`${styles.cell} ${styles.typeCell}`}>{instance.InstanceType}</div>
+                            <div className={`${styles.cell} ${styles.statusCell}`}>
+                                <span className={`${styles.tag} ${styles[instance.State.Name.toLowerCase()]}`}>
+                                    {instance.State.Name}
+                                </span>
+                            </div>
+                            <div className={`${styles.cell} ${styles.timeCell}`}>{new Date(instance.LaunchTime).toLocaleString()}</div>
+                            <div className={`${styles.cell} ${styles.AZCell}`}>{instance.Placement.AvailabilityZone}</div>
                         </div>
-                        <div className={`${styles.cell} ${styles.timeCell}`}>{new Date(instance.LaunchTime).toLocaleString()}</div>
-                        <div className={`${styles.cell} ${styles.AZCell}`}>{instance.Placement.AvailabilityZone}</div>
+                    ))
+                ) : (
+                    <div className={styles.VPCRow}>
+                        <div className={styles.cell} style={{ textAlign: 'center', width: '100%' }}>
+                            No matching instances found.
+                        </div>
                     </div>
-                ))
-            ) : (
-                <div className={styles.VPCRow}>
-                    <div className={styles.cell} style={{ textAlign: 'center', width: '100%' }}>
-                        No matching instances found.
-                    </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }
 
