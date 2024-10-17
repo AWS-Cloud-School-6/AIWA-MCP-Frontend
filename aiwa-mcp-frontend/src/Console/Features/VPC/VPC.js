@@ -3,7 +3,7 @@ import { Flex, Button, View, Heading } from "@aws-amplify/ui-react";
 import { SideBar, NavBarHeader2 } from "../../../ui-components";
 import VPCTable from "./table/VPCTable";
 import NavBar from "../../NavBar/NavBar";
-
+import SidebarVpc from "./Sidebar/SidebarVpc";
 
 function VPC() {
 
@@ -12,7 +12,7 @@ function VPC() {
     <div>
       <NavBar />
       <Flex direction="row">
-        <SideBar />
+        <SidebarVpc />
         <Flex direction="column" style={{ width: '100%', padding: '20px' }}>
           <Flex justifyContent="space-between" alignItems="center" marginBottom="20px">
             <Heading level={4}>VPC List</Heading>

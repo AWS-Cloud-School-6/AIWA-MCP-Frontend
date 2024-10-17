@@ -43,6 +43,7 @@ function VPCTable({ customer, onEdit, onDelete }) {
       return updatedVPCs;
     });
   }, []);
+  
   const fetchVPCData = async () => {
     try {
       const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);

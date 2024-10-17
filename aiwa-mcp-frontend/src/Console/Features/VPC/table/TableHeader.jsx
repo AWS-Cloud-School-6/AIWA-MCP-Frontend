@@ -16,8 +16,8 @@ function TableHeader({ onSelectAll, allSelected }) {
       <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '30%' }}>Name</div>
       {/* <div className={`${styles.cell} ${styles.descriptionCell}`} style={{ width: '20%' }}>Description</div> */}
       <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '10%' }}>Status</div>
-      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '20%' }}>CIDR</div>
-      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '30%' }}>Routing Table</div>
+      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '25%' }}>CIDR</div>
+      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '20%' }}>Routing Table</div>
     </div>
   );
 }
