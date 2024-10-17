@@ -13,8 +13,9 @@ import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import axios from 'axios';
 import styles from './EC2Table.module.css';
+import { API_URL } from '../../../../index';
 
-const API_ENDPOINT = 'https://your-api-gateway-endpoint'; // Replace with your API Gateway URL
+
 
 // 예제 데이터 추가
 const sampleInstances = [
@@ -66,7 +67,7 @@ function EC2Table() {
     }, []);
 
     const fetchInstances = () => {
-        axios.get(`${API_ENDPOINT}/instances`)
+        axios.get(`${API_URL}/instances`)
             .then((response) => {
                 setInstances(response.data);
             })

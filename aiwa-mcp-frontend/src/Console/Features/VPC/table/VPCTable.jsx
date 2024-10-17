@@ -7,8 +7,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
+import { API_URL } from '../../../../index';
 
-const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80';
 
 const initialCustomers = [
   { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
