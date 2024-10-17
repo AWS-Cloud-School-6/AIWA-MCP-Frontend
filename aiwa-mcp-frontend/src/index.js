@@ -12,6 +12,8 @@ import Auth from './Auth/Auth.js';
 import Main from './Main/Main';
 import ProtectedRoute from './ProtectedRoute';
 
+export const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80/api';
+
 function App() {
   return (
     <Authenticator.Provider>

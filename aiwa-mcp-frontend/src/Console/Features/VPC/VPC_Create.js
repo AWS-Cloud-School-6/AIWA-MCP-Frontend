@@ -5,8 +5,8 @@ import { SideBar, NavBarHeader2 } from "../../../ui-components";
 import axios from 'axios';
 import { useUserContext } from '../../../UserContext';
 import NavBar from '../../NavBar/NavBar';
+import { API_URL } from '../../../index';
 
-const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80/api/vpc/create?userId=';
 
 function VPC_Create() {
   // 상태 설정 (이름과 CIDR 블록)
@@ -26,7 +26,7 @@ function VPC_Create() {
       "vpcName": vpcName,
       "cidrBlock": cidrBlock,
     };
-    axios.post(API_URL + currentUser.id, newVPC)
+    axios.post(API_URL + '/vpc/create?userId=' + currentUser.id, newVPC)
       .then((response) => {
         console.log(response);
       }).catch((error) => {

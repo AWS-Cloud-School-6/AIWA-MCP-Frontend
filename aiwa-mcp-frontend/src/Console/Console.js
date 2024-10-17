@@ -6,9 +6,9 @@ import { getOverrideProps } from "../ui-components/utils";
 import axios from 'axios'; 
 import { useUserContext } from '../UserContext';
 import NavBar from './NavBar/NavBar';
+import { API_URL } from '../index';
 
 
-const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80/api';
 
 const ConsoleListboxComponent = (props) => {
     const handleChevronClick = () => {
