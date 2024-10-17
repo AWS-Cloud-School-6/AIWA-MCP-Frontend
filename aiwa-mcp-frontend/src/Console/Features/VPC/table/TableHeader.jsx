@@ -4,7 +4,7 @@ import styles from './VPCTable.module.css';
 function TableHeader({ onSelectAll, allSelected }) {
   return (
     <div className={`${styles.tableRow} ${styles.tableHeaderRow}`} style={{ textAlign: 'center' }}>
-      <div className={`${styles.cell} ${styles.checkboxCell}`} style={{ width: '6.5%' }}>
+      <div className={`${styles.cell} ${styles.checkboxCell}`} style={{ width: '7%' }}>
         <input
           type="checkbox"
           checked={allSelected}

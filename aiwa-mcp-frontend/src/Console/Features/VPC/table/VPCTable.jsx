@@ -43,32 +43,29 @@ function VPCTable({ customer, onEdit, onDelete }) {
       return updatedVPCs;
     });
   }, []);
-
-  useEffect(() => {
-    const fetchVPCData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/aws/resources/${currentUser.id}`);
-        if (response.vpcs && response.vpcs.length > 0) {
-          const latestVPC = response.vpcs[response.data.length - 1]; // 가장 최근에 생성된 VPC
-          const newVPC = {
-            group: latestVPC.id,
-            name: latestVPC.name,
-            number: latestVPC.number,
-            // description: latestVPC.description,
-            status: latestVPC.status,
-            cidr: latestVPC.cidr,
-            routingTable: latestVPC.routingTable
-          };
-          addNewVPC(newVPC);
-        }
-      } catch (error) {
-        console.error("Error fetching VPC data:", error);
+  const fetchVPCData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
+      if (response.data.vpcs && response.data.vpcs.length > 0) {
+        const latestVPC = response.data.vpcs.map((vpc) => ({ // 가장 최근에 생성된 VPC
+          number: vpc.vpcId,
+          name: vpc.tags.Name || '-',
+          status: vpc.status || "available",
+          cidr: vpc.cidr || '-',
+          routingTable: vpc.routingTable || "-",
+        }));
+        console.log(latestVPC);
+        setAllVPCs(latestVPC);
+        setDisplayedVPCs(latestVPC);
+        localStorage.setItem('allVPCs', JSON.stringify(latestVPC));
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching VPC data:", error);
+    }
+  };
+  useEffect(() => {
     fetchVPCData();
-    navigate(location.pathname, { replace: true, state: {} });
-  }, [location, navigate, addNewVPC, currentUser.id]);
+  }, []);
 
   useEffect(() => {
     setDisplayedVPCs(allVPCs);
@@ -144,11 +141,18 @@ function VPCTable({ customer, onEdit, onDelete }) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center' }}>
+          <button onClick={fetchVPCData} className={styles.filterButton} style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '10px'
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', padding: '0', margin: '0' }}>
+              <path d="M23 4v6h-6" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg>
+          </button>
           <button className={styles.AddVPCButton} onClick={() => navigate('/console/vpc/create')} style={{ marginRight: '10px' }}>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
             Create VPC
           </button>
-
           <ActionButtons
             selectedCount={selectedVpcs.length}
             onEdit={handleEdit}
