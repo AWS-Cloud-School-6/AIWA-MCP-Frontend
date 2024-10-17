@@ -5,9 +5,10 @@ import React from 'react';
 import { getOverrideProps } from "../ui-components/utils";
 import axios from 'axios'; 
 import { useUserContext } from '../UserContext';
+import NavBar from './NavBar/NavBar';
 
 
-const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1997676819.ap-northeast-2.elb.amazonaws.com:80/api';
+const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80/api';
 
 const ConsoleListboxComponent = (props) => {
     const handleChevronClick = () => {
@@ -179,7 +180,7 @@ function Console({overrides}) {
                     }
                 }}  
             /> */}
-            <NavBarHeader2 />
+            <NavBar />
                 <Flex direction="row">
                     <SideBar />
                     <MyPage /> {/* 마이페이지 컴포넌트 추가 */}

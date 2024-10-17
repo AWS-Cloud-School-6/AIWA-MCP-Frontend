@@ -4,8 +4,9 @@ import { Flex, Button, TextField, Heading } from "@aws-amplify/ui-react";
 import { SideBar, NavBarHeader2 } from "../../../ui-components";
 import axios from 'axios';
 import { useUserContext } from '../../../UserContext';
+import NavBar from '../../NavBar/NavBar';
 
-const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1997676819.ap-northeast-2.elb.amazonaws.com:80/api/vpc/create?userId=';
+const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80/api/vpc/create?userId=';
 
 function VPC_Create() {
   // 상태 설정 (이름과 CIDR 블록)
@@ -38,7 +39,7 @@ function VPC_Create() {
 
   return (
     <div>
-      <NavBarHeader2 />
+      <NavBar />
       <Flex direction="row" height="100vh">
         {/* 왼쪽: SideBar */}
         <SideBar />
