@@ -44,31 +44,31 @@ function VPCTable({ customer, onEdit, onDelete }) {
     });
   }, []);
 
-  useEffect(() => {
-    const fetchVPCData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/aws/resources/${currentUser.id}`);
-        if (response.vpcs && response.vpcs.length > 0) {
-          const latestVPC = response.vpcs[response.data.length - 1]; // 가장 최근에 생성된 VPC
-          const newVPC = {
-            group: latestVPC.id,
-            name: latestVPC.name,
-            number: latestVPC.number,
-            // description: latestVPC.description,
-            status: latestVPC.status,
-            cidr: latestVPC.cidr,
-            routingTable: latestVPC.routingTable
-          };
-          addNewVPC(newVPC);
-        }
-      } catch (error) {
-        console.error("Error fetching VPC data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchVPCData = async () => {
+  //     try {
+  //       const response = await axios.get(`${API_URL}/api/aws/resources/${currentUser.id}`);
+  //       if (response.vpcs && response.vpcs.length > 0) {
+  //         const latestVPC = response.vpcs[response.data.length - 1]; // 가장 최근에 생성된 VPC
+  //         const newVPC = {
+  //           group: latestVPC.id,
+  //           name: latestVPC.name,
+  //           number: latestVPC.number,
+  //           // description: latestVPC.description,
+  //           status: latestVPC.status,
+  //           cidr: latestVPC.cidr,
+  //           routingTable: latestVPC.routingTable
+  //         };
+  //         addNewVPC(newVPC);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching VPC data:", error);
+  //     }
+  //   };
 
-    fetchVPCData();
-    navigate(location.pathname, { replace: true, state: {} });
-  }, [location, navigate, addNewVPC, currentUser.id]);
+  //   fetchVPCData();
+  //   navigate(location.pathname, { replace: true, state: {} });
+  // }, [location, navigate, addNewVPC, currentUser.id]);
 
   useEffect(() => {
     setDisplayedVPCs(allVPCs);
