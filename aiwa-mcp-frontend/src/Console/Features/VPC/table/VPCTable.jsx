@@ -21,11 +21,8 @@ function VPCTable({ customer, onEdit, onDelete }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedVpcs, setSelectedVpcs] = useState([]);
-  const [allVPCs, setAllVPCs] = useState(() => {
-    const savedVPCs = localStorage.getItem('allVPCs');
-    return savedVPCs ? JSON.parse(savedVPCs) : initialCustomers;
-  });
-  const [displayedVPCs, setDisplayedVPCs] = useState(allVPCs);
+  const [allVPCs, setAllVPCs] = useState([]);
+  const [displayedVPCs, setDisplayedVPCs] = useState([]);
 
   // 유저 정보 가져오기
   const { currentUser } = useUserContext();
@@ -43,32 +40,29 @@ function VPCTable({ customer, onEdit, onDelete }) {
       return updatedVPCs;
     });
   }, []);
-
-  useEffect(() => {
-    const fetchVPCData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/aws/resources/${currentUser.id}`);
-        if (response.vpcs && response.vpcs.length > 0) {
-          const latestVPC = response.vpcs[response.data.length - 1]; // 가장 최근에 생성된 VPC
-          const newVPC = {
-            group: latestVPC.id,
-            name: latestVPC.name,
-            number: latestVPC.number,
-            // description: latestVPC.description,
-            status: latestVPC.status,
-            cidr: latestVPC.cidr,
-            routingTable: latestVPC.routingTable
-          };
-          addNewVPC(newVPC);
-        }
-      } catch (error) {
-        console.error("Error fetching VPC data:", error);
+  const fetchVPCData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/vpc?userId=${currentUser.id}`);
+      if (response.data.vpcs && response.data.vpcs.length > 0) {
+        const latestVPC = response.data.vpcs.map((vpc) => ({ // 가장 최근에 생성된 VPC
+          group: vpc.vpcId,
+          name: vpc.tags.Name,
+          status: vpc.status || "available",
+          cidr: vpc.cidr || '-',
+          routingTable: vpc.routingTable || "Active",
+        }));
+        console.log(latestVPC);
+        setAllVPCs(latestVPC);
+        setDisplayedVPCs(latestVPC);
+        localStorage.setItem('allVPCs', JSON.stringify(latestVPC));
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching VPC data:", error);
+    }
+  };
+  useEffect(() => {
     fetchVPCData();
-    navigate(location.pathname, { replace: true, state: {} });
-  }, [location, navigate, addNewVPC, currentUser.id]);
+  }, []);
 
   useEffect(() => {
     setDisplayedVPCs(allVPCs);
