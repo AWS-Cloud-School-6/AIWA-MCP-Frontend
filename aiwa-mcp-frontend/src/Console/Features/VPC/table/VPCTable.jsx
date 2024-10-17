@@ -17,9 +17,8 @@ const initialCustomers = [
   { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
 ];
 
-function VPCTable({ customer, onEdit, onDelete }) {
+function VPCTable() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [selectedVpcs, setSelectedVpcs] = useState([]);
   const [allVPCs, setAllVPCs] = useState(() => {
     const savedVPCs = localStorage.getItem('allVPCs');
@@ -30,20 +29,7 @@ function VPCTable({ customer, onEdit, onDelete }) {
   // 유저 정보 가져오기
   const { currentUser } = useUserContext();
 
-  // 리렌더링될 때마다 새로운 함수가 생성되지 않도록 구현
-  const addNewVPC = useCallback((newVPC) => {
-    setAllVPCs(prevVPCs => {
-      const existingVPC = prevVPCs.find(vpc => vpc.name === newVPC.name);
-      if (existingVPC) {
-        console.log("VPC with this name already exists");
-        return prevVPCs;
-      }
-      const updatedVPCs = [...prevVPCs, newVPC];
-      localStorage.setItem('allVPCs', JSON.stringify(updatedVPCs));
-      return updatedVPCs;
-    });
-  }, []);
-  
+
   const fetchVPCData = async () => {
     try {
       const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
@@ -68,13 +54,9 @@ function VPCTable({ customer, onEdit, onDelete }) {
     fetchVPCData();
   }, []);
 
-  useEffect(() => {
-    setDisplayedVPCs(allVPCs);
-  }, [allVPCs]);
-
-  const handleCheckboxChange = (id) => {
+  const handleCheckboxChange = (number) => {
     setSelectedVpcs(prev =>
-      prev.includes(id) ? prev.filter(vpcId => vpcId !== id) : [...prev, id]
+      prev.includes(number) ? prev.filter(vpcNumber => vpcNumber !== number) : [...prev, number]
     );
   };
 
@@ -82,7 +64,7 @@ function VPCTable({ customer, onEdit, onDelete }) {
     if (selectedVpcs.length === displayedVPCs.length) {
       setSelectedVpcs([]);
     } else {
-      setSelectedVpcs(displayedVPCs.map(vpc => vpc.id));
+      setSelectedVpcs(displayedVPCs.map(vpc => vpc.number));
     }
   };
 
@@ -167,11 +149,11 @@ function VPCTable({ customer, onEdit, onDelete }) {
       />
       {displayedVPCs.map((vpc, index) => (
         <VPCRow
-          key={vpc.id}
+          key={vpc.number}
           customer={vpc}
           isEven={index % 2 === 1}
-          isSelected={selectedVpcs.includes(vpc.id)}
-          onCheckboxChange={() => handleCheckboxChange(vpc.id)}
+          isSelected={selectedVpcs.includes(vpc.number)}
+          onCheckboxChange={() => handleCheckboxChange(vpc.number)}
         />
       ))}
       <TablePagination />
