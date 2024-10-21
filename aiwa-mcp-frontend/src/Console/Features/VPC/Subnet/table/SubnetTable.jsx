@@ -7,9 +7,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../../UserContext';
+import { API_URL } from '../../../../../index';
 
 
-const API_URL = 'http://k8s-default-terrafor-b27d0c3141-1770509579.ap-northeast-2.elb.amazonaws.com:80';
 
 const initialCustomers = [
   { id: 1, name: "Subin", number: "12345678", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", availableip: "4012", az: "ap-northeast-2a" },
@@ -43,9 +43,9 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   }, []);
   const fetchSubnetData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/subnet/describe?userId=${currentUser.id}`);
-      if (response.data.subnets && response.data.subnets.length > 0) {
-        const latestSubnets = response.data.subnets.map((subnet) => ({ // 가장 최근에 생성된 subnet
+      const response = await axios.get(`${API_URL}/subnet/describe?userId=${currentUser.id}`);
+      if (response.data.list && response.data.list > 0) {
+        const latestSubnets = response.data.list.map((subnet) => ({ // 가장 최근에 생성된 subnet
           number: subnet.subnetId,
           name: subnet.tags.Name || '-',
           status: subnet.status || "available",
@@ -54,7 +54,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
           availableip: calculateAvailableIPs(subnet.cidr),
           routingTable: subnet.routingTable || "Active",
         }));
-        console.log(latestSubnets);
+        console.log("subnet 출력: ", latestSubnets);
         setAllSubnets(latestSubnets);
         setDisplayedSubnets(latestSubnets);
         localStorage.setItem('allSubnets', JSON.stringify(latestSubnets));

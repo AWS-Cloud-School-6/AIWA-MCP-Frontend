@@ -24,13 +24,13 @@ function SidebarConsole({ onSelectProvider }) {
     setError(null);
     try {
       const response = await axios.get( API_URL + '/members/all');
-      const members = response.data;
+      const members = response.data.list;
       const currentMember = members.find(member => member.email === currentUser.id);
 
       if (currentMember) {
-        setAccessKey(currentMember.access_key);
-        console.log(currentMember.access_key);
-        if (currentMember.access_key === null) {
+        setAccessKey(currentMember.accessKey);
+        console.log(currentMember.accessKey);
+        if (currentMember.accessKey === null) {
             setError('Failed to fetch access key')
         }
       }

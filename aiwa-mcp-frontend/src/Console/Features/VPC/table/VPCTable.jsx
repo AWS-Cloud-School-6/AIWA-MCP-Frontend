@@ -3,7 +3,7 @@ import styles from './VPCTable.module.css';
 import TableHeader from './TableHeader';
 import VPCRow from './VPCRow';
 import TablePagination from './TablePagination';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
@@ -20,11 +20,8 @@ const initialCustomers = [
 function VPCTable() {
   const navigate = useNavigate();
   const [selectedVpcs, setSelectedVpcs] = useState([]);
-  const [allVPCs, setAllVPCs] = useState(() => {
-    const savedVPCs = localStorage.getItem('allVPCs');
-    return savedVPCs ? JSON.parse(savedVPCs) : initialCustomers;
-  });
-  const [displayedVPCs, setDisplayedVPCs] = useState(allVPCs);
+  const [allVPCs, setAllVPCs] = useState([]);
+  const [displayedVPCs, setDisplayedVPCs] = useState([]);
 
   // 유저 정보 가져오기
   const { currentUser } = useUserContext();
@@ -33,15 +30,17 @@ function VPCTable() {
   const fetchVPCData = async () => {
     try {
       const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
-      if (response.data.vpcs && response.data.vpcs.length > 0) {
-        const latestVPC = response.data.vpcs.map((vpc) => ({ // 가장 최근에 생성된 VPC
-          number: vpc.vpcId,
-          name: vpc.tags.Name || '-',
+      if (response.data.list && response.data.list.length > 0) {
+        const latestVPC = response.data.list.map((vpc) => ({
+          number: vpc.vpcId || '',
+          name: vpc.tags?.Name || '-',
           status: vpc.status || "available",
           cidr: vpc.cidr || '-',
-          routingTable: vpc.routingTable || "-",
+          routingTable: vpc.routeTables && vpc.routeTables.length > 0
+            ? vpc.routeTables.map(rt => rt.routeTableId).join(', ')
+            : '-',
         }));
-        console.log(latestVPC);
+        console.log("Processed VPC data:", latestVPC);
         setAllVPCs(latestVPC);
         setDisplayedVPCs(latestVPC);
         localStorage.setItem('allVPCs', JSON.stringify(latestVPC));
@@ -153,15 +152,24 @@ function VPCTable() {
         onSelectAll={handleSelectAll}
         allSelected={selectedVpcs.length === displayedVPCs.length}
       />
-      {displayedVPCs.map((vpc, index) => (
-        <VPCRow
-          key={vpc.name}
-          customer={vpc}
-          isEven={index % 2 === 1}
-          isSelected={selectedVpcs.includes(vpc.name)}
-          onCheckboxChange={() => handleCheckboxChange(vpc.name)}
-        />
-      ))}
+      {displayedVPCs.map((vpc, index) => {
+        console.log("Rendering VPC:", vpc);
+        return (
+          <VPCRow
+            key={vpc.number}
+            customer={{
+              name: String(vpc.name),
+              number: String(vpc.number),
+              status: String(vpc.status),
+              cidr: String(vpc.cidr),
+              routingTable: String(vpc.routingTable)
+            }}
+            isEven={index % 2 === 1}
+            isSelected={selectedVpcs.includes(vpc.number)}
+            onCheckboxChange={() => handleCheckboxChange(vpc.number)}
+          />
+        );
+      })}
       <TablePagination />
     </section>
   );
