@@ -11,8 +11,8 @@ import SidebarConsole from './SideBar/SidebarConsole';
 
 
 function MyPage({ provider }) {
-  const [access_key, setaccess_key] = useState('');
-  const [secret_key, setsecret_key] = useState('');
+  const [accessKey, setaccess_key] = useState('');
+  const [secretKey, setsecret_key] = useState('');
 
   const { currentUser } = useUserContext();
 
@@ -20,10 +20,10 @@ function MyPage({ provider }) {
     try {
       const response = await axios.post(API_URL + '/members/update-credentials', {
         email: currentUser?.id, // Use the current user's email from context
-        access_key,
-        secret_key
+        accessKey,
+        secretKey
       });    
-      console.log('API 응답:', response.data);
+      console.log('API 응답:', response.data.msg);
       alert('키 성공적으로 제출');
     } catch (error) {
       if (error.response && error.response.status === 500) {
@@ -46,7 +46,7 @@ function MyPage({ provider }) {
       <TextField
         label="Access Key"
         placeholder="Access Key를 입력하세요"
-        value={access_key}
+        value={accessKey}
         onChange={(e) => setaccess_key(e.target.value)}
         marginBottom="1rem"
       />
@@ -54,7 +54,7 @@ function MyPage({ provider }) {
         label="Secret Key"
         placeholder="Secret Key를 입력하세요"
         type="password"
-        value={secret_key}
+        value={secretKey}
         onChange={(e) => setsecret_key(e.target.value)}
         marginBottom="1rem"
       />
