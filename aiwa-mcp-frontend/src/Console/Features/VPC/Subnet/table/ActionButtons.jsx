@@ -7,11 +7,11 @@ function ActionButtons({ selectedCount, onEdit, onDelete }) {
   return (
     <div className={styles.actionButtons} style={{ display: 'flex', flexDirection: 'row' }}>
       {(
-        <button onClick={onEdit} className={styles.AddSubnetButton} style={{ marginRight: '0px' }}>
+        <button onClick={onEdit} className={styles.AddSubnetButton} disabled={selectedCount !== 1} style={{ marginRight: '0px' }}>
           Edit
         </button>
       )}
-      <button onClick={onDelete} className={styles.AddSubnetButton}>
+      <button onClick={onDelete} disabled={selectedCount !== 1} className={styles.AddSubnetButton}>
         Delete
       </button>
     </div>
