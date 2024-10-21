@@ -33,7 +33,7 @@ function VPCTable() {
       if (response.data.list && response.data.list.length > 0) {
         const latestVPC = response.data.list.map((vpc) => ({
           number: vpc.vpcId || '',
-          name: vpc.tags?.Name || '-',
+          name: vpc.tags.Name || '-',
           status: vpc.status || "available",
           cidr: vpc.cidr || '-',
           routingTable: vpc.routeTables && vpc.routeTables.length > 0
@@ -53,9 +53,9 @@ function VPCTable() {
     fetchVPCData();
   }, []);
 
-  const handleCheckboxChange = (number) => {
+  const handleCheckboxChange = (name) => {
     setSelectedVpcs(prev =>
-      prev.includes(number) ? prev.filter(vpcNumber => vpcNumber !== number) : [...prev, number]
+      prev.includes(name) ? prev.filter(vpcName => vpcName !== name) : [...prev, name]
     );
   };
 
@@ -63,7 +63,7 @@ function VPCTable() {
     if (selectedVpcs.length === displayedVPCs.length) {
       setSelectedVpcs([]);
     } else {
-      setSelectedVpcs(displayedVPCs.map(vpc => vpc.number));
+      setSelectedVpcs(displayedVPCs.map(vpc => vpc.name));
     }
   };
 
@@ -85,10 +85,11 @@ function VPCTable() {
     if (confirmDelete) {
       try {
         // Make a POST request to delete VPCs
+        console.log("selected vpc: ", selectedVpcs[0]);
         const response = axios.delete(`${API_URL}/vpc/delete?vpcName=${selectedVpcs[0]}&userId=${currentUser.id}`);
 
         // Optionally handle the response here
-        console.log(response.data);
+        // console.log("Delete Vpc", response.data.msg);
 
         // Filter out the deleted VPCs from the local state
       } catch (error) {
@@ -159,8 +160,8 @@ function VPCTable() {
             key={vpc.number}
             customer={vpc}
             isEven={index % 2 === 1}
-            isSelected={selectedVpcs.includes(vpc.number)}
-            onCheckboxChange={() => handleCheckboxChange(vpc.number)}
+            isSelected={selectedVpcs.includes(vpc.name)}
+            onCheckboxChange={() => handleCheckboxChange(vpc.name)}
           />
         );
       })}
