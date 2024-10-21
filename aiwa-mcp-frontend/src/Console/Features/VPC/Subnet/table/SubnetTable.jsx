@@ -86,9 +86,9 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   //   setDisplayedSubnets(allSubnets);
   // }, [allSubnets]);
 
-  const handleCheckboxChange = (number) => {
+  const handleCheckboxChange = (name) => {
     setSelectedSubnets(prev =>
-      prev.includes(number) ? prev.filter(subnetNumber => subnetNumber !== number) : [...prev, number]
+      prev.includes(name) ? prev.filter(subnetname => subnetname !== name) : [...prev, name]
     );
   };
 
@@ -96,7 +96,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     if (selectedSubnets.length === displayedSubnets.length) {
       setSelectedSubnets([]);
     } else {
-      setSelectedSubnets(displayedSubnets.map(subnet => subnet.number));
+      setSelectedSubnets(displayedSubnets.map(subnet => subnet.name));
     }
   };
 
@@ -105,7 +105,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
       alert("Please select only one subnet to edit.");
       return;
     }
-    const selectedSubnets = displayedSubnets.find(subnet => subnet.number === selectedSubnets[0]);
+    const selectedSubnets = displayedSubnets.find(subnet => subnet.tags.Name === selectedSubnets[0]);
     if (selectedSubnets) {
       navigate(`/console/subnet/edit/${selectedSubnets.name}`);
     } else {
@@ -120,6 +120,13 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     }
     const confirmDelete = window.confirm(`Are you sure you want to delete ${selectedSubnets.length} Subnet(s)?`);
     if (confirmDelete) {
+      try {
+        console.log("selected subnet: ", selectedSubnets[0]);
+        const response = axios.delete(`${API_URL}/subnet/delete?subnetName=${selectedSubnets[0]}&userId=${currentUser.id}`);
+      }
+      catch (error) {
+        console.error('Error deleting Subnets:', error);
+      }
       const updatedSubnets = allSubnets.filter(subnet => !selectedSubnets.includes(subnet.number));
       setAllSubnets(updatedSubnets);
       localStorage.setItem('allSubnets', JSON.stringify(updatedSubnets));
@@ -173,6 +180,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
             selectedCount={selectedSubnets.length}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            isDisabled={selectedSubnets.length !== 1}
           />
         </div>
       </header>
@@ -186,8 +194,8 @@ function SubnetTable({ customer, onEdit, onDelete }) {
             key={subnet.number}
             customer={subnet}
             isEven={index % 2 === 1}
-            isSelected={selectedSubnets.includes(subnet.number)}
-            onCheckboxChange={() => handleCheckboxChange(subnet.number)}
+            isSelected={selectedSubnets.includes(subnet.name)}
+            onCheckboxChange={() => handleCheckboxChange(subnet.name)}
           />
         ))}
       </div>
