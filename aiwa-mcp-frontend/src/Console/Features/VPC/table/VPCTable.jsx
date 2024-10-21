@@ -157,13 +157,7 @@ function VPCTable() {
         return (
           <VPCRow
             key={vpc.number}
-            customer={{
-              name: String(vpc.name),
-              number: String(vpc.number),
-              status: String(vpc.status),
-              cidr: String(vpc.cidr),
-              routingTable: String(vpc.routingTable)
-            }}
+            customer={vpc}
             isEven={index % 2 === 1}
             isSelected={selectedVpcs.includes(vpc.number)}
             onCheckboxChange={() => handleCheckboxChange(vpc.number)}

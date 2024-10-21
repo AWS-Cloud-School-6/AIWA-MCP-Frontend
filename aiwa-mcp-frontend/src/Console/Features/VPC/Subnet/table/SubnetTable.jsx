@@ -44,15 +44,14 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   const fetchSubnetData = async () => {
     try {
       const response = await axios.get(`${API_URL}/subnet/describe?userId=${currentUser.id}`);
-      if (response.data.list && response.data.list > 0) {
-        const latestSubnets = response.data.list.map((subnet) => ({ // 가장 최근에 생성된 subnet
-          number: subnet.subnetId,
-          name: subnet.tags.Name || '-',
+      if (response.data.list && response.data.list.length > 0) {
+        const latestSubnets = response.data.list.map((subnet) => ({
+          number: subnet.subnetId || '',
+          name: subnet.tags?.Name || '-',  // 수정된 부분
           status: subnet.status || "available",
           cidr: subnet.cidr || '-',
-          vpcId: subnet.vpcId,
+          vpcId: subnet.vpcId || '-',
           availableip: calculateAvailableIPs(subnet.cidr),
-          routingTable: subnet.routingTable || "Active",
         }));
         console.log("subnet 출력: ", latestSubnets);
         setAllSubnets(latestSubnets);

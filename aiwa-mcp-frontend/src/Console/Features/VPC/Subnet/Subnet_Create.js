@@ -20,8 +20,8 @@ function Subnet_Create() {
     const fetchVPCData = async () => {
         try {
             const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
-            if (response.data.vpcs && response.data.vpcs.length > 0) {
-                setLatestVPC(response.data.vpcs); // Set the list of VPCs
+            if (response.data.list && response.data.list.length > 0) {
+                setLatestVPC(response.data.list); // Set the list of VPCs
             }
         } catch (error) {
             console.error("Error fetching VPC data:", error);
@@ -49,7 +49,7 @@ function Subnet_Create() {
         try {
             const response = await axios.post(`${API_URL}/subnet/create?userId=${currentUser.id}`, newSubnet);
             console.log(response.data);
-            navigate('/console/vpc');
+            navigate('/console/vpc/subnet');
         } catch (error) {
             console.error("Error creating subnet:", error);
         }
