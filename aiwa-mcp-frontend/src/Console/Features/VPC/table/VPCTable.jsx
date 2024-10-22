@@ -80,23 +80,23 @@ function VPCTable() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const confirmDelete = window.confirm(`Are you sure you want to delete ${selectedVpcs.length} VPC(s)?`);
     if (confirmDelete) {
       try {
-        // Make a POST request to delete VPCs
+        // Make a DELETE request to delete VPCs
         console.log("selected vpc: ", selectedVpcs[0]);
-        const response = axios.delete(`${API_URL}/vpc/delete?vpcName=${selectedVpcs[0]}&userId=${currentUser.id}`);
+        const response = await axios.delete(`${API_URL}/vpc/delete?vpcName=${selectedVpcs[0]}&userId=${currentUser.id}`);
 
         // Optionally handle the response here
         // console.log("Delete Vpc", response.data.msg);
 
         // Filter out the deleted VPCs from the local state
+        // You might want to update the state here based on the response
       } catch (error) {
         console.error('Error deleting VPCs:', error);
         // Handle the error appropriately (e.g., show an error message)
       }
-
     }
   };
 

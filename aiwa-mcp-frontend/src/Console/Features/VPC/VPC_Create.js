@@ -15,7 +15,7 @@ function VPC_Create() {
   const navigate = useNavigate();
   const { currentUser } = useUserContext();
   // 버튼 클릭 시 동작하는 함수
-  const handleCreateVPC = () => {
+  const handleCreateVPC = async () => {
     if (!vpcName || !cidrBlock) {
       alert("VPC 이름과 CIDR 블록을 모두 입력해주세요.");
       return;
@@ -26,15 +26,16 @@ function VPC_Create() {
       "vpcName": vpcName,
       "cidrBlock": cidrBlock,
     };
-    axios.post(API_URL + '/vpc/create?userId=' + currentUser.id, newVPC)
-      .then((response) => {
-        console.log(response);
-      }).catch((error) => {
-        console.log(error);
-      });
 
-    // VPCTable 컴포넌트로 새로운 VPC 정보를 전달
-    navigate('/console/vpc', { state: { newVPC } });
+    try {
+      const response = await axios.post(API_URL + '/vpc/create?userId=' + currentUser.id, newVPC);
+      console.log(response);
+
+      // VPCTable 컴포넌트로 새로운 VPC 정보를 전달
+      navigate('/console/vpc', { state: { newVPC } });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
