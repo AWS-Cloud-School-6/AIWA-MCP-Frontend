@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
 import NavBar from '../../../NavBar/NavBar';
 import { API_URL } from '../../../../index';
+import SidebarVpc from "../Sidebar/SidebarVpc";
 
 function Subnet_Create() {
     // 상태 설정 (이름과 CIDR 블록)
@@ -76,6 +77,7 @@ function Subnet_Create() {
             <NavBar />
             <Flex direction="row" height="100vh">
                 {/* 왼쪽: SideBar */}
+                <SidebarVpc />
           
                 {/* 오른쪽: VPC Create Form */}
                 <Flex

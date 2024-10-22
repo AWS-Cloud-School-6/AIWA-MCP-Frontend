@@ -17,7 +17,7 @@ function SubnetRow({ customer, isEven, isSelected, onCheckboxChange }) {
       <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '5%', textAlign: 'center' }}>
         {customer.id}
       </div>
-      <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '20%', textAlign: 'center' }}>
+      <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '15%', textAlign: 'center' }}>
         <div className={styles.customerName}>{customer.name}</div>
         <div className={styles.customerNumber}>{customer.number}</div>
       </div>
@@ -32,11 +32,11 @@ function SubnetRow({ customer, isEven, isSelected, onCheckboxChange }) {
       <div className={`${styles.cell} ${styles.vpcCell}`} style={{ width: '20%', textAlign: 'center' }}>
         <div className={styles.vpcId}>{customer.vpcId}</div>
       </div>
-      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '25%', textAlign: 'center' }}>
+      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '15%', textAlign: 'center' }}>
         <div className={styles.cidr}>{customer.cidr}</div>
         <div className={styles.cidrv6} style={{ color: 'rgb(25, 104, 110)' }}>{customer.cidrv6 || '-'}</div>
       </div>
-      <div className={`${styles.cell} ${styles.availableipCell}`} style={{ width: '20%', textAlign: 'center' }}>
+      <div className={`${styles.cell} ${styles.availableipCell}`} style={{ width: '10%', textAlign: 'center' }}>
         {customer.availableip}
       </div>
       <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '20%', textAlign: 'center' }}>
