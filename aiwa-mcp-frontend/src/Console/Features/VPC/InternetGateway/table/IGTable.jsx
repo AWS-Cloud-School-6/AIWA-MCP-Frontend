@@ -101,15 +101,19 @@ function IGTable({ ig, onEdit, onDelete }) {
     const confirmDelete = window.confirm(`Are you sure you want to delete ${selectedIG.length} Internet Gateway(s)?`);
     if (confirmDelete) {
       try {
-        console.log("selected IG: ", selectedIG[0]);
-        const response = await axios.delete(`${API_URL}/internet-gateway/delete?igwName=${selectedIG[0]}&userId=${currentUser.id}`);
+        for (const igName of selectedIG) {
+          await axios.delete(`${API_URL}/internet-gateway/delete?igwName=${igName}&userId=${currentUser.id}`);
+        }
         const updatedigs = allIGs.filter(ig => !selectedIG.includes(ig.name));
         setallIGs(updatedigs);
+        setdisplayedIGs(updatedigs);
         localStorage.setItem('allIGs', JSON.stringify(updatedigs));
         setselectedIG([]);
+        alert(`Successfully deleted ${selectedIG.length} Internet Gateway(s).`);
       }
       catch (error) {
         console.error('Error deleting Internet Gateways:', error);
+        alert('An error occurred while deleting Internet Gateways. Please try again.');
       }
     }
   };  

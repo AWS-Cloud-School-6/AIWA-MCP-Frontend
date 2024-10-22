@@ -17,7 +17,7 @@ function IGRow({ ig, isEven, isSelected, onCheckboxChange }) {
       <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '15%', textAlign: 'center' }}>
         {ig.name}
       </div>
-      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '15%', textAlign: 'center' }}>
+      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '30%', textAlign: 'center' }}>
         {ig.id}
       </div>
       {/* <div className={`${styles.cell} ${styles.descriptionCell}`} style={{ width: '20%', textAlign: 'center' }}>
@@ -28,7 +28,7 @@ function IGRow({ ig, isEven, isSelected, onCheckboxChange }) {
           {ig.status}
         </span>
       </div>
-      <div className={`${styles.cell} ${styles.vpcCell}`} style={{ width: '20%', textAlign: 'center' }}>
+      <div className={`${styles.cell} ${styles.vpcCell}`} style={{ width: '40%', textAlign: 'center' }}>
         <div className={styles.vpcId}>{ig.vpcId}</div>
       </div>
     </div>
