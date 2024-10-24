@@ -48,7 +48,7 @@ function VPC_Create() {
     // Show "Creating VPC..." notification ONLY when the "Create" button is pressed
     NotificationManager.info('Creating VPC...', 'Info', 0); // Keep notification until manually removed
     navigate('/console/vpc', { state: { newVPC } });
-    
+
     axios.post(`${API_URL}/vpc/create?userId=${currentUser.id}`, newVPC)
       .then((response) => {
         console.log(response);
@@ -57,17 +57,6 @@ function VPC_Create() {
         NotificationManager.listNotify = NotificationManager.listNotify.filter(n => n.title !== 'Info');
         // Notify success
         notify('VPC created successfully!', 'success');
-
-    try {
-      const response = await axios.post(API_URL + '/vpc/create?userId=' + currentUser.id, newVPC);
-      console.log(response);
-
-      // VPCTable 컴포넌트로 새로운 VPC 정보를 전달
-      navigate('/console/vpc', { state: { newVPC } });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
       })
       .catch((error) => {
