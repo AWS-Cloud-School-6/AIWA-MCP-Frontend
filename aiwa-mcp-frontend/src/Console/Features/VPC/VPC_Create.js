@@ -16,6 +16,7 @@ function VPC_Create() {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const navigate = useNavigate();
   const { currentUser } = useUserContext();
+
   const notify = useNotification();
 
   // Cleanup notification when component unmounts
@@ -28,6 +29,8 @@ function VPC_Create() {
   }, []);
 
   // Function to handle VPC creation
+  // 버튼 클릭 시 동작하는 함수
+
   const handleCreateVPC = async () => {
     if (!vpcName || !cidrBlock) {
       alert("VPC 이름과 CIDR 블록을 모두 입력해주세요.");
@@ -45,6 +48,7 @@ function VPC_Create() {
     // Show "Creating VPC..." notification ONLY when the "Create" button is pressed
     NotificationManager.info('Creating VPC...', 'Info', 0); // Keep notification until manually removed
     navigate('/console/vpc', { state: { newVPC } });
+    
     axios.post(`${API_URL}/vpc/create?userId=${currentUser.id}`, newVPC)
       .then((response) => {
         console.log(response);
@@ -54,13 +58,23 @@ function VPC_Create() {
         // Notify success
         notify('VPC created successfully!', 'success');
 
+    try {
+      const response = await axios.post(API_URL + '/vpc/create?userId=' + currentUser.id, newVPC);
+      console.log(response);
+
+      // VPCTable 컴포넌트로 새로운 VPC 정보를 전달
+      navigate('/console/vpc', { state: { newVPC } });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
       })
       .catch((error) => {
         console.log(error); // Error
 
         // Remove the "Creating VPC..." notification manually
         NotificationManager.listNotify = NotificationManager.listNotify.filter(n => n.title !== 'Info');
-
         // Notify error
         notify('Error creating VPC.', 'error');
       })
@@ -68,6 +82,7 @@ function VPC_Create() {
         setIsLoading(false); // Reset loading state in finally block
       });
   }; // Navigate to VPC page
+
   return (
     <div>
       <NavBar />

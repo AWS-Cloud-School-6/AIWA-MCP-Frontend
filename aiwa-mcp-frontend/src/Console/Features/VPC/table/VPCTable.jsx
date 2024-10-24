@@ -95,7 +95,6 @@ function VPCTable() {
 
   const handleDelete = () => {
     openDeleteModal();
-
   };
 
   const handleSearch = (e) => {
