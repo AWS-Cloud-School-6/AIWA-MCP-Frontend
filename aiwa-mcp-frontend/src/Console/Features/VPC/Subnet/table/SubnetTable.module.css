@@ -196,7 +196,7 @@
 }
 
 .azCell {
-  width: 150px;
+  width: 180px;
   /* az 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
 }
