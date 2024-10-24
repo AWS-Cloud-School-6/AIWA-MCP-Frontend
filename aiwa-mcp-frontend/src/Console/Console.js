@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Flex, View, Text, Icon, TextField, Button } from '@aws-amplify/ui-react';
 import { ListboxComponent } from '../ui-components';
 import React from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 import { useUserContext } from '../UserContext';
 import NavBar from './NavBar/NavBar';
 import { API_URL } from '../index';
@@ -15,6 +15,9 @@ function MyPage({ provider }) {
   const [secretKey, setsecret_key] = useState('');
 
   const { currentUser } = useUserContext();
+  const refreshPage = () => {
+    window.location.reload();
+  };
 
   const handleSubmit = async () => {
     try {
@@ -22,7 +25,7 @@ function MyPage({ provider }) {
         email: currentUser?.id, // Use the current user's email from context
         accessKey,
         secretKey
-      });    
+      });
       console.log('API 응답:', response.data.msg);
       alert('키 성공적으로 제출');
     } catch (error) {
@@ -37,6 +40,7 @@ function MyPage({ provider }) {
         alert('키 제출 실패: ' + error.message);
       }
     }
+    refreshPage();
   };
 
   return (
@@ -63,22 +67,22 @@ function MyPage({ provider }) {
   );
 }
 
-function Console({overrides}) {
-    const [selectedProvider, setSelectedProvider] = useState(null);
+function Console({ overrides }) {
+  const [selectedProvider, setSelectedProvider] = useState(null);
 
-    const handleProviderSelect = (provider) => {
-        setSelectedProvider(provider);
-    };
+  const handleProviderSelect = (provider) => {
+    setSelectedProvider(provider);
+  };
 
-    return (
-        <div>
-            <NavBar />
-            <Flex direction="row">
-                <SidebarConsole onSelectProvider={handleProviderSelect} />
-                {selectedProvider && <MyPage provider={selectedProvider} />}
-            </Flex>
-        </div>
-    );
+  return (
+    <div>
+      <NavBar />
+      <Flex direction="row">
+        <SidebarConsole onSelectProvider={handleProviderSelect} />
+        {selectedProvider && <MyPage provider={selectedProvider} />}
+      </Flex>
+    </div>
+  );
 }
 
 export default Console;
