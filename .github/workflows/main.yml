@@ -1,0 +1,44 @@
+name: Build and Deploy to S3
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 전체 히스토리 체크아웃 (선택사항)
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Node.js 버전
+
+      - name: Print working directory
+        run: pwd
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: .  # 루트 디렉토리에서 작업
+
+      - name: Build project
+        run: npm run build
+        env:
+          CI: false  # CI 환경 변수를 false로 설정하여 경고를 오류로 처리하지 않도록 함
+        working-directory: .  # 루트 디렉토리에서 작업
+
+      - name: Upload to S3
+        run: |
+          aws s3 sync build/ s3://tf-test-hyeob-bucket-991906 --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ap-northeast-2'
+          # test-01
