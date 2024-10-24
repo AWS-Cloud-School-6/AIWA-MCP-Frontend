@@ -1,0 +1,77 @@
+.deleteSubnetsButton {
+  margin-left: 10px;
+  /* Adjust as needed */
+  border-radius: 6px;
+  background: var(--Blue-500, #2264e5);
+  color: var(--White, #fff);
+  font: 500 14px/1 Inter, sans-serif;
+  letter-spacing: 0.28px;
+  display: flex;
+  padding: 5px 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(70, 79, 96, 0.16), 0 2px 5px 0 rgba(89, 96, 120, 0.1);
+  transition: background 0.3s ease;
+  /* Smooth transition */
+}
+
+.filterButton {
+  border-radius: 6px;
+  font: 500 14px/1 Inter, sans-serif;
+  letter-spacing: 0.28px;
+  display: flex;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(70, 79, 96, 0.16), 0 2px 5px 0 rgba(89, 96, 120, 0.1);
+  transition: background 0.3s ease;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 500px;
+}
+
+.modalContent h2 {
+  margin-top: 0;
+}
+
+.modalContent form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalContent label {
+  margin-bottom: 10px;
+}
+
+.modalContent input {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.buttonGroup button {
+  margin-left: 10px;
+  padding: 5px 10px;
+}
