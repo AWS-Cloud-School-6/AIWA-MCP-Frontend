@@ -15,7 +15,7 @@ const initialIG = [
   { id: 1, name: "Subin", status: "Attached", vpc: "vpc id display"},
 ];
 
-function IGTable({ ig, onEdit, onDelete }) {
+function IGTable() {
   const location = useLocation();
   const [igwName, setigwName] = useState(""); 
   const [selectedIG, setselectedIG] = useState([]);

@@ -5,6 +5,8 @@ import VPC from './VPC'; // Main EC2 Console page
 import VPC_Create from './VPC_Create';
 import Subnet from './Subnet/Subnet';
 import InternetGateway from './InternetGateway/InternetGateway';
+import NatGateway from './NatGateway/Nat';
+
 
 function VPCRoutes() {
     return (
@@ -13,6 +15,7 @@ function VPCRoutes() {
             <Route path="/create" element={<VPC_Create />} />
             <Route path="/subnet" element={<Subnet />} />
             <Route path="/internetgateway" element={<InternetGateway />} />
+            <Route path="/natgateway" element={<NatGateway />} />
         </Routes>
     );
 }
