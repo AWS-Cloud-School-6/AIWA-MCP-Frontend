@@ -12,7 +12,7 @@ import Auth from './Auth/Auth.js';
 import Main from './Main/Main';
 import ProtectedRoute from './ProtectedRoute';
 
-export const API_URL = 'http://k8s-default-terrafor-b27d0c3141-2009248808.ap-northeast-2.elb.amazonaws.com:80/api';
+export const API_URL = 'https://alb.aiwa-cloud.com:80/api';
 
 function App() {
   return (
