@@ -25,6 +25,10 @@ jobs:
         run: pwd
 
       - name: Install dependencies
+        env:
+          REACT_APP_AWS_PROJECT_REGION: ${{ secrets.REACT_APP_AWS_PROJECT_REGION }}
+          REACT_APP_AWS_USER_POOLS_ID: ${{ secrets.REACT_APP_AWS_USER_POOLS_ID }}
+          REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID: ${{ secrets.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID }}
         run: npm install
         working-directory: ./aiwa-mcp-frontend  # 루트 디렉토리에서 작업
 
