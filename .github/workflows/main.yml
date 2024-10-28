@@ -25,16 +25,15 @@ jobs:
         run: pwd
 
       - name: Install dependencies
-        env:
-          REACT_APP_AWS_PROJECT_REGION: ${{ secrets.REACT_APP_AWS_PROJECT_REGION }}
-          REACT_APP_AWS_USER_POOLS_ID: ${{ secrets.REACT_APP_AWS_USER_POOLS_ID }}
-          REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID: ${{ secrets.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID }}
         run: npm install
         working-directory: ./aiwa-mcp-frontend  # 루트 디렉토리에서 작업
 
       - name: Build project
         run: npm run build
         env:
+          REACT_APP_AWS_PROJECT_REGION: ${{ secrets.REACT_APP_AWS_PROJECT_REGION }}
+          REACT_APP_AWS_USER_POOLS_ID: ${{ secrets.REACT_APP_AWS_USER_POOLS_ID }}
+          REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID: ${{ secrets.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID }}
           CI: false  # CI 환경 변수를 false로 설정하여 경고를 오류로 처리하지 않도록 함
         working-directory: ./aiwa-mcp-frontend  # 루트 디렉토리에서 작업
 
