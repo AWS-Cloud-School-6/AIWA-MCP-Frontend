@@ -8,7 +8,8 @@ import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
 import { API_URL } from '../../../../index';
-
+import DeleteVPCModal from './DeleteVPCModal';
+import 'react-notifications/lib/notifications.css'; // Import notification styles
 
 const initialCustomers = [
   { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
@@ -17,15 +18,23 @@ const initialCustomers = [
   { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
 ];
 
+
 function VPCTable() {
   const navigate = useNavigate();
   const [selectedVpcs, setSelectedVpcs] = useState([]);
   const [allVPCs, setAllVPCs] = useState([]);
   const [displayedVPCs, setDisplayedVPCs] = useState([]);
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // 유저 정보 가져오기
   const { currentUser } = useUserContext();
 
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
 
   const fetchVPCData = async () => {
     try {
@@ -39,6 +48,7 @@ function VPCTable() {
           routingTable: vpc.routeTables && vpc.routeTables.length > 0
             ? vpc.routeTables.map(rt => rt.routeTableId).join(', ')
             : '-',
+          subnet: vpc.subnets
         }));
         console.log("Processed VPC data:", latestVPC);
         setAllVPCs(latestVPC);
@@ -53,10 +63,13 @@ function VPCTable() {
     fetchVPCData();
   }, []);
 
-  const handleCheckboxChange = (name) => {
+  const handleCheckboxChange = (selectedVpc) => {
     setSelectedVpcs(prev =>
-      prev.includes(name) ? prev.filter(vpcName => vpcName !== name) : [...prev, name]
+      prev.some(vpc => vpc.name === selectedVpc.name) // Check if the full VPC object is already selected
+        ? prev.filter(vpc => vpc.name !== selectedVpc.name) // Remove the selected VPC if it was already selected
+        : [...prev, selectedVpc] // Add the full selected VPC object
     );
+    console.log("Selected VPC: ", selectedVpc);
   };
 
   const handleSelectAll = () => {
@@ -80,24 +93,8 @@ function VPCTable() {
     }
   };
 
-  const handleDelete = async () => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete ${selectedVpcs.length} VPC(s)?`);
-    if (confirmDelete) {
-      try {
-        // Make a DELETE request to delete VPCs
-        console.log("selected vpc: ", selectedVpcs[0]);
-        const response = await axios.delete(`${API_URL}/vpc/delete?vpcName=${selectedVpcs[0]}&userId=${currentUser.id}`);
-
-        // Optionally handle the response here
-        // console.log("Delete Vpc", response.data.msg);
-
-        // Filter out the deleted VPCs from the local state
-        // You might want to update the state here based on the response
-      } catch (error) {
-        console.error('Error deleting VPCs:', error);
-        // Handle the error appropriately (e.g., show an error message)
-      }
-    }
+  const handleDelete = () => {
+    openDeleteModal();
   };
 
   const handleSearch = (e) => {
@@ -160,12 +157,19 @@ function VPCTable() {
             key={vpc.number}
             customer={vpc}
             isEven={index % 2 === 1}
-            isSelected={selectedVpcs.includes(vpc.name)}
-            onCheckboxChange={() => handleCheckboxChange(vpc.name)}
+            isSelected={selectedVpcs.some(selectedVpc => selectedVpc.name === vpc.name)} // Check if the full VPC object is selected
+            onCheckboxChange={() => handleCheckboxChange(vpc)}
           />
         );
       })}
       <TablePagination />
+      {isDeleteModalOpen && (
+        <DeleteVPCModal
+          selectedVpcs={selectedVpcs}
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+        />
+      )}
     </section>
   );
 }

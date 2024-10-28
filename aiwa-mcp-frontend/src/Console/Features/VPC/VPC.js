@@ -4,10 +4,10 @@ import { SideBar, NavBarHeader2 } from "../../../ui-components";
 import VPCTable from "./table/VPCTable";
 import NavBar from "../../NavBar/NavBar";
 import SidebarVpc from "./Sidebar/SidebarVpc";
-
-function VPC() {
-
-
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css'; // Import notification styles
+import { useNotification } from './NotificationContext';
+function VPC({ VPCCreating }) {
   return (
     <div>
       <NavBar />
@@ -20,6 +20,7 @@ function VPC() {
           <VPCTable />
         </Flex>
       </Flex>
+      <NotificationContainer /> {/* Render Notification Container */}
     </div>
   );
 }
