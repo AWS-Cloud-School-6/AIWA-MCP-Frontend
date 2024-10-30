@@ -12,7 +12,7 @@ import Auth from './Auth/Auth.js';
 import Main from './Main/Main';
 import ProtectedRoute from './ProtectedRoute';
 
-export const API_URL = 'https://alb.aiwa-cloud.com/api';
+export const API_URL = 'https://alb.aiwa-cloud.com/spring/api';
 
 function App() {
   return (
