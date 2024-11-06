@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CreateIGModal.module.css';
 import axios from 'axios';
-import { API_URL } from '../../../../../index';
+import { AWS_API_URL } from '../../../../../index';
 import { useUserContext } from '../../../../../UserContext';
 import { Menu, MenuItem, MenuButton } from "@aws-amplify/ui-react";
 
@@ -25,7 +25,7 @@ function CreateIGModal({ isOpen, onClose }) {
     // Fetch the latest VPC data
     const fetchVPCData = async () => {
         try {
-            const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
+            const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
             if (response.data.list && response.data.list.length > 0) {
                 setLatestVPC(response.data.list); // Set the list of VPCs
             }
@@ -45,7 +45,7 @@ function CreateIGModal({ isOpen, onClose }) {
     };
 
     try {
-      const response = await axios.post(`${API_URL}/internet-gateway/create?userId=${currentUser.id}`, newIG);
+      const response = await axios.post(`${AWS_API_URL}/internet-gateway/create?userId=${currentUser.id}`, newIG);
       console.log(response.data);
       onClose();
     } catch (error) {

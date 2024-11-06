@@ -5,7 +5,7 @@ import { SideBar } from "../../../ui-components";
 import axios from 'axios';
 import { useUserContext } from '../../../UserContext';
 import NavBar from '../../NavBar/NavBar';
-import { API_URL } from '../../../index';
+import { AWS_API_URL } from '../../../index';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css'; // Import notification styles
 import { useNotification } from './NotificationContext';
@@ -49,7 +49,7 @@ function VPC_Create() {
     NotificationManager.info('Creating VPC...', 'Info', 0); // Keep notification until manually removed
     navigate('/console/vpc', { state: { newVPC } });
 
-    axios.post(`${API_URL}/vpc/create?userId=${currentUser.id}`, newVPC)
+    axios.post(`${AWS_API_URL}/vpc/create?userId=${currentUser.id}`, newVPC)
       .then((response) => {
         console.log(response);
 

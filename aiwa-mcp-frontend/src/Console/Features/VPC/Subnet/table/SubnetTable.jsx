@@ -7,7 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../../UserContext';
-import { API_URL } from '../../../../../index';
+import { AWS_API_URL } from '../../../../../index';
 
 
 
@@ -43,7 +43,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   }, []);
   const fetchSubnetData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/subnet/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/subnet/describe?userId=${currentUser.id}`);
       if (response.data.list && response.data.list.length > 0) {
         const latestSubnets = response.data.list.map((subnet) => ({
           number: subnet.subnetId || '',
@@ -122,7 +122,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     if (confirmDelete) {
       try {
         console.log("selected subnet: ", selectedSubnets[0]);
-        const response = axios.delete(`${API_URL}/subnet/delete?subnetName=${selectedSubnets[0]}&userId=${currentUser.id}`);
+        const response = axios.delete(`${AWS_API_URL}/subnet/delete?subnetName=${selectedSubnets[0]}&userId=${currentUser.id}`);
       }
       catch (error) {
         console.error('Error deleting Subnets:', error);

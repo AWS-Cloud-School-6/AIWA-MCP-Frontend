@@ -12,7 +12,9 @@ import Auth from './Auth/Auth.js';
 import Main from './Main/Main';
 import ProtectedRoute from './ProtectedRoute';
 
-export const API_URL = 'https://alb.aiwa-cloud.com/api';
+export const AWS_API_URL = 'https://alb.aiwa-cloud.com/aws/api';
+
+export const MEMBER_API_URL = 'https://alb.aiwa-cloud.com/member/api';
 
 function App() {
   return (

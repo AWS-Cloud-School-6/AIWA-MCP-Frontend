@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
-import { API_URL } from '../../../../index';
+import { AWS_API_URL } from '../../../../index';
 import DeleteVPCModal from './DeleteVPCModal';
 import 'react-notifications/lib/notifications.css'; // Import notification styles
 
@@ -38,7 +38,7 @@ function VPCTable() {
 
   const fetchVPCData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
       if (response.data.list && response.data.list.length > 0) {
         const latestVPC = response.data.list.map((vpc) => ({
           number: vpc.vpcId || '',

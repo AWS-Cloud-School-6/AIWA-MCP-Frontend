@@ -13,7 +13,7 @@ import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import axios from 'axios';
 import styles from './EC2Table.module.css';
-import { API_URL } from '../../../../index.js';
+import { AWS_API_URL } from '../../../../index.js';
 
 
 
@@ -67,7 +67,7 @@ function EC2Table() {
     }, []);
 
     const fetchInstances = () => {
-        axios.get(`${API_URL}/instances`)
+        axios.get(`${AWS_API_URL}/instances`)
             .then((response) => {
                 setInstances(response.data);
             })

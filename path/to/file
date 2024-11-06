@@ -1,0 +1,25 @@
+return (
+  <section className={styles.dataTable}>
+    <header className={styles.tableHeader}>
+      {/* ... 기존 코드 ... */}
+    </header>
+    <div className={styles.tableWrapper}>
+      <div className={styles.scrollableTable}>
+        <TableHeader
+          onSelectAll={handleSelectAll}
+          allSelected={selectedRTTable.length === displayedRTTables.length && displayedRTTables.length > 0}
+        />
+        {displayedRTTables.map((RTTable, index) => (
+          <RTRow
+            key={RTTable.id}
+            rt={RTTable}
+            isEven={index % 2 === 1}
+            isSelected={selectedRTTable.includes(RTTable.name)}
+            onCheckboxChange={() => handleCheckboxChange(RTTable.name)}
+          />
+        ))}
+      </div>
+    </div>
+    <TablePagination />
+  </section>
+); 

@@ -6,7 +6,7 @@ import TablePagination from './TablePagination';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useUserContext } from '../../../../../UserContext';
-import { API_URL } from '../../../../../index';
+import { AWS_API_URL } from '../../../../../index';
 import CreateIGModal from './CreateIGModal'; // 새로 만들어야 할 컴포넌트
 
 
@@ -56,7 +56,7 @@ function IGTable() {
 
   const fetchIGData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/internet-gateway/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/internet-gateway/describe?userId=${currentUser.id}`);
       if (response.data.list && response.data.list.length > 0) {
         const latestigs = response.data.list.map((ig) => ({
           id: ig.internetGatewayId || '-',
@@ -102,7 +102,7 @@ function IGTable() {
     if (confirmDelete) {
       try {
         for (const igName of selectedIG) {
-          await axios.delete(`${API_URL}/internet-gateway/delete?igwName=${igName}&userId=${currentUser.id}`);
+          await axios.delete(`${AWS_API_URL}/internet-gateway/delete?igwName=${igName}&userId=${currentUser.id}`);
         }
         const updatedigs = allIGs.filter(ig => !selectedIG.includes(ig.name));
         setallIGs(updatedigs);

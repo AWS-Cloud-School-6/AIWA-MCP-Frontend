@@ -6,7 +6,7 @@ import TablePagination from './TablePagination';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useUserContext } from '../../../../../UserContext';
-import { API_URL } from '../../../../../index';
+import { AWS_API_URL } from '../../../../../index';
 import CreateNatModal from "./CreateNatModal";
 
 
@@ -37,7 +37,7 @@ function NatTable() {
 
   const fetchNATData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/nat-gateway/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/nat-gateway/describe?userId=${currentUser.id}`);
       if (response.data.list && response.data.list.length > 0) {
         console.log("NAT list 데이터: ", response.data.list);
         const latestNats = response.data.list.map((nat) => ({
@@ -89,7 +89,7 @@ function NatTable() {
     if (confirmDelete) {
       try {
         for (const natName of selectedNAT) {
-          await axios.delete(`${API_URL}/nat-gateway/delete?natGatewayName=${natName}&userId=${currentUser.id}`);
+          await axios.delete(`${AWS_API_URL}/nat-gateway/delete?natGatewayName=${natName}&userId=${currentUser.id}`);
         }
         const updatedNats = allNATs.filter(nat => !selectedNAT.includes(nat.name));
         setAllNATs(updatedNats);

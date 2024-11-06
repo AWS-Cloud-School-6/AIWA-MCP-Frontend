@@ -7,6 +7,8 @@ import SidebarVpc from "./Sidebar/SidebarVpc";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css'; // Import notification styles
 import { useNotification } from './NotificationContext';
+
+
 function VPC({ VPCCreating }) {
   return (
     <div>
