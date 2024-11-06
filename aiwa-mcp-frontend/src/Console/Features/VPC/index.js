@@ -5,6 +5,8 @@ import VPC_Create from './VPC_Create';
 import Subnet from './Subnet/Subnet';
 import InternetGateway from './InternetGateway/InternetGateway';
 import NatGateway from './NatGateway/Nat';
+import RouteTable from './RouteTable/RouteTable';
+
 import { NotificationProvider } from './NotificationContext'; // Import the Notification Provider
 
 function VPCRoutes() {
@@ -16,6 +18,7 @@ function VPCRoutes() {
                 <Route path="/subnet" element={<Subnet />} />
                 <Route path="/internetgateway" element={<InternetGateway />} />
                 <Route path="/natgateway" element={<NatGateway />} />
+                <Route path="/routetable" element={<RouteTable />} />
             </Routes>
         </NotificationProvider>
     );

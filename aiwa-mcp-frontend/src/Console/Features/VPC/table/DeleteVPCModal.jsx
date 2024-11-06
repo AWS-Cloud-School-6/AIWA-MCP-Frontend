@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './DeleteVPCModal.module.css';
 import axios from 'axios';
-import { API_URL } from '../../../../index';
+import { AWS_API_URL } from '../../../../index';
 import { useUserContext } from '../../../../UserContext';
 
 function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { // Assuming setSelectedVpcs is passed as a prop
@@ -26,7 +26,7 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
 
   const fetchVPCData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
       if (response.data.list && response.data.list.length > 0) {
         const fetchedVPCs = response.data.list.map((vpc) => ({
           number: vpc.vpcId || '',
@@ -60,7 +60,7 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
     const confirmDelete = window.confirm(`Are you sure you want to delete this subnet?`);
     if (confirmDelete) {
       try {
-        const response = await axios.delete(`${API_URL}/subnet/delete?subnetName=${currentVPC.subnet[0].tags.Name}&userId=${currentUser.id}`);
+        const response = await axios.delete(`${AWS_API_URL}/subnet/delete?subnetName=${currentVPC.subnet[0].tags.Name}&userId=${currentUser.id}`);
         console.log("Subnet deleted successfully:", response.data);
         // Re-fetch VPC data after deletion
         await fetchVPCData(); // This will also check for matching VPCs
@@ -78,7 +78,7 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
       try {
         // Make a POST request to delete VPCs
         console.log("selected vpc: ", currentVPC);
-        const response = axios.delete(`${API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`);
+        const response = axios.delete(`${AWS_API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`);
 
         // Optionally handle the response here
         // console.log("Delete Vpc", response.data.msg);

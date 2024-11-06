@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CreateNatModal.module.css';
 import axios from 'axios';
-import { API_URL } from '../../../../../index';
+import { AWS_API_URL } from '../../../../../index';
 import { useUserContext } from '../../../../../UserContext';
 import { Menu, MenuItem, MenuButton, Button, Flex, Alert } from "@aws-amplify/ui-react";
 
@@ -43,7 +43,7 @@ function CreateNatModal({ isOpen, onClose }) {
     // Fetch the latest subnet data
     const fetchSubnetData = async () => {
         try {
-            const response = await axios.get(`${API_URL}/subnet/describe?userId=${currentUser.id}`);
+            const response = await axios.get(`${AWS_API_URL}/subnet/describe?userId=${currentUser.id}`);
             console.log("fetch subnet data", response.data);
             if (response.data.list && response.data.list.length > 0) {
                 setlatestSubnet(response.data.list); // Set the list of subnets
@@ -60,7 +60,7 @@ function CreateNatModal({ isOpen, onClose }) {
     // fetch elastic ip data
     const fetchElasticIpData = async () => {
       try {
-          const response = await axios.get(`${API_URL}/eip/describe?userId=${currentUser.id}`);
+          const response = await axios.get(`${AWS_API_URL}/eip/describe?userId=${currentUser.id}`);
           console.log("fetch elastic ip data", response.data);
           if (response.data.list && response.data.list.length > 0) {
               setlatestElasticIp(response.data.list); // Set the list of subnets
@@ -82,7 +82,7 @@ function CreateNatModal({ isOpen, onClose }) {
       };
 
       try {
-          const response = await axios.post(`${API_URL}/eip/create`, newEIP);
+          const response = await axios.post(`${AWS_API_URL}/eip/create`, newEIP);
           console.log("create eip", response.data);
       } catch (error) {
           console.error("Error creating EIP:", error);
@@ -103,7 +103,7 @@ function CreateNatModal({ isOpen, onClose }) {
     };
 
     try {
-      const response = await axios.post(`${API_URL}/nat-gateway/create?userId=${currentUser.id}`, newNAT);
+      const response = await axios.post(`${AWS_API_URL}/nat-gateway/create?userId=${currentUser.id}`, newNAT);
       console.log(response.data);
       onClose();
     } catch (error) {
@@ -114,7 +114,7 @@ function CreateNatModal({ isOpen, onClose }) {
   const checkInternetGateway = async (subnetName) => {
     setIsChecking(true);
     try {
-      const response = await axios.get(`${API_URL}/vpc/check-internet-gateway?userId=${currentUser.id}&subnetName=${subnetName}`);
+      const response = await axios.get(`${AWS_API_URL}/vpc/check-internet-gateway?userId=${currentUser.id}&subnetName=${subnetName}`);
       setHasInternetGateway(response.data.hasInternetGateway);
     } catch (error) {
       console.error("Error checking Internet Gateway:", error);

@@ -5,7 +5,7 @@ import React from 'react';
 import axios from 'axios';
 import { useUserContext } from '../UserContext';
 import NavBar from './NavBar/NavBar';
-import { API_URL } from '../index';
+import { AWS_API_URL, MEMBER_API_URL } from '../index';
 import SidebarConsole from './SideBar/SidebarConsole';
 
 
@@ -21,7 +21,7 @@ function MyPage({ provider }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(API_URL + '/members/update-credentials', {
+      const response = await axios.post(MEMBER_API_URL + '/members/update-credentials', {
         email: currentUser?.id, // Use the current user's email from context
         accessKey,
         secretKey

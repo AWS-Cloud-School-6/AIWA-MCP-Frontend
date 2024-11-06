@@ -4,7 +4,7 @@ import { Flex, Button, TextField, Heading, Menu, MenuItem, MenuButton, Text } fr
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
 import NavBar from '../../../NavBar/NavBar';
-import { API_URL } from '../../../../index';
+import { AWS_API_URL } from '../../../../index';
 import SidebarVpc from "../Sidebar/SidebarVpc";
 
 function Subnet_Create() {
@@ -20,7 +20,7 @@ function Subnet_Create() {
     // Fetch the latest VPC data
     const fetchVPCData = async () => {
         try {
-            const response = await axios.get(`${API_URL}/vpc/describe?userId=${currentUser.id}`);
+            const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
             if (response.data.list && response.data.list.length > 0) {
                 setLatestVPC(response.data.list); // Set the list of VPCs
             }
@@ -48,7 +48,7 @@ function Subnet_Create() {
         };
 
         try {
-            const response = await axios.post(`${API_URL}/subnet/create?userId=${currentUser.id}`, newSubnet);
+            const response = await axios.post(`${AWS_API_URL}/subnet/create?userId=${currentUser.id}`, newSubnet);
             console.log(response.data);
             navigate('/console/vpc/subnet');
         } catch (error) {
