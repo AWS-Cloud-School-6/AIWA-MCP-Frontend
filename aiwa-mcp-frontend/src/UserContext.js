@@ -6,35 +6,47 @@ const UserContext = createContext(); // Create a context
 // Custom hook to access user context
 export const useUserContext = () => useContext(UserContext);
 
-export const UserProvider   = ({ children }) => {
-    // localStorage에서 초기값 가져오기
-    const [currentUser, setCurrentUser] = useState(() => {
-        const savedUser = localStorage.getItem('currentUser');
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
-    
+export const UserProvider = ({ children }) => {
+    const { user } = useAuthenticator((context) => [context.user]);
+    const [currentUser, setCurrentUser] = useState(null);
     const [selectedCompany, setSelectedCompany] = useState(() => {
-        const savedCompany = localStorage.getItem('selectedCompany');
-        return savedCompany || null;
+        try {
+            // localStorage에서 저장된 회사 정보 불러오기
+            const savedCompany = localStorage.getItem('selectedCompany');
+            return savedCompany ? JSON.parse(savedCompany) : null;
+        } catch (error) {
+            console.error('Error parsing selectedCompany from localStorage:', error);
+            localStorage.removeItem('selectedCompany'); // 잘못된 데이터 삭제
+            return null;
+        }
     });
+
+    useEffect(() => {
+        if (user) {
+            try {
+                setCurrentUser({
+                    id: user.signInDetails.loginId,
+                });
+            } catch (error) {
+                console.error('Error setting current user:', error);
+            }
+        } else {
+            setCurrentUser(null);
+        }
+    }, [user]);
 
     // selectedCompany가 변경될 때마다 localStorage에 저장
     useEffect(() => {
         if (selectedCompany) {
-            localStorage.setItem('selectedCompany', selectedCompany);
+            localStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
+        } else {
+            localStorage.removeItem('selectedCompany');
         }
     }, [selectedCompany]);
 
-    // currentUser가 변경될 때마다 localStorage에 저장
-    useEffect(() => {
-        if (currentUser) {
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        }
-    }, [currentUser]);
-
     return (
-        <UserContext.Provider value={{
-            currentUser,
+        <UserContext.Provider value={{ 
+            currentUser, 
             setCurrentUser,
             selectedCompany,
             setSelectedCompany
