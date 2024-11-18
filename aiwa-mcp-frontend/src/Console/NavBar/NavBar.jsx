@@ -6,7 +6,7 @@ import NavLink from './NavLinks';
 import { useUserContext } from '../../UserContext';
 
 
-// 수정
+// 수정ㅎㅎㅎㅎ
 
 const navLinks = [
   { text: 'HOME', href: '/console' },
