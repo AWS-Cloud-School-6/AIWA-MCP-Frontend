@@ -6,6 +6,7 @@ import NavLink from './NavLinks';
 import { useUserContext } from '../../UserContext';
 
 
+// 수정ㅎㅎㅎㅎ
 
 const navLinks = [
   { text: 'HOME', href: '/console' },
@@ -73,8 +74,8 @@ function NavBar() {
           </div>
           <div className={styles.userInfoContainer}>
             <div className={styles.userInfo}>
-              {userId && <div className={styles.userId}>{currentUser.id}</div>}
-              {selectedCompany && <div className={styles.companyName}> Your Company: {selectedCompany}</div>}
+              {currentUser && <div className={styles.userId}>{currentUser.id}</div>}
+              {selectedCompany && <div className={styles.companyName}>{selectedCompany}</div>}
             </div>
             <div className={styles.logoutContainer}>
               <button className={styles.logoutButton} onClick={handleLogout}>Logout</button>
