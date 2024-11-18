@@ -24,7 +24,7 @@ function NatTable() {
     return savedNATs ? JSON.parse(savedNATs) : initialNAT;
   });
   // 유저 정보 가져오기
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany } = useUserContext();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const openCreateModal = () => {
@@ -37,7 +37,7 @@ function NatTable() {
 
   const fetchNATData = async () => {
     try {
-      const response = await axios.get(`${AWS_API_URL}/nat-gateway/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/nat-gateway/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
       if (response.data.list && response.data.list.length > 0) {
         console.log("NAT list 데이터: ", response.data.list);
         const latestNats = response.data.list.map((nat) => ({

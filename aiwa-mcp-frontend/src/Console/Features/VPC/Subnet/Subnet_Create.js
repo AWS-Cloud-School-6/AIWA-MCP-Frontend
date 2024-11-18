@@ -15,12 +15,12 @@ function Subnet_Create() {
     const [selectedVPC, setSelectedVPC] = useState("non-selected"); // Default to non-selected
     const [selectedAZ, setSelectedAZ] = useState("non-selected"); // Default to non-selected for Availability Zone
     const navigate = useNavigate();
-    const { currentUser } = useUserContext();
+    const { currentUser, selectedCompany } = useUserContext();
 
     // Fetch the latest VPC data
     const fetchVPCData = async () => {
         try {
-            const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
+            const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
             if (response.data.list && response.data.list.length > 0) {
                 setLatestVPC(response.data.list); // Set the list of VPCs
             }

@@ -26,7 +26,7 @@ function VPCTable() {
   const [displayedVPCs, setDisplayedVPCs] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // 유저 정보 가져오기
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany } = useUserContext();
 
   const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
@@ -38,7 +38,7 @@ function VPCTable() {
 
   const fetchVPCData = async () => {
     try {
-      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
       if (response.data.list && response.data.list.length > 0) {
         const latestVPC = response.data.list.map((vpc) => ({
           number: vpc.vpcId || '',

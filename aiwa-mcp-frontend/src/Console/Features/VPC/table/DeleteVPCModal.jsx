@@ -5,7 +5,7 @@ import { AWS_API_URL } from '../../../../index';
 import { useUserContext } from '../../../../UserContext';
 
 function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { // Assuming setSelectedVpcs is passed as a prop
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany } = useUserContext();
   const [vpcs, setVpcs] = useState([]);
   const [currentVPC, setCurrentVPC] = useState(null);
   const [hasSubnets, setHasSubnets] = useState(false);
@@ -26,7 +26,7 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
 
   const fetchVPCData = async () => {
     try {
-      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
       if (response.data.list && response.data.list.length > 0) {
         const fetchedVPCs = response.data.list.map((vpc) => ({
           number: vpc.vpcId || '',

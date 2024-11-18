@@ -100,65 +100,35 @@
   .userAndLogout {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 10px;
   }
   
-  .userIconContainer {
-    margin-right: 10px;
-  }
-  
-  .userIcon {
-    justify-content: center;
-    align-items: center;
-    border-radius: 30px;
-    background: var(--Grey-Light2, #cdcdcd);
-    align-self: stretch;
+  .userInfoContainer {
     display: flex;
-    width: 45px;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .userInfo {
+    display: flex;
     flex-direction: column;
-    overflow: hidden;
-    margin: auto 0;
-    padding: 5px;
+    align-items: flex-start;
+    gap: 4px;
   }
   
-  .userIconImage {
-    aspect-ratio: 1.13;
-    object-fit: contain;
-    object-position: center;
-    width: 100%;
-    fill: var(--Dark2, #000);
-  }
-  
-  .userNameAndLogout {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-  }
-  
-  .loginId {
+  .userId {
     font-weight: bold;
-    text-align: center;
-    flex-grow: 1;
-    padding: 0 10px;
+    font-size: 1rem;
+    color: #000;
+  }
+  
+  .companyName {
+    font-size: 0.9rem;
+    color: #666;
   }
   
   .logoutContainer {
     margin-left: 10px;
-    display: flex;
-    align-items: start;
-    gap: 20px;
-    color: var(--Light, #f5f5f5);
-    white-space: nowrap;
-    text-align: center;
-    justify-content: start;
-    font: 700 16px Open Sans, sans-serif;
-  }
-  
-  @media (max-width: 991px) {
-    .logoutContainer {
-      white-space: initial;
-    }
   }
   
   .logoutButton {

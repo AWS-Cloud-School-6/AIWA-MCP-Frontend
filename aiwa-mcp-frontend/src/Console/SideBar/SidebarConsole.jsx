@@ -12,7 +12,8 @@ function SidebarConsole({ onSelectProvider }) {
   const [accessKey, setAccessKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany, setSelectedCompany } = useUserContext();
+  const [keysList, setKeysList] = useState([]);
 
   useEffect(() => {
     fetchAccessKey();
@@ -24,16 +25,12 @@ function SidebarConsole({ onSelectProvider }) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get( MEMBER_API_URL + '/members/all');
+      const response = await axios.get(MEMBER_API_URL + '/members/all');
       const members = response.data.list;
       const currentMember = members.find(member => member.email === currentUser.id);
 
-      if (currentMember) {
-        setAccessKey(currentMember.accessKey);
-        console.log(currentMember.accessKey);
-        if (currentMember.accessKey === null) {
-            setError('Failed to fetch access key')
-        }
+      if (currentMember && currentMember.aiwaKeys) {
+        setKeysList(currentMember.aiwaKeys);
       }
     } catch (err) {
       setError('Failed to fetch access key');
@@ -62,7 +59,14 @@ function SidebarConsole({ onSelectProvider }) {
 
   const maskAccessKey = (key) => {
     if (!key) return '';
-    return key.substring(0, 4) + '*'.repeat(key.length - 4);
+    if (key.length <= 4) return '*'.repeat(key.length);
+    // Add ellipsis if key is too long
+    const maskedKey = '*'.repeat(8) + key.slice(-4);
+    return maskedKey.length > 16 ? maskedKey.slice(0, 16) : maskedKey;
+  };
+
+  const handleCompanySelect = (companyName) => {
+    setSelectedCompany(companyName);
   };
 
   return (
@@ -93,9 +97,21 @@ function SidebarConsole({ onSelectProvider }) {
           </div>
           {isLoading && <p>Loading...</p>}
           {error && <p className={styles.error}>{error}</p>}
-          {accessKey && (
+          {keysList.length > 0 && (
             <div className={styles.accessKeyContainer}>
-              <p>Access Key: {maskAccessKey(accessKey)}</p>
+              {keysList.map((key, index) => (
+                <div 
+                  key={index} 
+                  className={`${styles.keyItem} ${selectedCompany === key.companyName ? styles.selectedKey : ''}`}
+                  onClick={() => handleCompanySelect(key.companyName)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <p><strong>Company: {key.companyName}</strong></p>
+                  <p>Access Key: {maskAccessKey(key.accessKey)}</p>
+                  <p>Secret Key: {maskAccessKey(key.secretKey)}</p>
+                  {key.gcpKeyPath && <p>GCP Key Path: {key.gcpKeyPath}</p>}
+                </div>
+              ))}
             </div>
           )}
         </div>

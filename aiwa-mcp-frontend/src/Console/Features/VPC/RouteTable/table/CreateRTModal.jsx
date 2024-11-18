@@ -15,7 +15,7 @@ function CreateRTModal({ isOpen, onClose }) {
   const [latestVPC, setLatestVPC] = useState([]); 
   const [selectedVPC, setSelectedVPC] = useState("non-selected");
 
-  const { currentUser } = useUserContext(); 
+  const { currentUser, selectedCompany } = useUserContext(); 
 
   const handleVPCSelect = (vpcName) => {
     setSelectedVPC(vpcName);
@@ -23,7 +23,7 @@ function CreateRTModal({ isOpen, onClose }) {
 
   const fetchVPCData = async () => {
     try {
-      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
       if (response.data.list && response.data.list.length > 0) {
         setLatestVPC(response.data.list);
       }

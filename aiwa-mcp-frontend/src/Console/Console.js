@@ -11,8 +11,10 @@ import SidebarConsole from './SideBar/SidebarConsole';
 
 
 function MyPage({ provider }) {
-  const [accessKey, setaccess_key] = useState('');
-  const [secretKey, setsecret_key] = useState('');
+  const [accessKey, setAccessKey] = useState('');
+  const [secretKey, setSecretKey] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [gcpKeyContent, setgcpKeyContent] = useState('');
 
   const { currentUser } = useUserContext();
   const refreshPage = () => {
@@ -21,13 +23,35 @@ function MyPage({ provider }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(MEMBER_API_URL + '/members/update-credentials', {
-        email: currentUser?.id, // Use the current user's email from context
+      let checkCompanyResponse;
+      try {
+        checkCompanyResponse = await axios.get(`${MEMBER_API_URL}/members/${currentUser?.id}/${companyName}`);
+        if (checkCompanyResponse.data.success === true) {
+          alert('이미 존재하는 회사 이름입니다. 다른 이름을 사용해주세요.');
+          return;
+        }
+      } catch (checkError) {
+      }
+
+      const payload = {
+        email: currentUser?.id,
+        companyName: companyName,
         accessKey,
-        secretKey
-      });
+        secretKey,
+        gcpKeyContent,
+      };
+
+      if (provider === 'AWS') {
+        payload.accessKey = accessKey;
+        payload.secretKey = secretKey;
+      } else if (provider === 'GCP') {
+        payload.gcpKeyContent = gcpKeyContent;
+      }
+
+      const response = await axios.post(MEMBER_API_URL + '/members/add-aws-gcp-key', payload);
       console.log('API 응답:', response.data.msg);
       alert('키 성공적으로 제출');
+      // refreshPage();
     } catch (error) {
       if (error.response && error.response.status === 500) {
         console.error('서버 내부 오류:', error.response.data);
@@ -40,7 +64,8 @@ function MyPage({ provider }) {
         alert('키 제출 실패: ' + error.message);
       }
     }
-    refreshPage();
+
+    // refreshPage();
   };
 
   return (
@@ -48,20 +73,43 @@ function MyPage({ provider }) {
       <Text fontSize="2xl" fontWeight="bold" marginBottom="1rem">마이페이지 - {provider}</Text>
 
       <TextField
-        label="Access Key"
-        placeholder="Access Key를 입력하세요"
-        value={accessKey}
-        onChange={(e) => setaccess_key(e.target.value)}
+        label="Company Name"
+        placeholder="Company Name을 입력"
+        value={companyName}
+        onChange={(e) => setCompanyName(e.target.value)}
         marginBottom="1rem"
-      />
-      <TextField
-        label="Secret Key"
-        placeholder="Secret Key를 입력하세요"
-        type="password"
-        value={secretKey}
-        onChange={(e) => setsecret_key(e.target.value)}
-        marginBottom="1rem"
-      />
+      />  
+
+      {provider === 'AWS' && (
+        <>
+          <TextField
+            label="Access Key"
+            placeholder="Access Key를 입력"
+            value={accessKey}
+            onChange={(e) => setAccessKey(e.target.value)}
+            marginBottom="1rem"
+          />
+          <TextField
+            label="Secret Key"
+            placeholder="Secret Key를 입력"
+            type="password"
+            value={secretKey}
+            onChange={(e) => setSecretKey(e.target.value)}
+            marginBottom="1rem"
+          />
+        </>
+      )}
+
+      {provider === 'GCP' && (
+        <TextField
+          label="서비스 계정 키"
+          placeholder="서비스 계정 키 입력"
+          value={gcpKeyContent}
+          onChange={(e) => setgcpKeyContent(e.target.value)}
+          marginBottom="1rem"
+        />
+      )}
+  
       <Button onClick={handleSubmit}>제출</Button>
     </Flex>
   );
