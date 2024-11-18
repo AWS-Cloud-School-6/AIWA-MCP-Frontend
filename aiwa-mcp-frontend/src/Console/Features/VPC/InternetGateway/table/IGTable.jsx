@@ -10,7 +10,6 @@ import { AWS_API_URL } from '../../../../../index';
 import CreateIGModal from './CreateIGModal'; // 새로 만들어야 할 컴포넌트
 
 
-
 const initialIG = [
   { id: 1, name: "Subin", status: "Attached", vpc: "vpc id display"},
 ];
@@ -26,7 +25,7 @@ function IGTable() {
     return savedIGs ? JSON.parse(savedIGs) : initialIG;
   });
   // 유저 정보 가져오기
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany } = useUserContext();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const openCreateModal = () => {
@@ -56,7 +55,7 @@ function IGTable() {
 
   const fetchIGData = async () => {
     try {
-      const response = await axios.get(`${AWS_API_URL}/internet-gateway/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/internet-gateway/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
       if (response.data.list && response.data.list.length > 0) {
         const latestigs = response.data.list.map((ig) => ({
           id: ig.internetGatewayId || '-',

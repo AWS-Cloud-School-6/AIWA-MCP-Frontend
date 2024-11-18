@@ -116,3 +116,21 @@
   margin-top: 10px;
   font-size: 14px;
 }
+
+.keyItem {
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.selectedKey {
+  background-color: #e6f3ff;
+  border-color: #1890ff;
+}
+
+.keyItem p {
+  margin: 5px 0;
+  font-size: 14px;
+}

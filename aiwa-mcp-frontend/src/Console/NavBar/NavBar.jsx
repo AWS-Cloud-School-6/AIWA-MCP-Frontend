@@ -15,7 +15,7 @@ const navLinks = [
 
 function NavBar() {
   const [userId, setUserId] = useState('');
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany } = useUserContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,8 +71,11 @@ function NavBar() {
               <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/b336f31c57083d1f8335bfaeeabac3ed1120f96e8e9342d246d8eaab917c205e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" className={styles.userIconImage} alt="User profile" />
             </div>
           </div>
-          <div className={styles.userNameAndLogout}>
-            {userId && <div className={styles.userId}>{currentUser.id}</div>}
+          <div className={styles.userInfoContainer}>
+            <div className={styles.userInfo}>
+              {userId && <div className={styles.userId}>{currentUser.id}</div>}
+              {selectedCompany && <div className={styles.companyName}> Your Company: {selectedCompany}</div>}
+            </div>
             <div className={styles.logoutContainer}>
               <button className={styles.logoutButton} onClick={handleLogout}>Logout</button>
             </div>

@@ -19,7 +19,7 @@ function CreateNatModal({ isOpen, onClose }) {
   const [latestElasticIp, setlatestElasticIp] = useState([]); // Holds the list of subnets 
   const [selectedElasticIp, setselectedElasticIp] = useState("non-selected"); // Default to non-selected
 
-  const { currentUser } = useUserContext(); 
+  const { currentUser, selectedCompany } = useUserContext(); 
 
   const [hasInternetGateway, setHasInternetGateway] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -43,7 +43,7 @@ function CreateNatModal({ isOpen, onClose }) {
     // Fetch the latest subnet data
     const fetchSubnetData = async () => {
         try {
-            const response = await axios.get(`${AWS_API_URL}/subnet/describe?userId=${currentUser.id}`);
+            const response = await axios.get(`${AWS_API_URL}/subnet/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
             console.log("fetch subnet data", response.data);
             if (response.data.list && response.data.list.length > 0) {
                 setlatestSubnet(response.data.list); // Set the list of subnets
@@ -60,7 +60,7 @@ function CreateNatModal({ isOpen, onClose }) {
     // fetch elastic ip data
     const fetchElasticIpData = async () => {
       try {
-          const response = await axios.get(`${AWS_API_URL}/eip/describe?userId=${currentUser.id}`);
+          const response = await axios.get(`${AWS_API_URL}/eip/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
           console.log("fetch elastic ip data", response.data);
           if (response.data.list && response.data.list.length > 0) {
               setlatestElasticIp(response.data.list); // Set the list of subnets
@@ -114,7 +114,7 @@ function CreateNatModal({ isOpen, onClose }) {
   const checkInternetGateway = async (subnetName) => {
     setIsChecking(true);
     try {
-      const response = await axios.get(`${AWS_API_URL}/vpc/check-internet-gateway?userId=${currentUser.id}&subnetName=${subnetName}`);
+      const response = await axios.get(`${AWS_API_URL}/vpc/check-internet-gateway?userId=${currentUser.id}&companyName=${selectedCompany}&subnetName=${subnetName}`);
       setHasInternetGateway(response.data.hasInternetGateway);
     } catch (error) {
       console.error("Error checking Internet Gateway:", error);

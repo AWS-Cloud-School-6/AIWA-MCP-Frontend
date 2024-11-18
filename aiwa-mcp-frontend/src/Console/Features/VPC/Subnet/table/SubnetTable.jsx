@@ -26,7 +26,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     return savedSubnets ? JSON.parse(savedSubnets) : initialCustomers;
   });
   // 유저 정보 가져오기
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany } = useUserContext();
 
   // 리렌더링될 때마다 새로운 함수가 생성되지 않도록 구현
   const addNewSubnet = useCallback((newSubnet) => {
@@ -43,7 +43,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   }, []);
   const fetchSubnetData = async () => {
     try {
-      const response = await axios.get(`${AWS_API_URL}/subnet/describe?userId=${currentUser.id}`);
+      const response = await axios.get(`${AWS_API_URL}/subnet/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
       if (response.data.list && response.data.list.length > 0) {
         const latestSubnets = response.data.list.map((subnet) => ({
           number: subnet.subnetId || '',

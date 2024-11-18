@@ -26,12 +26,12 @@ function RTTable() {
     return savedRTTables ? JSON.parse(savedRTTables) : initialRTTable;
   });
   // 유저 정보 가져오기
-  const { currentUser } = useUserContext();
+  const { currentUser, selectedCompany } = useUserContext();
 
     // Fetch the latest VPC data
     const fetchVPCData = async () => {
       try {
-          const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}`);
+          const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
             return response.data.list || [];
       } catch (error) {
           console.error("Error fetching VPC data:", error);
@@ -43,7 +43,7 @@ function RTTable() {
   const fetchRTData = async () => {
     try {
       const [rtResponse, vpcList] = await Promise.all([
-        axios.get(`${AWS_API_URL}/route-table/describe?userId=${currentUser.id}`),
+        axios.get(`${AWS_API_URL}/route-table/describe?userId=${currentUser.id}&companyName=${selectedCompany}`),
         fetchVPCData() 
       ]);
 
