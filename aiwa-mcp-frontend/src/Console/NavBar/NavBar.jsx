@@ -53,8 +53,8 @@ function NavBar() {
         <div className={styles.logoAndLinks}>
           <div
             className={styles.logoContainer}
-            onClick={handleLogoClick} // 로고 클릭 시 /console로 이동
-            style={{ cursor: 'pointer' }} // 클릭 가능한 스타일 추가
+            onClick={handleLogoClick}
+            style={{ cursor: 'pointer' }}
           >
             <img
               loading="lazy"
@@ -62,8 +62,9 @@ function NavBar() {
               className={styles.logo}
               alt="AIWA logo"
             />
-            <div>AIWA</div>
+            <div style={{ marginTop: '10px' }}>AIWA</div> {/* AIWA 글자 아래로 내리기 */}
           </div>
+
           <div className={styles.navLinks}>
             {navLinks.map((link, index) => (
               <NavLink key={index} text={link.text} href={link.href} />
