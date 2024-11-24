@@ -1,0 +1,49 @@
+.services-container {
+    padding: 20px;
+    width: 100%;
+    max-width: 1600px;
+    /* 최대 너비를 유지 */
+    margin: 0 auto;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    /* 그리드 자체의 너비를 100%로 */
+}
+
+.aws-console-button {
+    background-color: #ffffff;
+    color: #16191f;
+    border: 1px solid #d5dbdb;
+    border-radius: 8px;
+    padding: 8px;
+    /* 패딩을 적당히 설정 */
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    height: 40px;
+    /* 세로 길이를 적당히 설정 */
+    width: 100%;
+    /* 가로 길이 100% */
+    display: flex;
+    align-items: center;
+    /* 텍스트를 세로 중앙에 배치 */
+    justify-content: center;
+    /* 텍스트를 가로 중앙에 배치 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.aws-console-button:hover {
+    background-color: #f2f8f9;
+    border-color: #008296;
+}
+
+.aws-console-button:active {
+    background-color: #e6f4f6;
+    border-color: #008296;
+}

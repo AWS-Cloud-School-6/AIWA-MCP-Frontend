@@ -6,9 +6,6 @@ import { useUserContext } from '../../UserContext';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 
 const navLinks = [
-  { text: 'HOME', href: '/console' },
-  { text: 'Network', href: '/console/vpc' },
-  { text: 'Instance', href: '/console/instances' }
 ];
 
 function NavBar() {
