@@ -1,25 +1,21 @@
 import React from 'react';
 import styles from './EC2Table.module.css';
 
-function EC2Row({ instance, isEven, isSelected, onCheckboxChange }) {
+function EC2Row({ ec2, isEven, isSelected, onCheckboxChange }) {
   return (
     <div className={`${styles.tableRow} ${isEven ? styles.evenRow : ''}`}>
-      <div className={styles.cell}>
+      <div className={styles.cell} style={{ width: '5%' }}>
         <input
           type="checkbox"
           checked={isSelected}
-          onChange={() => onCheckboxChange(instance.InstanceId)}
+          onChange={() => onCheckboxChange(ec2)}
         />
       </div>
-      <div className={styles.cell}>{instance.InstanceId}</div>
-      <div className={styles.cell}>{instance.InstanceType}</div>
-      <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '8%' ,textAlign: 'center'}}>
-        <span className={`${styles.tag} ${styles[instance.State.Name.toLowerCase()]}`}>
-          {instance.State.Name}
-        </span>
-      </div>      
-      <div className={styles.cell}>{instance.Placement.AvailabilityZone}</div>
-      <div className={styles.cell}>{new Date(instance.LaunchTime).toLocaleString()}</div>
+      <div className={styles.cell} style={{ width: '25%' }}>{ec2.instanceId}</div>
+      <div className={styles.cell} style={{ width: '15%' }}>{ec2.name}</div>
+      <div className={styles.cell} style={{ width: '15%' }}>{ec2.state}</div>
+      <div className={styles.cell} style={{ width: '20%' }}>{ec2.publicIpAddress}</div>
+      <div className={styles.cell} style={{ width: '20%' }}>{ec2.privateIpAddress}</div>
     </div>
   );
 }

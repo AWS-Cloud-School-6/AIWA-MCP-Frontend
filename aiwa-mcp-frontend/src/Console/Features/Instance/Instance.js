@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Heading } from '@aws-amplify/ui-react';
-import { SideBar, NavBarHeader2 } from '../../../ui-components';
 import EC2Table from "./table/EC2Table";
+import SidebarEc2 from "./Sidebar/SidebarEc2";
 import NavBar from '../../NavBar/NavBar';
 
 function Instance() {
@@ -9,7 +9,7 @@ function Instance() {
         <div>
             <NavBar />
             <Flex direction="row">
-                <SideBar />
+                <SidebarEc2 />
                 <Flex direction="column" style={{ width: '100%', padding: '20px' }}>
                     <Flex justifyContent="space-between" alignItems="center" marginBottom="20px">
                         <Heading level={4}>EC2 List</Heading>

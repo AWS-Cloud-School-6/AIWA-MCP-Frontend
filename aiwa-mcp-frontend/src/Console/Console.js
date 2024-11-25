@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Flex, View, Text, Icon, TextField, Button } from '@aws-amplify/ui-react';
-import { ListboxComponent } from '../ui-components';
 import React from 'react';
 import axios from 'axios';
 import { useUserContext } from '../UserContext';
 import NavBar from './NavBar/NavBar';
 import { AWS_API_URL, MEMBER_API_URL } from '../index';
 import SidebarConsole from './SideBar/SidebarConsole';
-
-
+import { useNavigate } from "react-router-dom";
+import './Console.css';
 
 function MyPage({ provider }) {
   const [accessKey, setAccessKey] = useState('');
@@ -31,8 +30,7 @@ function MyPage({ provider }) {
           alert('이미 존재하는 회사 이름입니다. 다른 이름을 사용해주세요.');
           return;
         }
-      } catch (checkError) {
-      }
+      } catch (checkError) { }
 
       let url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(accessKey || null)}&secretKey=${encodeURIComponent(secretKey || null)}&projectId=${encodeURIComponent(projectId || null)}&gcpKeyFile=${encodeURIComponent(gcpKeyFile || null)}`;
 
@@ -45,7 +43,6 @@ function MyPage({ provider }) {
       const response = await axios.post(url);
       console.log('API 응답:', response.data.msg);
       alert('키 성공적으로 제출');
-      // refreshPage();
     } catch (error) {
       if (error.response && error.response.status === 500) {
         console.error('서버 내부 오류:', error.response.data);
@@ -58,8 +55,6 @@ function MyPage({ provider }) {
         alert('키 제출 실패: ' + error.message);
       }
     }
-
-    // refreshPage();
   };
 
   return (
@@ -112,17 +107,44 @@ function MyPage({ provider }) {
 
 function Console({ overrides }) {
   const [selectedProvider, setSelectedProvider] = useState(null);
+  const navigate = useNavigate();
 
   const handleProviderSelect = (provider) => {
     setSelectedProvider(provider);
   };
 
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
+  const services = [
+    { path: "/console/vpc", label: "VPC" },
+    { path: "/console/subnet", label: "Subnet" },
+    { path: "/console/vpc/internetgateway", label: "Internet Gateway" },
+    { path: "/console/vpc/routetable", label: "Route Table" },
+    { path: "/console/securitygroup", label: "Security Group" },
+    { path: "/console/vpc/natgateway", label: "NAT Gateway" },
+    { path: "/console/instances", label: "EC2" },
+  ];
+
   return (
-    <div>
+    <div className="console-container">
       <NavBar />
-      <Flex direction="row">
+      <Flex direction="row" className="console-content">
         <SidebarConsole onSelectProvider={handleProviderSelect} />
         {selectedProvider && <MyPage provider={selectedProvider} />}
+
+        <div className="services-grid">
+          {services.map((item, index) => (
+            <Button
+              key={index}
+              onClick={() => handleNavigation(item.path)}
+              className="aws-console-button"
+            >
+              {item.label}
+            </Button>
+          ))}
+        </div>
       </Flex>
     </div>
 

@@ -1,168 +1,133 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-    Button,
-    TextField,
-    SelectField,
-    Table,
-    TableCell,
-    TableHead,
-    TableRow,
-} from '@aws-amplify/ui-react';
-import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
-import '@szhsin/react-menu/dist/index.css';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
 import styles from './EC2Table.module.css';
-import { AWS_API_URL } from '../../../../index.js';
-
-
-
-// 예제 데이터 추가
-const sampleInstances = [
-    {
-        InstanceId: 'i-1234567890abcdef0',
-        InstanceType: 't2.micro',
-        State: { Name: 'running' },
-        LaunchTime: '2023-04-01T12:00:00.000Z',
-        Placement: { AvailabilityZone: 'us-east-1a' }
-    },
-    {
-        InstanceId: 'i-0987654321fedcba0',
-        InstanceType: 't2.small',
-        State: { Name: 'stopped' },
-        LaunchTime: '2023-03-15T09:30:00.000Z',
-        Placement: { AvailabilityZone: 'us-east-1b' }
-    },
-    {
-        InstanceId: 'i-abcdef1234567890',
-        InstanceType: 't3.medium',
-        State: { Name: 'running' },
-        LaunchTime: '2023-04-10T15:45:00.000Z',
-        Placement: { AvailabilityZone: 'us-east-1c' }
-    },
-    {
-        InstanceId: 'i-fedcba0987654321',
-        InstanceType: 'm5.large',
-        State: { Name: 'terminated' },
-        LaunchTime: '2023-02-28T18:20:00.000Z',
-        Placement: { AvailabilityZone: 'us-east-1d' }
-    },
-    {
-        InstanceId: 'i-11223344556677889',
-        InstanceType: 'c5.xlarge',
-        State: { Name: 'running' },
-        LaunchTime: '2023-04-05T10:15:00.000Z',
-        Placement: { AvailabilityZone: 'us-east-1a' }
-    }
-];
+import TableHeader from './TableHeader';
+import EC2Row from './EC2Row';
+import TablePagination from './TablePagination';
+import { useNavigate } from 'react-router-dom';
+import ActionButtons from './ActionButtons';
+import axios from 'axios';
+import { useUserContext } from '../../../../UserContext';
+import { AWS_API_URL } from '../../../../index';
+import DeleteEC2Modal from './DeleteEC2Modal';
 
 function EC2Table() {
-    const [instances, setInstances] = useState(sampleInstances);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [instanceState, setInstanceState] = useState('running');
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [selectedEc2s, setSelectedEc2s] = useState([]);
+  const [allEC2s, setAllEC2s] = useState([]);
+  const [displayedEC2s, setDisplayedEC2s] = useState([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { currentUser, selectedCompany } = useUserContext();
 
-    useEffect(() => {
-        fetchInstances();
-    }, []);
+  const openDeleteModal = () => setIsDeleteModalOpen(true);
+  const closeDeleteModal = () => setIsDeleteModalOpen(false);
 
-    const fetchInstances = () => {
-        axios.get(`${AWS_API_URL}/instances`)
-            .then((response) => {
-                setInstances(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching instances:', error);
-            });
-    };
+  const fetchEC2Data = async () => {
+    try {
+      const response = await axios.get(
+        `${AWS_API_URL}/ec2/describe?userId=${currentUser.id}&companyName=${selectedCompany}`
+      );
 
-    const filteredInstances = instances.filter(instance =>
-        instance.State.Name === instanceState &&
-        instance.InstanceId.toLowerCase().includes(searchTerm.toLowerCase())
+      if (response.data.list && response.data.list.length > 0) {
+        const processedEC2s = response.data.list.map((ec2) => ({
+          instanceId: ec2.instanceId || 'N/A', // EC2 인스턴스 ID
+          state: ec2.state || 'Unknown', // 상태
+          name: ec2.tags?.Name || '-', // 태그에서 Name 추출
+          publicIpAddress: ec2.publicIpAddress || 'N/A', // 퍼블릭 IP
+          privateIpAddress: ec2.privateIpAddress || 'N/A' // 프라이빗 IP
+        }));
+
+        console.log("Processed EC2 data:", processedEC2s);
+        setAllEC2s(processedEC2s);
+        setDisplayedEC2s(processedEC2s);
+      }
+    } catch (error) {
+      console.error("Error fetching EC2 data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEC2Data();
+  }, []);
+
+  const handleCheckboxChange = (selectedEc2) => {
+    setSelectedEc2s((prev) =>
+      prev.some((ec2) => ec2.instanceId === selectedEc2.instanceId)
+        ? prev.filter((ec2) => ec2.instanceId !== selectedEc2.instanceId)
+        : [...prev, selectedEc2]
     );
+  };
 
-    return (
-        <div className={styles.dataTable}>
-            <div className={styles.tableControls}>
-                <div className={styles.searchContainer}>
-                    <div className={styles.searchInputWrapper}>
-                        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d322eb2c900627c1c0432bf23dfda65d4720f3b4b6381543703e324a72370a2e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-                        <input
-                            type="text"
-                            placeholder="Search by Instance ID"
-                            className={styles.searchInput}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <select
-                        className={styles.filterButton}
-                        onChange={(e) => setInstanceState(e.target.value)}
-                        value={instanceState}
-                    >
-                        <option value="running">Running</option>
-                        <option value="stopped">Stopped</option>
-                        <option value="terminated">Terminated</option>
-                    </select>
-                </div>
-                <div className={styles.actionButtons}>
-                    <button onClick={fetchInstances} className={styles.filterButton} style={{
-                        display: 'flex', justifyContent: 'center', alignItems: 'center'
-                    }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', padding: '0', margin: '0' }}>
-                            <path d="M23 4v6h-6" />
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                        </svg>
-                    </button>
-                    <Menu menuButton={<MenuButton className={styles.filterButton}>Actions ▾</MenuButton>}>
-                        <MenuItem disabled>Connect</MenuItem>
-                        <MenuItem disabled>View details</MenuItem>
-                        <MenuItem disabled>Manage instance state</MenuItem>
-                        <MenuItem>Instance settings</MenuItem>
-                        <MenuItem>Networking</MenuItem>
-                        <MenuItem>Security</MenuItem>
-                        <MenuItem>Image and templates</MenuItem>
-                        <MenuItem>Monitor and troubleshoot</MenuItem>
-                    </Menu>
-                    <Menu menuButton={<MenuButton className={styles.EC2Button}>Launch Instances ▾</MenuButton>}>
-                        <MenuItem onClick={() => navigate('aws')}>AWS</MenuItem>
-                        <MenuItem onClick={() => navigate('gcp')}>GCP</MenuItem>
-                    </Menu>
-                </div>
-            </div>
+  const handleSelectAll = () => {
+    if (selectedEc2s.length === displayedEC2s.length) {
+      setSelectedEc2s([]);
+    } else {
+      setSelectedEc2s([...displayedEC2s]);
+    }
+  };
 
-            <div className={styles.tableHeaderRow}>
-                <div className={`${styles.cell} ${styles.idCell}`}>Instance ID</div>
-                <div className={`${styles.cell} ${styles.typeCell}`}>Type</div>
-                <div className={`${styles.cell} ${styles.statusCell}`}>State</div>
-                <div className={`${styles.cell} ${styles.timeCell}`}>Launch Time</div>
-                <div className={`${styles.cell} ${styles.AZCell}`}>Availability Zone</div>
-            </div>
+  const handleEdit = () => {
+    if (selectedEc2s.length !== 1) {
+      alert("Please select only one EC2 to edit.");
+      return;
+    }
+    const selectedEc2 = selectedEc2s[0];
+    navigate(`/console/ec2/edit/${selectedEc2.instanceId}`);
+  };
 
-            {
-                filteredInstances.length > 0 ? (
-                    filteredInstances.map((instance, index) => (
-                        <div key={instance.InstanceId} className={index % 2 === 0 ? styles.VPCRow : styles.VPCRowEven}>
-                            <div className={`${styles.cell} ${styles.idCell}`}>{instance.InstanceId}</div>
-                            <div className={`${styles.cell} ${styles.typeCell}`}>{instance.InstanceType}</div>
-                            <div className={`${styles.cell} ${styles.statusCell}`}>
-                                <span className={`${styles.tag} ${styles[instance.State.Name.toLowerCase()]}`}>
-                                    {instance.State.Name}
-                                </span>
-                            </div>
-                            <div className={`${styles.cell} ${styles.timeCell}`}>{new Date(instance.LaunchTime).toLocaleString()}</div>
-                            <div className={`${styles.cell} ${styles.AZCell}`}>{instance.Placement.AvailabilityZone}</div>
-                        </div>
-                    ))
-                ) : (
-                    <div className={styles.VPCRow}>
-                        <div className={styles.cell} style={{ textAlign: 'center', width: '100%' }}>
-                            No matching instances found.
-                        </div>
-                    </div>
-                )
-            }
-        </div >
+  const handleDelete = () => openDeleteModal();
+
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredEC2s = allEC2s.filter((ec2) =>
+      ec2.name.toLowerCase().includes(searchTerm)
     );
+    setDisplayedEC2s(filteredEC2s);
+    setSelectedEc2s([]);
+  };
+
+  return (
+    <section className={styles.dataTable}>
+      <header className={styles.tableHeader}>
+        <div className={styles.searchContainer}>
+          <div className={styles.searchInputWrapper}>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search EC2s by Name..."
+              onChange={handleSearch}
+            />
+          </div>
+        </div>
+        <ActionButtons
+          selectedCount={selectedEc2s.length}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          isDisabled={selectedEc2s.length !== 1}
+        />
+      </header>
+      <TableHeader
+        onSelectAll={handleSelectAll}
+        allSelected={selectedEc2s.length === displayedEC2s.length}
+      />
+      {displayedEC2s.map((ec2, index) => (
+        <EC2Row
+          key={ec2.instanceId}
+          ec2={ec2}
+          isEven={index % 2 === 1}
+          isSelected={selectedEc2s.some((selected) => selected.instanceId === ec2.instanceId)}
+          onCheckboxChange={() => handleCheckboxChange(ec2)}
+        />
+      ))}
+      <TablePagination />
+      {isDeleteModalOpen && (
+        <DeleteEC2Modal
+          selectedEc2s={selectedEc2s}
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+        />
+      )}
+    </section>
+  );
 }
 
 export default EC2Table;
