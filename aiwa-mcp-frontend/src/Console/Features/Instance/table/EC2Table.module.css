@@ -1,5 +1,12 @@
 .dataTable {
-  max-width: none !important;
+  max-width: 900px;
+  width: 100%;
+  margin: 0;
+  /* 중앙 정렬을 위한 auto 마진 제거 */
+  margin-left: 0;
+  /* 왼쪽 정렬을 위해 왼쪽 마진을 0으로 설정 */
+  margin-right: auto;
+  /* 오른쪽 여백을 자동으로 설정하여 왼쪽 정렬 유지 */
   border-radius: 8px;
   background: var(--White, #fff);
   box-shadow: 0 0 0 1px rgba(152, 161, 178, 0.1), 0 1px 4px 0 rgba(69, 75, 87, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.08);
@@ -8,45 +15,13 @@
   overflow: hidden;
 }
 
-.tableControls {
+.tableHeader {
+  background-color: rgba(244, 247, 252, 0.75);
   display: flex;
+  width: 100%;
+  padding: 16px;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background-color: rgba(244, 247, 252, 0.75);
-}
-
-.searchContainer {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.actionButtons {
-  display: flex;
-  gap: 10px;
-}
-
-.filterButton,
-.EC2Button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.filterButton {
-  background-color: #fff;
-  color: #464f60;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(104, 113, 130, 0.16);
-
-}
-
-.EC2Button {
-  background-color: #2264e5;
-  color: #fff;
 }
 
 @media (max-width: 991px) {
@@ -54,6 +29,48 @@
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+.searchContainer {
+  display: flex;
+  gap: 16px;
+}
+
+.filterButton,
+.AddVPCButton {
+  align-items: center;
+  border-radius: 6px;
+  background: var(--White, #fff);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(70, 79, 96, 0.16), 0 2px 5px 0 rgba(89, 96, 120, 0.1);
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.AddVPCButton {
+  background: var(--Blue-500, #2264e5);
+  color: var(--White, #fff);
+  font: 500 14px/1 Inter, sans-serif;
+  letter-spacing: 0.28px;
+}
+
+.AddVPCButton:disabled {
+  background-color: #d3d3d3;
+  /* Light gray for disabled button */
+  color: #a9a9a9;
+  /* Darker gray for text */
+  cursor: not-allowed;
+  /* Change cursor to indicate disabled state */
+}
+
+.filterButton {
+  background-color: #fff;
+  color: #464f60;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(104, 113, 130, 0.16);
+  width: 40px;
+  height: 30px;
 }
 
 .searchInputWrapper {
@@ -105,15 +122,15 @@
   background-color: #f5f5f5;
 }
 
-.typeCell,
-.AZCell,
+.nameCell,
+.routingTableCell,
 .descriptionCell {
   text-align: left;
 }
 
 .idCell,
 .statusCell,
-.timeCell {
+.cidrCell {
   text-align: center;
 }
 
@@ -138,7 +155,7 @@
   flex-shrink: 0;
 }
 
-.typeCell {
+.nameCell {
   width: 200px;
   /* Name 열의 너비를 늘립니다 */
   flex-shrink: 0;
@@ -156,13 +173,13 @@
   flex-shrink: 0;
 }
 
-.timeCell {
+.cidrCell {
   width: 150px;
   /* CIDR 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
 }
 
-.AZCell {
+.routingTableCell {
   width: 200px;
   /* Routing Table 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
@@ -241,27 +258,7 @@
   font-weight: bold;
 }
 
-/* .available {
-    background: var(--Indigo-0, #f0f1fa);
-    color: var(--Indigo-500, #4f5aed);
-  }
-  
-  .pending {
-    background: var(--Green-0, #e1fcef);
-    color: var(--Green-500, #14804a);
-  }
-  
-  .deleting {
-    background: var(--Gray-50, #e9edf5);
-    color: var(--Gray-600, #ff6923);
-  }
-
-  .deleted {
-    background: var(--Gray-50, #e9edf5);
-    color: var(--Gray-600, #f12c2c);
-  } */
-
-.runnning {
+.available {
   background: var(--Indigo-0, #f0f1fa);
   color: var(--Indigo-500, #4f5aed);
 }
@@ -271,21 +268,15 @@
   color: var(--Green-500, #14804a);
 }
 
-.stopping {
+.deleting {
   background: var(--Gray-50, #e9edf5);
   color: var(--Gray-600, #ff6923);
 }
 
-.stopped {
+.deleted {
   background: var(--Gray-50, #e9edf5);
   color: var(--Gray-600, #f12c2c);
 }
-
-.stopped {
-  background: var(--Gray-50, #e9edf5);
-  color: var(--Gray-600, #f12c2c);
-}
-
 
 .due {
   background: var(--Red-0, #faf0f3);
