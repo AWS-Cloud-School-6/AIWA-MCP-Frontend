@@ -8,7 +8,7 @@ function ActionButtons({ selectedCount, onEdit, onDelete }) {
     <div className={styles.actionButtons} style={{ display: 'flex', flexDirection: 'row' }}>
       {(
         <button onClick={onEdit} className={styles.AddVPCButton} disabled={selectedCount !== 1} style={{ marginRight: '10px' }} >
-          Edit
+          Create
         </button>
       )}
       <button onClick={onDelete} disabled={selectedCount !== 1} className={styles.AddVPCButton}>

@@ -1,12 +1,7 @@
 .dataTable {
-  max-width: 900px;
-  width: 100%;
-  margin: 0;
-  /* 중앙 정렬을 위한 auto 마진 제거 */
-  margin-left: 0;
-  /* 왼쪽 정렬을 위해 왼쪽 마진을 0으로 설정 */
-  margin-right: auto;
-  /* 오른쪽 여백을 자동으로 설정하여 왼쪽 정렬 유지 */
+  max-width: none; /* 테이블 너비를 제한하지 않음 */
+  width: 100%; /* 부모 컨테이너의 전체 너비를 차지 */
+  margin: 0; /* 정렬 관련 여백 제거 */
   border-radius: 8px;
   background: var(--White, #fff);
   box-shadow: 0 0 0 1px rgba(152, 161, 178, 0.1), 0 1px 4px 0 rgba(69, 75, 87, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.08);
@@ -14,6 +9,7 @@
   flex-direction: column;
   overflow: hidden;
 }
+
 
 .tableHeader {
   background-color: rgba(244, 247, 252, 0.75);

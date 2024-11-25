@@ -8,20 +8,21 @@
     padding: 10px;
   }
   
-  .container {
-    border-radius: 12px;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    align-self: stretch;
-    display: flex;
-    min-width: 240px;
-    min-height: 920px;
-    width: 256px;
-    flex-direction: column;
-    justify-content: start;
-    margin: auto 0;
-    padding: 24px;
-  }
+.container {
+  border-radius: 12px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  align-self: stretch;
+  display: flex;
+  min-width: 240px;
+  min-height: 920px;
+  width: 256px;
+  flex-direction: column;
+  justify-content: start;
+  margin: 0; /* auto 0 제거 */
+  padding: 24px;
+}
+
   
   .divider {
     border-radius: 2px;

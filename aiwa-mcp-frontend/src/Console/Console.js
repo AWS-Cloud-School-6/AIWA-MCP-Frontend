@@ -120,10 +120,10 @@ function Console({ overrides }) {
   const services = [
     { path: "/console/vpc", label: "VPC" },
     { path: "/console/subnet", label: "Subnet" },
-    { path: "/console/internet-gateway", label: "Internet Gateway" },
-    { path: "/console/route-table", label: "Route Table" },
-    { path: "/console/security-group", label: "Security Group" },
-    { path: "/console/nat-gateway", label: "NAT Gateway" },
+    { path: "/console/vpc/internetgateway", label: "Internet Gateway" },
+    { path: "/console/vpc/routetable", label: "Route Table" },
+    { path: "/console/securitygroup", label: "Security Group" },
+    { path: "/console/vpc/natgateway", label: "NAT Gateway" },
     { path: "/console/instances", label: "EC2" },
   ];
 

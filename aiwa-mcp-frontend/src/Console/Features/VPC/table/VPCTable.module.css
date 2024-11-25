@@ -1,18 +1,15 @@
 .dataTable {
-  max-width: 900px;
-  width: 100%;
-  margin: 0;
-  /* 중앙 정렬을 위한 auto 마진 제거 */
-  margin-left: 0;
-  /* 왼쪽 정렬을 위해 왼쪽 마진을 0으로 설정 */
-  margin-right: auto;
-  /* 오른쪽 여백을 자동으로 설정하여 왼쪽 정렬 유지 */
+  max-width: none; /* 테이블 너비 제한을 제거 */
+  width: 100%; /* 부모 컨테이너의 전체 너비를 차지 */
+  margin: 0; /* 여백 제거 */
   border-radius: 8px;
   background: var(--White, #fff);
   box-shadow: 0 0 0 1px rgba(152, 161, 178, 0.1), 0 1px 4px 0 rgba(69, 75, 87, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.08);
-  display: flex;
+  display: block;
+  table-layout: fixed;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: auto; /* 가로 스크롤 허용 */
+  overflow-y: hidden;
 }
 
 .tableHeader {
@@ -106,32 +103,30 @@
   border-bottom: 1px solid #dee2e6;
 }
 
-.cell {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 5px;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
+.cell, .tableHeaderRow .cell {
+  display: flex; /* Flexbox로 정렬 */
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  align-items: center; /* 세로 방향 중앙 정렬 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+  padding: 10px; /* 적절한 여백 추가 */
+  overflow-wrap: break-word; /* 줄바꿈 허용 */
+  word-break: break-word; /* 긴 단어 줄바꿈 */
 }
 
+/* 테이블 헤더도 동일하게 수정 */
 .tableHeaderRow .cell {
   font-weight: bold;
   text-align: center;
   background-color: #f5f5f5;
 }
 
-.nameCell,
-.routingTableCell,
-.descriptionCell {
-  text-align: left;
-}
-
 .idCell,
+.nameCell,
 .statusCell,
-.cidrCell {
-  text-align: center;
+.cidrCell,
+.routingTableCell {
+  text-align: center; /* 열별 텍스트 중앙 정렬 */
+  flex: 1
 }
 
 .checkboxCell {
@@ -168,8 +163,7 @@
 }
 
 .statusCell {
-  width: 100px;
-  /* Status 열의 너비를 늘립니다 */
+  width: 15%; /* Status 열의 너비 */
   flex-shrink: 0;
 }
 
@@ -395,6 +389,6 @@
 .tableRow {
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 100%; /* 행도 전체 너비를 차지 */
   border-bottom: 1px solid #e0e0e0;
 }
