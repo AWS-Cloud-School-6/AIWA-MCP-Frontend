@@ -21,7 +21,7 @@ function SidebarConsole({ onSelectProvider }) {
 
   const fetchAccessKey = async () => {
     if (!currentUser?.id) return;
-    
+
     setIsLoading(true);
     setError(null);
     try {
@@ -100,8 +100,8 @@ function SidebarConsole({ onSelectProvider }) {
           {keysList.length > 0 && (
             <div className={styles.accessKeyContainer}>
               {keysList.map((key, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className={`${styles.keyItem} ${selectedCompany === key.companyName ? styles.selectedKey : ''}`}
                   onClick={() => handleCompanySelect(key.companyName)}
                   style={{ cursor: 'pointer' }}

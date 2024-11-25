@@ -10,7 +10,7 @@ import { NotificationContainer, NotificationManager } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'; // Import notification styles
 import { useNotification } from './NotificationContext';
 
-function VPC_Create() {
+function VPC_GCP_Create() {
   const [vpcName, setVpcName] = useState("");
   const [cidrBlock, setCidrBlock] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading state
@@ -87,7 +87,7 @@ function VPC_Create() {
           padding="20px"
           gap="20px"
         >
-          <Heading level={2}>VPC 생성</Heading>
+          <Heading level={2}>GCP VPC 생성</Heading>
 
           <TextField
             label="VPC 이름"
@@ -117,4 +117,4 @@ function VPC_Create() {
   );
 }
 
-export default VPC_Create;
+export default VPC_GCP_Create;

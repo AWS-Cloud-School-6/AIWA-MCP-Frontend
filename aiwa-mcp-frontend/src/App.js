@@ -5,7 +5,7 @@ import '@aws-amplify/ui-react/styles/button.layer.css' // component specific sty
 
 import { Authenticator } from '@aws-amplify/ui-react'
 import { NavBarHeader2 } from './ui-components';
-import VPC_Create from './Features/VPC/VPC';
+import VPC_AWS_Create from './Features/VPC/VPC';
 import Console from './Console/Console';
 
 

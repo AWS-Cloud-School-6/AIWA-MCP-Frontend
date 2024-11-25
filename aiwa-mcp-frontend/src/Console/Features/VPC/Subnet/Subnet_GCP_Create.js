@@ -78,7 +78,7 @@ function Subnet_Create() {
             <Flex direction="row" height="100vh">
                 {/* 왼쪽: SideBar */}
                 <SidebarVpc />
-          
+
                 {/* 오른쪽: VPC Create Form */}
                 <Flex
                     direction="column"
@@ -87,7 +87,7 @@ function Subnet_Create() {
                     padding="20px"
                     gap="20px"
                 >
-                    <Heading level={2}>Subnet 생성</Heading>
+                    <Heading level={2}> GCP Subnet 생성</Heading>
 
                     <TextField
                         fontWeight="bold"

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import VPC from './VPC'; // Main VPC page
-import VPC_Create from './VPC_Create';
+import VPC_AWS_Create from './VPC_AWS_Create';
 import Subnet from './Subnet/Subnet';
 import InternetGateway from './InternetGateway/InternetGateway';
 import NatGateway from './NatGateway/Nat';
@@ -14,7 +14,8 @@ function VPCRoutes() {
         <NotificationProvider> {/* Place provider at the top level */}
             <Routes>
                 <Route path="/" element={<VPC />} />
-                <Route path="/create" element={<VPC_Create />} />
+                <Route path="/aws/create" element={<VPC_AWS_Create />} />
+                <Route path="/gcp/create" element={<VPC_AWS_Create />} />
                 <Route path="/subnet" element={<Subnet />} />
                 <Route path="/internetgateway" element={<InternetGateway />} />
                 <Route path="/natgateway" element={<NatGateway />} />
