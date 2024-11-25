@@ -10,6 +10,7 @@
   flex-direction: column;
   overflow-x: auto; /* 가로 스크롤 허용 */
   overflow-y: hidden;
+
 }
 
 
@@ -173,10 +174,10 @@
 }
 
 .subnetCell {
-  width: 200px;
-  flex-shrink: 0;
+  white-space: nowrap; /* 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 내용 숨기기 */
+  text-overflow: ellipsis; /* 말줄임표(...) 표시 */
 }
-
 
 
 .columnHeader {

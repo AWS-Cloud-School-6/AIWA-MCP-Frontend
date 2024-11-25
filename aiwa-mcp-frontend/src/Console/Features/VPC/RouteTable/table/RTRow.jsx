@@ -19,22 +19,21 @@ function RTRow({ rt, isEven, isSelected, onCheckboxChange }) {
       </div>
       <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '20%', textAlrtn: 'center' }}>
         {rt.id}
-      </div>  
+      </div>
       <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '5%', textAlrtn: 'center' }}>
-      <span className={`${styles.tag} ${styles[rt.status.toLowerCase()]}`}>
+        <span className={`${styles.tag} ${styles[rt.status.toLowerCase()]}`}>
           {rt.status}
         </span>
-      </div>                
-      <div className={`${styles.cell} ${styles.subnetCell}`} style={{ width: '40%', textAlrtn: 'center' }}>
-        {rt.subnetid.map((id, index) => (
-          <div key={index}>
-            <div>{id}</div>
-            <div style={{ color: 'grey', fontSize: '0.8em' }}>{rt.subnetname[index]}</div>
-          </div>
-        ))}
-      </div>      
+      </div>
+
+
+      <div className={`${styles.cell} ${styles.subnetCell}`} style={{ width: '40%', textAlign: 'center' }}>
+        {rt.subnetid.join(', ')}
+      </div>
+
+
       <div className={`${styles.cell} ${styles.vpcCell}`} style={{ width: '40%', textAlrtn: 'center' }}>
-      <div className={styles.vpcId}>{rt.vpcName} </div>
+        <div className={styles.vpcId}>{rt.vpcName} </div>
         <div style={{ color: 'grey', fontSize: '0.8em' }} className={styles.vpcId}>{rt.vpcId}</div>
       </div>
     </div>
