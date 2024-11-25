@@ -1,16 +1,25 @@
 .dataTable {
-  max-width: none; /* 테이블 너비 제한을 제거 */
-  width: 100%; /* 부모 컨테이너의 전체 너비를 차지 */
-  margin: 0; /* 여백 제거 */
+  max-width: none !important;
   border-radius: 8px;
   background: var(--White, #fff);
   box-shadow: 0 0 0 1px rgba(152, 161, 178, 0.1), 0 1px 4px 0 rgba(69, 75, 87, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.08);
-  display: block;
-  table-layout: fixed;
+  display: flex;
   flex-direction: column;
-  overflow-x: auto; /* 가로 스크롤 허용 */
-  overflow-y: hidden;
+  overflow: hidden;
 }
+
+.scrollableTable {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+}
+
+
+
 
 .tableHeader {
   background-color: rgba(244, 247, 252, 0.75);
@@ -34,7 +43,7 @@
 }
 
 .filterButton,
-.AddVPCButton {
+.AddSecuritygroupButton {
   align-items: center;
   border-radius: 6px;
   background: var(--White, #fff);
@@ -46,14 +55,14 @@
   cursor: pointer;
 }
 
-.AddVPCButton {
+.AddSecuritygroupButton {
   background: var(--Blue-500, #2264e5);
   color: var(--White, #fff);
   font: 500 14px/1 Inter, sans-serif;
   letter-spacing: 0.28px;
 }
 
-.AddVPCButton:disabled {
+.AddSecuritygroupButton:disabled {
   background-color: #d3d3d3;
   /* Light gray for disabled button */
   color: #a9a9a9;
@@ -89,12 +98,6 @@
   width: 100%;
 }
 
-.icon {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
-}
-
 .tableHeaderRow {
   display: flex;
   align-items: center;
@@ -103,31 +106,37 @@
   border-bottom: 1px solid #dee2e6;
 }
 
-.cell, .tableHeaderRow .cell {
-  display: flex; /* Flexbox로 정렬 */
-  justify-content: center; /* 가로 방향 중앙 정렬 */
-  align-items: center; /* 세로 방향 중앙 정렬 */
-  text-align: center; /* 텍스트 중앙 정렬 */
-  padding: 10px; /* 적절한 여백 추가 */
-  overflow-wrap: break-word; /* 줄바꿈 허용 */
-  word-break: break-word; /* 긴 단어 줄바꿈 */
+.cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
-/* 테이블 헤더도 동일하게 수정 */
 .tableHeaderRow .cell {
   font-weight: bold;
   text-align: center;
   background-color: #f5f5f5;
 }
 
-.idCell,
 .nameCell,
-.statusCell,
-.cidrCell,
-.routingTableCell {
-  text-align: center; /* 열별 텍스트 중앙 정렬 */
-  flex: 1
+.routingTableCell,
+.descriptionCell {
+  text-align: left;
 }
+
+.idCell,
+.statusCell,
+.vpcCell,
+.cidrCell {
+  text-align: center;
+}
+
+.availableipCell,
+.azCell,
 
 .checkboxCell {
   width: 50px;
@@ -163,13 +172,32 @@
 }
 
 .statusCell {
-  width: 15%; /* Status 열의 너비 */
+  width: 100px;
+  /* Status 열의 너비를 늘립니다 */
+  flex-shrink: 0;
+}
+
+.vpcCell {
+  width: 150px;
+  /* VPC 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
 }
 
 .cidrCell {
   width: 150px;
   /* CIDR 열의 너비를 약간 늘립니다 */
+  flex-shrink: 0;
+}
+
+.availableipCell {
+  width: 150px;
+  /* availableip 열의 너비를 약간 늘립니다 */
+  flex-shrink: 0;
+}
+
+.azCell {
+  width: 180px;
+  /* az 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
 }
 
@@ -192,8 +220,8 @@
   height: 12px;
 }
 
-.VPCRow,
-.VPCRowEven {
+.SecuritygroupRow,
+.SecuritygroupRowEven {
   display: flex;
   width: 100%;
   align-items: center;
@@ -202,14 +230,14 @@
   padding: 12px 50px 12px 10px;
 }
 
-.VPCRowEven {
+.SecuritygroupRowEven {
   background-color: rgba(249, 250, 252, 1);
 }
 
 @media (max-width: 991px) {
 
-  .VPCRow,
-  .VPCRowEven {
+  .SecuritygroupRow,
+  .SecuritygroupRowEven {
     padding-right: 20px;
     flex-wrap: wrap;
   }
@@ -389,6 +417,6 @@
 .tableRow {
   display: flex;
   align-items: center;
-  width: 100%; /* 행도 전체 너비를 차지 */
+  width: 100%;
   border-bottom: 1px solid #e0e0e0;
 }

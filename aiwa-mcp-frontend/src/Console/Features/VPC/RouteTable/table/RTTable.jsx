@@ -6,19 +6,19 @@ import TablePagination from './TablePagination';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useUserContext } from '../../../../../UserContext';
-import { AWS_API_URL } from '../../../../../index';
+import { AWS_API_URL, GCP_API_URL } from '../../../../../index';
 import CreateRTModal from './CreateRTModal';
 import { Menu, MenuButton, MenuItem } from '@aws-amplify/ui-react';
 
 
 
 const initialRTTable = [
-  { id: 1, name: "Subin", status: "Attached", vpc: "vpc id display"},
+  { id: 1, name: "Subin", status: "Attached", vpc: "vpc id display" },
 ];
 
 function RTTable() {
   const location = useLocation();
-  const [RTTableName, setRTTableName] = useState(""); 
+  const [RTTableName, setRTTableName] = useState("");
   const [selectedRTTable, setSelectedRTTable] = useState([]);
   const [displayedRTTables, setDisplayedRTTables] = useState([]);
   const [allRTTables, setAllRTTables] = useState(() => {
@@ -28,46 +28,82 @@ function RTTable() {
   // 유저 정보 가져오기
   const { currentUser, selectedCompany } = useUserContext();
 
-    // Fetch the latest VPC data
-    const fetchVPCData = async () => {
-      try {
-          const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
-            return response.data.list || [];
-      } catch (error) {
-          console.error("Error fetching VPC data:", error);
-          return [];
-      }
-  };  
+  // Fetch the latest VPC data
+  const fetchVPCData = async () => {
+    try {
+      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
+      return response.data.list || [];
+    } catch (error) {
+      console.error("Error fetching VPC data:", error);
+      return [];
+    }
+  };
 
 
   const fetchRTData = async () => {
     try {
       const [rtResponse, vpcList] = await Promise.all([
         axios.get(`${AWS_API_URL}/route-table/describe?userId=${currentUser.id}&companyName=${selectedCompany}`),
-        fetchVPCData() 
+        fetchVPCData()
       ]);
 
-      if (rtResponse.data.list && rtResponse.data.list.length > 0) {
-        console.log("Route Table list 데이터: ", rtResponse.data.list);
-        const latestRT = rtResponse.data.list.map((RT) => {
-          const ispublic = RT.publicSubnets.length > 0 ? 'public' : 'private';
-          const vpcName = vpcList.find(vpc => vpc.vpcId === RT.vpcId)?.tags.Name || '-'; // VPC 이름 찾기
+      const awsList = rtResponse?.data?.list?.map(item => ({
+        ...item,
+        provider: 'AWS' // Add provider info
+      })) || []; // Fallback to empty array if list is undefined
+
+      const [rtResponse2, vpcList2] = await Promise.all([
+        axios.get(`${GCP_API_URL}/routetable/describe?projectId=${currentUser.id}&companyName=${selectedCompany}`),
+        fetchVPCData()
+      ]);
+
+      const gcpList = rtResponse2?.data?.list?.map(item => ({
+        ...item,
+        provider: 'GCP' // Add provider info
+      })) || []; // Fallback to empty array if list is undefined
+
+      let combinedList = [];
+      if (awsList.length > 0 && gcpList.length > 0) {
+        combinedList = [...awsList, ...gcpList]; // Show both
+      } else if (awsList.length > 0) {
+        combinedList = awsList; // Show only AWS
+      } else if (gcpList.length > 0) {
+        combinedList = gcpList; // Show only GCP
+      }
+
+      let combinedVPCList = [];
+      if (vpcList.length > 0 && vpcList2.length > 0) {
+        combinedVPCList = [...vpcList, ...vpcList2]; // Show both
+      } else if (vpcList.length > 0) {
+        combinedVPCList = vpcList; // Show only AWS VPCs
+      } else if (vpcList2.length > 0) {
+        combinedVPCList = vpcList2; // Show only GCP VPCs
+      }
+
+      if (combinedList.length > 0) {  // Check directly on combinedList, not combinedList.data.list
+        console.log("Combined Route Table list 데이터: ", combinedList);
+
+        // Process combined list
+        const latestRT = combinedList.map((RT) => {
+          const ispublic = RT.publicSubnets?.length > 0 ? 'public' : 'private';
+          const vpcName = combinedVPCList.find(vpc => vpc.vpcId === RT.vpcId)?.tags?.Name || '-';
 
           return {
-            name: RT.tags.Name || '-',  
+            name: RT.tags?.Name || '-',
             id: RT.routeTableId || '-',
             status: ispublic,
             subnetid: ispublic === 'public' ? RT.publicSubnets.map(subnet => subnet.subnetId) : RT.privateSubnets.map(subnet => subnet.subnetId),
-            subnetname: ispublic === 'public' ? RT.publicSubnets.map(subnet => subnet.tags.Name) : RT.privateSubnets.map(subnet => subnet.tags.Name),
-            vpcId: RT.vpcId || '-', 
-            vpcName: vpcName, // VPC 이름 포함
+            subnetname: ispublic === 'public' ? RT.publicSubnets.map(subnet => subnet.tags?.Name) : RT.privateSubnets.map(subnet => subnet.tags?.Name),
+            vpcId: RT.vpcId || '-',
+            vpcName: vpcName,
+            provider: RT.provider || '-',
           };
         });
         setAllRTTables(latestRT);
         setDisplayedRTTables(latestRT);
         localStorage.setItem('allRTTables', JSON.stringify(latestRT));
         console.log("RTTable 출력: ", latestRT);
-        }
+      }
 
     } catch (error) {
       console.error("Error fetching RTTable data:", error);
@@ -120,7 +156,7 @@ function RTTable() {
         alert('An error occurred while deleting RTTable Gateways. Please try again.');
       }
     }
-  };  
+  };
 
   const handleSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -149,94 +185,94 @@ function RTTable() {
 
   return (
     <div className={styles.scrollableTable}>
-    <section className={styles.dataTable}>
-      <header className={styles.tableHeader}>
-        <div className={styles.searchContainer}>
-          <button className={styles.filterButton}>
-            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/5432f397b9aa45f4a1f1b54a87e9fcf132e23908e329d59ba9ba1ef19388e8fe?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-          </button>
-          <div className={styles.searchInputWrapper}>
-            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d322eb2c900627c1c0432bf23dfda65d4720f3b4b6381543703e324a72370a2e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Search..."
-              aria-label="Search RTTables"
-              onChange={handleSearch}
-            />
+      <section className={styles.dataTable}>
+        <header className={styles.tableHeader}>
+          <div className={styles.searchContainer}>
+            <button className={styles.filterButton}>
+              <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/5432f397b9aa45f4a1f1b54a87e9fcf132e23908e329d59ba9ba1ef19388e8fe?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
+            </button>
+            <div className={styles.searchInputWrapper}>
+              <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d322eb2c900627c1c0432bf23dfda65d4720f3b4b6381543703e324a72370a2e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Search..."
+                aria-label="Search RTTables"
+                onChange={handleSearch}
+              />
+            </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button onClick={fetchRTData} className={styles.filterButton} style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '10px'
-          }}>
-            <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', padding: '0', margin: '0' }}>
-              <path d="M23 4v6h-6" />
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button onClick={fetchRTData} className={styles.filterButton} style={{
+              display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '10px'
+            }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', padding: '0', margin: '0' }}>
+                <path d="M23 4v6h-6" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+            </button>
 
-          <button className={styles.AddRTTableButton} style={{ marginRight: '10px' }} onClick={handleCreate}>
-            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
-            Create
-          </button>   
-          <button className={styles.AddRTTableButton} onClick={handleDelete} style={{ marginRight: '10px' }}>
-            Delete
-          </button>    
-          <Menu
-            trigger={
-              <MenuButton className={styles.menuButton}>
-                Actions
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                >
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </MenuButton>
-            }
-          >
-            <MenuItem onClick={() => handleConnectSubnet()}>
-              Subnet 연결
-            </MenuItem>
-            <MenuItem onClick={() => handleConnectIGW()}>
-              Internet Gateway 연결
-            </MenuItem>
-          </Menu>                        
-        </div>
-      </header>
+            <button className={styles.AddRTTableButton} style={{ marginRight: '10px' }} onClick={handleCreate}>
+              <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
+              Create
+            </button>
+            <button className={styles.AddRTTableButton} onClick={handleDelete} style={{ marginRight: '10px' }}>
+              Delete
+            </button>
+            <Menu
+              trigger={
+                <MenuButton className={styles.menuButton}>
+                  Actions
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </MenuButton>
+              }
+            >
+              <MenuItem onClick={() => handleConnectSubnet()}>
+                Subnet 연결
+              </MenuItem>
+              <MenuItem onClick={() => handleConnectIGW()}>
+                Internet Gateway 연결
+              </MenuItem>
+            </Menu>
+          </div>
+        </header>
 
-      <div className={styles.tableWrapper}>
-        <div className={styles.scrollableTable}>
+        <div className={styles.tableWrapper}>
+          <div className={styles.scrollableTable}>
 
             <TableHeader
               onSelectAll={handleSelectAll}
               allSelected={selectedRTTable.length === displayedRTTables.length && displayedRTTables.length > 0}
             />
-   
-              {displayedRTTables.map((RTTable, index) => (
-                <RTRow
-                  key={RTTable.id}
-                  rt={RTTable}
-                  isEven={index % 2 === 1}
-                  isSelected={selectedRTTable.includes(RTTable.name)}
-                  onCheckboxChange={() => handleCheckboxChange(RTTable.name)}
-                />
-              ))}
+
+            {displayedRTTables.map((RTTable, index) => (
+              <RTRow
+                key={RTTable.id}
+                rt={RTTable}
+                isEven={index % 2 === 1}
+                isSelected={selectedRTTable.includes(RTTable.name)}
+                onCheckboxChange={() => handleCheckboxChange(RTTable.name)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-      <TablePagination />
-      <CreateRTModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-      />
-    </section>
+        <TablePagination />
+        <CreateRTModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+        />
+      </section>
     </div>
   );
 }

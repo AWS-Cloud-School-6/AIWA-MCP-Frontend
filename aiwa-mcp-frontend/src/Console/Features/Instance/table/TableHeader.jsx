@@ -4,7 +4,7 @@ import styles from './EC2Table.module.css';
 function TableHeader({ onSelectAll, allSelected }) {
   return (
     <div className={`${styles.tableRow} ${styles.tableHeaderRow}`} style={{ textAlign: 'center' }}>
-      <div className={`${styles.cell} ${styles.checkboxCell}`} >
+      <div className={`${styles.cell} ${styles.checkboxCell}`} style={{ width: '5%' }}>
         <input
           type="checkbox"
           checked={allSelected}
@@ -12,12 +12,11 @@ function TableHeader({ onSelectAll, allSelected }) {
           className={styles.checkbox}
         />
       </div>
-      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '10%' }}>#</div>
-      <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '5%' }}>Name</div>
-      <div className={`${styles.cell} ${styles.descriptionCell}`} style={{ width: '20%' }}>Description</div>
-      <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '10%' }}>Status</div>
-      <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '15%' }}>CIDR</div>
-      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '30%' }}>Routing Table</div>
+      <div className={styles.cell} style={{ width: '25%' }}>Instance ID</div>
+      <div className={styles.cell} style={{ width: '15%' }}>Name</div>
+      <div className={styles.cell} style={{ width: '15%' }}>Status</div>
+      <div className={styles.cell} style={{ width: '20%' }}>Public IP</div>
+      <div className={styles.cell} style={{ width: '20%' }}>Private IP</div>
     </div>
   );
 }

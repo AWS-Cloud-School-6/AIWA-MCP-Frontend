@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { getCurrentUser, signOut } from 'aws-amplify/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import styles from './NavBar.module.css';
 import NavLink from './NavLinks';
 import { useUserContext } from '../../UserContext';
-
-
-// 수정ㅎㅎㅎㅎ
+import { getCurrentUser, signOut } from 'aws-amplify/auth';
 
 const navLinks = [
-  { text: 'HOME', href: '/console' },
-  { text: 'Network', href: '/console/vpc' },
-  { text: 'Instance', href: '/console/instances' }
 ];
 
 function NavBar() {
   const [userId, setUserId] = useState('');
   const { currentUser, selectedCompany } = useUserContext();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 정의
 
   useEffect(() => {
     async function fetchUserId() {
       try {
         const userInfo = await getCurrentUser();
-        console.log('User Info:', userInfo); // 디버깅을 위한 로그 유지
+        console.log('User Info:', userInfo);
         setUserId(userInfo.userId || userInfo.attributes?.sub || '');
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -32,16 +26,17 @@ function NavBar() {
     fetchUserId();
   }, []);
 
-  console.log('Current userId:', userId); // 렌더링 시 userId 상태 확인
+  const handleLogoClick = () => {
+    navigate('/console'); // 로고 클릭 시 /console로 이동
+  };
 
   const handleLogout = async () => {
     try {
       await signOut({ global: true });
-      //setCurrentUser(null);
       document.cookie.split(';').forEach(cookie => {
         const name = cookie.split('=')[0].trim();
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-      });      
+      });
       window.location.reload();
       navigate('/login');
     } catch (error) {
@@ -53,10 +48,20 @@ function NavBar() {
     <nav className={styles.navBar}>
       <div className={styles.navBarContent}>
         <div className={styles.logoAndLinks}>
-          <div className={styles.logoContainer}>
-            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/5ec46070fee5581e109f73c1f4f471b76775dbfaa499588d86ce24efd2677724?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" className={styles.logo} alt="AIWA logo" />
-            <div>AIWA</div>
+          <div
+            className={styles.logoContainer}
+            onClick={handleLogoClick}
+            style={{ cursor: 'pointer' }}
+          >
+            <img
+              loading="lazy"
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/5ec46070fee5581e109f73c1f4f471b76775dbfaa499588d86ce24efd2677724?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841"
+              className={styles.logo}
+              alt="AIWA logo"
+            />
+            <div style={{ marginTop: '10px' }}>AIWA</div> {/* AIWA 글자 아래로 내리기 */}
           </div>
+
           <div className={styles.navLinks}>
             {navLinks.map((link, index) => (
               <NavLink key={index} text={link.text} href={link.href} />
@@ -69,7 +74,12 @@ function NavBar() {
         <div className={styles.userAndLogout}>
           <div className={styles.userIconContainer}>
             <div className={styles.userIcon}>
-              <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/b336f31c57083d1f8335bfaeeabac3ed1120f96e8e9342d246d8eaab917c205e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" className={styles.userIconImage} alt="User profile" />
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/b336f31c57083d1f8335bfaeeabac3ed1120f96e8e9342d246d8eaab917c205e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841"
+                className={styles.userIconImage}
+                alt="User profile"
+              />
             </div>
           </div>
           <div className={styles.userInfoContainer}>
