@@ -122,7 +122,7 @@ function Console({ overrides }) {
     { path: "/console/subnet", label: "Subnet" },
     { path: "/console/vpc/internetgateway", label: "Internet Gateway" },
     { path: "/console/vpc/routetable", label: "Route Table" },
-    { path: "/console/securitygroup", label: "Security Group" },
+    { path: "/console/instances/securitygroup", label: "Security Group" },
     { path: "/console/vpc/natgateway", label: "NAT Gateway" },
     { path: "/console/instances", label: "EC2" },
   ];
