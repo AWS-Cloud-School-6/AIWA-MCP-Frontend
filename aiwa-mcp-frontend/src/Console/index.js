@@ -4,7 +4,7 @@ import { Routes, Route, Router } from 'react-router-dom';
 import InstanceRoutes from './Features/Instance';
 import VPCRoutes from './Features/VPC';
 import SubnetRoutes from './Features/VPC/Subnet';
-import Console from './Console';
+import Console from './Console.js';
 import Profile from './Profile/Profile';
 import Auth from '../Auth/Auth.js';
 
