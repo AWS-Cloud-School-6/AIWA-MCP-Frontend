@@ -8,7 +8,7 @@ function ActionButtons({ selectedCount, onEdit, onDelete }) {
     <div className={styles.actionButtons} style={{ display: 'flex', flexDirection: 'row' }}>
       { (
         <button onClick={onEdit} className={styles.EC2Button} style={{ marginRight: '10px' }}>
-          Edit
+          Create
         </button>
       )}
       <button onClick={onDelete} className={styles.EC2Button}>

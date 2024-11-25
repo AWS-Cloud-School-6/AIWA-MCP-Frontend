@@ -107,14 +107,16 @@
 }
 
 .cell {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 5px;
+  display: flex; /* 플렉스 박스를 사용 */
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+  padding: 8px 10px; /* 적절한 여백 */
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
+  text-align: center; /* 텍스트 중앙 정렬 */
 }
+
 
 .tableHeaderRow .cell {
   font-weight: bold;
