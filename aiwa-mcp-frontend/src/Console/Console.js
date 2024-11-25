@@ -69,6 +69,7 @@ function MyPage({ provider }) {
   };
 
   return (
+
     <Flex direction="column" padding="2rem">
       <Text fontSize="2xl" fontWeight="bold" marginBottom="1rem">마이페이지 - {provider}</Text>
 
@@ -78,7 +79,7 @@ function MyPage({ provider }) {
         value={companyName}
         onChange={(e) => setCompanyName(e.target.value)}
         marginBottom="1rem"
-      />  
+      />
 
       {provider === 'AWS' && (
         <>
@@ -109,7 +110,7 @@ function MyPage({ provider }) {
           marginBottom="1rem"
         />
       )}
-  
+
       <Button onClick={handleSubmit}>제출</Button>
     </Flex>
   );
@@ -130,6 +131,7 @@ function Console({ overrides }) {
         {selectedProvider && <MyPage provider={selectedProvider} />}
       </Flex>
     </div>
+
   );
 }
 

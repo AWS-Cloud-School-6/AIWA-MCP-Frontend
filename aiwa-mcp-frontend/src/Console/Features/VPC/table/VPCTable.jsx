@@ -25,6 +25,8 @@ function VPCTable() {
   const [allVPCs, setAllVPCs] = useState([]);
   const [displayedVPCs, setDisplayedVPCs] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   // 유저 정보 가져오기
   const { currentUser, selectedCompany } = useUserContext();
 
@@ -71,6 +73,8 @@ function VPCTable() {
     );
     console.log("Selected VPC: ", selectedVpc);
   };
+
+
 
   const handleSelectAll = () => {
     if (selectedVpcs.length === displayedVPCs.length) {
@@ -134,10 +138,17 @@ function VPCTable() {
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
           </button>
-          <button className={styles.AddVPCButton} onClick={() => navigate('/console/vpc/create')} style={{ marginRight: '10px' }}>
+          <button className={styles.AddVPCButton} onClick={() => setIsDropdownOpen((prev) => !prev)} style={{ marginRight: '10px' }}>
+            {/* navigate('/console/vpc/create')} style={{ marginRight: '10px' }}> */}
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
             Create VPC
           </button>
+          {isDropdownOpen && (
+            <div className={styles.dropdown}>
+              <button onClick={() => navigate('/console/vpc/aws/create')} style={{ marginRight: '5px' }} disabled={isLoading}>AWS</button>
+              <button onClick={() => navigate('/console/vpc/gcp/create')} style={{ marginRight: '10px' }} disabled={isLoading}>GCP</button>
+            </div>
+          )}
           <ActionButtons
             selectedCount={selectedVpcs.length}
             onEdit={handleEdit}
