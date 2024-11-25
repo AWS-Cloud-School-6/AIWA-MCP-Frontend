@@ -62,12 +62,23 @@ function RTTable() {
         provider: 'GCP' // Add provider info
       })) || []; // Fallback to empty array if list is undefined
 
-      const combinedList = [...awsList, ...gcpList];
+      let combinedList = [];
+      if (awsList.length > 0 && gcpList.length > 0) {
+        combinedList = [...awsList, ...gcpList]; // Show both
+      } else if (awsList.length > 0) {
+        combinedList = awsList; // Show only AWS
+      } else if (gcpList.length > 0) {
+        combinedList = gcpList; // Show only GCP
+      }
 
-      const combinedVPCList = [
-        ...vpcList,
-        ...vpcList2
-      ]
+      let combinedVPCList = [];
+      if (vpcList.length > 0 && vpcList2.length > 0) {
+        combinedVPCList = [...vpcList, ...vpcList2]; // Show both
+      } else if (vpcList.length > 0) {
+        combinedVPCList = vpcList; // Show only AWS VPCs
+      } else if (vpcList2.length > 0) {
+        combinedVPCList = vpcList2; // Show only GCP VPCs
+      }
 
       if (combinedList.length > 0) {  // Check directly on combinedList, not combinedList.data.list
         console.log("Combined Route Table list 데이터: ", combinedList);
