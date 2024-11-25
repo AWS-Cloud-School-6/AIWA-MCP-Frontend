@@ -14,7 +14,8 @@ function MyPage({ provider }) {
   const [accessKey, setAccessKey] = useState('');
   const [secretKey, setSecretKey] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [gcpKeyContent, setgcpKeyContent] = useState('');
+  const [projectId, setprojectId] = useState('');
+  const [gcpKeyFile, setgcpKeyFile] = useState('');
 
   const { currentUser } = useUserContext();
   const refreshPage = () => {
@@ -33,22 +34,15 @@ function MyPage({ provider }) {
       } catch (checkError) {
       }
 
-      const payload = {
-        email: currentUser?.id,
-        companyName: companyName,
-        accessKey,
-        secretKey,
-        gcpKeyContent,
-      };
+      let url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(accessKey || null)}&secretKey=${encodeURIComponent(secretKey || null)}&projectId=${encodeURIComponent(projectId || null)}&gcpKeyFile=${encodeURIComponent(gcpKeyFile || null)}`;
 
       if (provider === 'AWS') {
-        payload.accessKey = accessKey;
-        payload.secretKey = secretKey;
+        url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(accessKey)}&secretKey=${encodeURIComponent(secretKey)}&projectId=${encodeURIComponent(null)}&gcpKeyFile=${encodeURIComponent(null)}`;
       } else if (provider === 'GCP') {
-        payload.gcpKeyContent = gcpKeyContent;
+        url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(null)}&secretKey=${encodeURIComponent(null)}&projectId=${encodeURIComponent(projectId)}&gcpKeyFile=${encodeURIComponent(gcpKeyFile)}`;
       }
 
-      const response = await axios.post(MEMBER_API_URL + '/members/add-aws-gcp-key', payload);
+      const response = await axios.post(url);
       console.log('API 응답:', response.data.msg);
       alert('키 성공적으로 제출');
       // refreshPage();
@@ -105,8 +99,8 @@ function MyPage({ provider }) {
         <TextField
           label="서비스 계정 키"
           placeholder="서비스 계정 키 입력"
-          value={gcpKeyContent}
-          onChange={(e) => setgcpKeyContent(e.target.value)}
+          value={gcpKeyFile}
+          onChange={(e) => setgcpKeyFile(e.target.value)}
           marginBottom="1rem"
         />
       )}
