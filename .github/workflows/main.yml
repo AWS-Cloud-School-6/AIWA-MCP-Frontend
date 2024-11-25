@@ -41,6 +41,14 @@ jobs:
           CI: false  # CI 환경 변수를 false로 설정하여 경고를 오류로 처리하지 않도록 함
         working-directory: ./aiwa-mcp-frontend  # 루트 디렉토리에서 작업
 
+
+      #   #### code guru 추가 #####
+      # - name: CodeGuru Security
+      #   uses: aws-actions/codeguru-security@v1
+      #   with:
+      #     source_path: ./aiwa-mcp-frontend/src
+      #     aws_region: ap-northeast-1  # 도쿄 리전
+
       - name: Upload to S3
         run: |
           aws s3 sync ./aiwa-mcp-frontend/build/ s3://tf-test-hyeob-bucket-991906 --delete
