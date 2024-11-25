@@ -20,12 +20,17 @@ function TableHeader({ onSelectAll, allSelected }) {
       <div className={`${styles.cell} ${styles.idCell}`}>
         <div className={styles.columnHeader}>
           ID
-        </div> 
+        </div>
+      </div>
+      <div className={`${styles.cell} ${styles.routesCell}`}>
+        <div className={styles.columnHeader}>
+          Provider
+        </div>
       </div>
       <div className={`${styles.cell} ${styles.statusCell}`}>
         <div className={styles.columnHeader}>
           Status
-        </div> 
+        </div>
       </div>
       <div className={`${styles.cell} ${styles.subnetIdCell}`}>
         <div className={styles.columnHeader}>
