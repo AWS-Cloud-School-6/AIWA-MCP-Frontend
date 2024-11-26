@@ -58,8 +58,7 @@ function MyPage({ provider }) {
   };
 
   return (
-
-    <Flex direction="column" padding="2rem">
+    <Flex direction="column" padding="2rem" width="400px">
       <Text fontSize="2xl" fontWeight="bold" marginBottom="1rem">마이페이지 - {provider}</Text>
 
       <TextField
