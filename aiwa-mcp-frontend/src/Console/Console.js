@@ -229,7 +229,7 @@ function Console({ overrides }) {
 
   const services = [
     { path: "/console/vpc", label: "VPC" },
-    { path: "/console/subnet", label: "Subnet" },
+    { path: "/console/vpc/subnet", label: "Subnet" },
     { path: "/console/vpc/internetgateway", label: "Internet Gateway" },
     { path: "/console/vpc/routetable", label: "Route Table" },
     { path: "/console/instances/securitygroup", label: "Security Group" },
