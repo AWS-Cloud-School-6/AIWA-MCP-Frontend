@@ -11,18 +11,18 @@ import { useNotification } from './NotificationContext';
 
 function VPC({ VPCCreating }) {
   return (
-    <div>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <NavBar />
-      <Flex direction="row">
+      <Flex direction="row" style={{ flex: 1, overflow: 'hidden' }}>
         <SidebarVpc />
-        <Flex direction="column" style={{ width: '100%', padding: '20px' }}>
+        <Flex direction="column" style={{ width: '100%', padding: '20px', overflow: 'auto' }}>
           <Flex justifyContent="space-between" alignItems="center" marginBottom="20px">
             <Heading level={4}>VPC List</Heading>
           </Flex>
           <VPCTable />
         </Flex>
       </Flex>
-      <NotificationContainer /> {/* Render Notification Container */}
+      <NotificationContainer />
     </div>
   );
 }

@@ -14,10 +14,10 @@ import CreateVPCModal from './CreateVPCModal';
 import { NotificationManager } from 'react-notifications';
 
 const initialCustomers = [
-  { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
-  { id: 2, name: "Ahmad Rosser", number: "5684236527", description: "VPC 생성 중...", status: "pending", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
-  { id: 3, name: "Zain Calzoni", number: "5684236528", description: "VPC 삭제 중...", status: "deleting", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
-  { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
+  { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routeTables: "none" },
+  { id: 2, name: "Ahmad Rosser", number: "5684236527", description: "VPC 생성 중...", status: "pending", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routeTables: "none" },
+  { id: 3, name: "Zain Calzoni", number: "5684236528", description: "VPC 삭제 중...", status: "deleting", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routeTables: "none" },
+  { id: 4, name: "Leo Stanton", number: "5684236529", description: "VPC 성공적으로 삭제 됨", status: "deleted", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routeTables: "none" },
 ];
 
 function VPCTable() {
@@ -28,56 +28,65 @@ function VPCTable() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { currentUser, selectedCompany } = useUserContext();
+  const { currentUser, selectedCompany, projectId } = useUserContext();
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   const fetchVPCData = async () => {
+    setIsDataLoading(true);
+    
     try {
+      // AWS와 GCP 요청을 병렬로 실행
       const awsUrl = `${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`;
-      const gcpUrl = `${GCP_API_URL}/vpc/describe?projectId=eighth-service-439605-r6&userId=${currentUser.id}`;
-
-      const [awsResponse, gcpResponse] = await Promise.allSettled([
-        axios.get(awsUrl),
-        axios.get(gcpUrl),
-      ]);
-
-      const awsVPCs = awsResponse.status === "fulfilled" && awsResponse.value.data.list
-        ? awsResponse.value.data.list.map((vpc) => ({
-          provider: "AWS",
-          number: vpc.vpcId || '',
-          name: vpc.tags?.Name || '-',
-          status: vpc.status || "available",
-          cidr: vpc.cidr || '-',
-          routingTable: vpc.routeTables?.map(rt => rt.routeTableId).join(', ') || '-',
-        }))
-        : [];
-
-      const gcpVPCs = gcpResponse.status === "fulfilled" && gcpResponse.value.data.list
-        ? gcpResponse.value.data.list.map((vpc) => ({
-          provider: "GCP",
-          number: vpc.vpcId || '-', // VPC ID
-          name: vpc.tags.length > 0 ? vpc.tags[0] : '-', // 태그가 존재하면 첫 번째 값 사용
-          status: "available", // 상태가 명시되지 않았으므로 기본값 설정
-          cidr: vpc.cidr || '-', // CIDR 블록
-          routingTable: vpc.routingTables.join(', ') || '-', // 라우팅 테이블 목록을 문자열로 변환
-        }))
-        : [];
-
-
-      const combinedVPCs = [...awsVPCs, ...gcpVPCs];
-
-      if (combinedVPCs.length > 0) {
-        setAllVPCs(combinedVPCs);
-        setDisplayedVPCs(combinedVPCs);
-      } else {
-        setAllVPCs(initialCustomers);
-        setDisplayedVPCs(initialCustomers);
+      const awsPromise = axios.get(awsUrl);
+      
+      let gcpPromise = Promise.resolve({ data: { list: [] } });
+      if (projectId && projectId !== 'undefined' && projectId !== 'null') {
+        const gcpUrl = `${GCP_API_URL}/vpc/describe?projectId=${projectId}&userId=${currentUser.id}&companyName=${selectedCompany}`;
+        gcpPromise = axios.get(gcpUrl);
       }
 
-      localStorage.setItem('allVPCs', JSON.stringify(combinedVPCs));
+      // 병렬로 데이터 가져오기
+      const [awsResponse, gcpResponse] = await Promise.all([awsPromise, gcpPromise]);
+
+      // AWS VPC 처리
+      const awsVPCs = awsResponse.data.list
+        ? awsResponse.data.list.map((vpc) => ({
+            provider: "AWS",
+            number: vpc.vpcId || '',
+            name: vpc.tags?.Name || '-',
+            status: vpc.status || "available",
+            cidr: vpc.cidr || '-',
+            routeTables: vpc.routeTables?.map(rt => rt.routeTableId).join(', ') || '-',
+          }))
+        : [];
+
+      // GCP VPC 처리
+      const gcpVPCs = gcpResponse.data.list
+        ? gcpResponse.data.list.map((vpc) => ({
+            provider: "GCP",
+            number: vpc.vpcId || '-',
+            name: vpc.name || '-',
+            status: "available",
+            cidr: vpc.cidr || '-',
+            routeTables: vpc.routingTables?.join(', ') || '-',
+          }))
+        : [];
+
+      const combinedVPCs = [...awsVPCs, ...gcpVPCs];
+      
+      // 데이터가 있으면 실제 데이터를, 없으면 초기 데이터를 사용
+      const finalVPCs = combinedVPCs.length > 0 ? combinedVPCs : initialCustomers;
+      
+      setAllVPCs(finalVPCs);
+      setDisplayedVPCs(finalVPCs);
+      localStorage.setItem('allVPCs', JSON.stringify(finalVPCs));
+
     } catch (error) {
-      console.error("Error fetching VPC data:", error);
+      console.error("Error in fetchVPCData:", error);
       setAllVPCs(initialCustomers);
       setDisplayedVPCs(initialCustomers);
+    } finally {
+      setIsDataLoading(false);
     }
   };
 
@@ -147,32 +156,69 @@ function VPCTable() {
   return (
     <section className={styles.dataTable}>
       <header className={styles.tableHeader}>
-        <input
-          type="text"
-          className={styles.searchInput}
-          placeholder="Search..."
-          onChange={handleSearch}
-        />
-        <ActionButtons
-          selectedCount={selectedVpcs.length}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-        <button onClick={() => setIsCreateModalOpen(true)}>Create VPC</button>
+      <div className={styles.searchContainer}>
+          <button className={styles.filterButton}>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/5432f397b9aa45f4a1f1b54a87e9fcf132e23908e329d59ba9ba1ef19388e8fe?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
+          </button>
+          <div className={styles.searchInputWrapper}>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d322eb2c900627c1c0432bf23dfda65d4720f3b4b6381543703e324a72370a2e?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search..."
+              aria-label="Search Subnets"
+              onChange={handleSearch}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <button onClick={fetchVPCData} className={styles.filterButton} style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '10px'
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', padding: '0', margin: '0' }}>
+              <path d="M23 4v6h-6" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg>
+          </button>
+          <button className={styles.AddVPCButton} onClick={() => setIsCreateModalOpen(true)} style={{ marginRight: '10px' }}>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
+            Create VPC
+          </button>
+
+          <ActionButtons
+            selectedCount={selectedVpcs.length}
+            onDelete={handleDelete}
+            isDisabled={selectedVpcs.length !== 1}
+          />
+        </div>
       </header>
-      <TableHeader
-        allSelected={selectedVpcs.length === displayedVPCs.length}
-        onSelectAll={handleSelectAll}
-      />
-      {displayedVPCs.map((vpc, index) => (
-        <VPCRow
-          key={vpc.number}
-          customer={vpc}
-          isEven={index % 2 === 1}
-          isSelected={selectedVpcs.some((selected) => selected.number === vpc.number)}
-          onCheckboxChange={() => handleCheckboxChange(vpc)}
-        />
-      ))}
+
+      <div className={styles.tableWrapper}>
+        <div className={styles.scrollableTable}>
+
+          <TableHeader
+            allSelected={selectedVpcs.length === displayedVPCs.length}
+            onSelectAll={handleSelectAll}
+          />
+
+          {isDataLoading ? (
+            <div className={styles.loadingState}>
+              Loading VPC data...
+            </div>
+          ) : (
+            displayedVPCs.map((vpc, index) => (
+              <VPCRow
+                key={vpc.number}
+                customer={vpc}
+                isEven={index % 2 === 1}
+                isSelected={selectedVpcs.some((selected) => selected.number === vpc.number)}
+                onCheckboxChange={() => handleCheckboxChange(vpc)}
+              />
+            ))
+          )}
+      </div>
+      </div>
       <TablePagination />
       {isDeleteModalOpen && (
         <DeleteVPCModal

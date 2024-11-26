@@ -1,6 +1,6 @@
 .dataTable {
   max-width: none; /* 테이블 너비 제한을 제거 */
-  width: 100%; /* 부모 컨테이너의 전체 너비를 차지 */
+  width: 80%; /* 부모 컨테이너의 전체 너비를 차지 */
   margin: 0; /* 여백 제거 */
   border-radius: 8px;
   background: var(--White, #fff);
@@ -9,8 +9,18 @@
   table-layout: fixed;
   flex-direction: column;
   overflow-x: auto; /* 가로 스크롤 허용 */
-  overflow-y: hidden;
+  overflow-y: auto; /* 세로 스크롤 허용 */
+  max-height: 800px; /* 테이블의 최대 높이 설정 */
 }
+
+.scrollableTable {
+  min-width: 100%;
+  width: max-content;
+  flex-direction: column;
+  display: table;
+  height: 100%; /* 높이를 100%로 설정 */
+}
+
 
 .tableHeader {
   background-color: rgba(244, 247, 252, 0.75);
@@ -170,6 +180,15 @@
 .cidrCell {
   width: 150px;
   /* CIDR 열의 너비를 약간 늘립니다 */
+  flex-shrink: 0;
+}
+
+.ipCell {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
   flex-shrink: 0;
 }
 
@@ -391,4 +410,27 @@
   align-items: center;
   width: 100%; /* 행도 전체 너비를 차지 */
   border-bottom: 1px solid #e0e0e0;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  color: #0066ff;
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+.expandButton:hover {
+  text-decoration: underline;
+}
+
+.loadingState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #666;
+  font-size: 14px;
 }
