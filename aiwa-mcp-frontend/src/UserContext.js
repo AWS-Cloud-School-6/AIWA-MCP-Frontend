@@ -50,7 +50,7 @@ export const UserProvider = ({ children }) => {
             if (currentUser?.id && selectedCompany) {  // optional chaining 사용
                 try {
                     const response = await axios.get(`${MEMBER_API_URL}/members/${currentUser.id}/${selectedCompany}`);
-                    // console.log(response.data.data.aiwaKeys[0].projectId);
+                    console.log(response.data.data.aiwaKeys[0].projectId);
                     setProjectId(response.data.data.aiwaKeys[0].projectId);
                     setCurrentUser(prev => ({
                         ...prev,

@@ -107,16 +107,18 @@ function MyPage({ provider }) {
         finalGcpKeyFile = existingKeys.gcpKeyFile || null;
       }
 
+      // 새로운 키 정보로 업데이트 - GCP인 경우 먼저 projectId 설정
+      if (provider === 'GCP') {
+        finalProjectId = projectId;
+      }
+
       const url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(finalAccessKey)}&secretKey=${encodeURIComponent(finalSecretKey)}&projectId=${encodeURIComponent(finalProjectId)}`;
 
-      // 새로운 키 정보로 업데이트
       if (provider === 'AWS') {
         finalAccessKey = accessKey;
         finalSecretKey = secretKey;
         response = await axios.post(url);
       } else if (provider === 'GCP') {
-        finalProjectId = projectId;
-        
         // FormData 객체 생성
         const formData = new FormData();
         
