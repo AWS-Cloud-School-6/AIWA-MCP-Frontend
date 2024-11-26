@@ -109,6 +109,7 @@ function SidebarConsole({ onSelectProvider }) {
                   <p><strong>Company: {key.companyName}</strong></p>
                   <p>Access Key: {maskAccessKey(key.accessKey)}</p>
                   <p>Secret Key: {maskAccessKey(key.secretKey)}</p>
+                  <p>Project ID: {key.projectId}</p>
                   {key.gcpKeyPath && <p>GCP Key Path: {key.gcpKeyPath}</p>}
                 </div>
               ))}

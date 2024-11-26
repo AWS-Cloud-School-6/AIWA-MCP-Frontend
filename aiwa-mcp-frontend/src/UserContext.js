@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react'; // Use Amplify's Authenticator
+import axios from 'axios';
+import { MEMBER_API_URL } from './index';
 
 const UserContext = createContext(); // Create a context
 
@@ -20,16 +22,14 @@ export const UserProvider = ({ children }) => {
             return null;
         }
     });
+    const [projectId, setProjectId] = useState(null);
 
     useEffect(() => {
         if (user) {
-            try {
-                setCurrentUser({
-                    id: user.signInDetails.loginId,
-                });
-            } catch (error) {
-                console.error('Error setting current user:', error);
-            }
+            // user가 있을 때만 currentUser 설정
+            setCurrentUser({
+                id: user.signInDetails.loginId,
+            });
         } else {
             setCurrentUser(null);
         }
@@ -44,12 +44,35 @@ export const UserProvider = ({ children }) => {
         }
     }, [selectedCompany]);
 
+    // projectId를 가져오는 useEffect
+    useEffect(() => {
+        const fetchProjectId = async () => {
+            if (currentUser?.id && selectedCompany) {  // optional chaining 사용
+                try {
+                    const response = await axios.get(`${MEMBER_API_URL}/members/${currentUser.id}/${selectedCompany}`);
+                    // console.log(response.data.data.aiwaKeys[0].projectId);
+                    setProjectId(response.data.data.aiwaKeys[0].projectId);
+                    setCurrentUser(prev => ({
+                        ...prev,
+                        projectId: response.data.data.aiwaKeys[0].projectId
+                    }));
+                } catch (error) {
+                    console.error('Error fetching project ID:', error);
+                }
+            }
+        };
+
+        fetchProjectId();
+    }, [currentUser?.id, selectedCompany]);
+
     return (
         <UserContext.Provider value={{ 
             currentUser, 
             setCurrentUser,
             selectedCompany,
-            setSelectedCompany
+            setSelectedCompany,
+            projectId,
+            setProjectId    
         }}>
             {children}
         </UserContext.Provider>
