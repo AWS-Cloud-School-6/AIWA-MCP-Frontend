@@ -17,6 +17,8 @@ export const AWS_API_URL = 'https://alb.aiwa-cloud.com/aws/api';
 
 export const MEMBER_API_URL = 'https://alb.aiwa-cloud.com/member/api';
 
+export const GCP_API_URL = 'https://alb.aiwa-cloud.com/gcp/api';
+
 
 function App() {
   return (
