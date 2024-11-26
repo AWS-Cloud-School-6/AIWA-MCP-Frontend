@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import styles from './VPCTable.module.css';
+import awsIcon from '../../../../images/aws_icon.png';
+import gcpIcon from '../../../../images/gcp_icon.png';
+
+// PROVIDER_ICONS 상수 수정
+const PROVIDER_ICONS = {
+  "AWS": awsIcon,
+  "GCP": gcpIcon
+};
 
 function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -14,8 +22,13 @@ function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
         <input type="checkbox" checked={isSelected} onChange={onCheckboxChange} className={styles.checkbox} />
       </div>
       
-      <div className={styles.cell} style={{ width: '10%' }}>
-        {customer.provider}
+      <div className={styles.cell}>
+          <img 
+            src={PROVIDER_ICONS[customer.provider]} 
+            alt={`${customer.provider} icon`}
+            className={styles.providerIcon}
+          />
+          {/* {customer.provider} */}
       </div>
 
       {/* Name: 5% */}

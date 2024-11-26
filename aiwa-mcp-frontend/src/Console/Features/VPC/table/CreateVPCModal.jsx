@@ -11,8 +11,11 @@ export default function CreateVPCModal({ isOpen, onClose, onSubmit, isLoading })
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
-    if (!vpcName || !cidrBlock) {
-      notify('Please fill in all required fields', 'warning');
+    if (selectedProvider === 'AWS' && (!vpcName || !cidrBlock)) {
+      notify('Please fill in VPC name and CIDR block', 'warning');
+      return;
+    } else if (selectedProvider === 'GCP' && !vpcName) {
+      notify('Please fill in VPC name', 'warning'); 
       return;
     }
     
@@ -80,16 +83,18 @@ export default function CreateVPCModal({ isOpen, onClose, onSubmit, isLoading })
                 className={styles.input}
               />
             </div>
-            <div className={styles.formGroup}>
-              <label>CIDR Block</label>
-              <input
-                type="text"
-                value={cidrBlock}
-                onChange={(e) => setCidrBlock(e.target.value)}
-                placeholder="e.g., 10.0.0.0/16"
-                className={styles.input}
-              />
-            </div>
+            {selectedProvider === 'AWS' && (
+              <div className={styles.formGroup}>
+                <label>CIDR Block</label>
+                <input
+                  type="text"
+                  value={cidrBlock}
+                  onChange={(e) => setCidrBlock(e.target.value)}
+                  placeholder="e.g., 10.0.0.0/16"
+                  className={styles.input}
+                />
+              </div>
+            )}
             <div className={styles.buttonGroup}>
               <button 
                 onClick={handleBack}
@@ -100,7 +105,7 @@ export default function CreateVPCModal({ isOpen, onClose, onSubmit, isLoading })
               <button
                 onClick={handleSubmit}
                 className={styles.submitButton}
-                disabled={!vpcName || !cidrBlock || isLoading}
+                disabled={!vpcName || (selectedProvider === 'AWS' && !cidrBlock) || isLoading}
               >
                 {isLoading ? 'Creating...' : 'Create VPC'}
               </button>
