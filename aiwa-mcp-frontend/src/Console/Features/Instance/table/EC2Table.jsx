@@ -17,7 +17,7 @@ function EC2Table() {
   const [allEC2s, setAllEC2s] = useState([]);
   const [displayedEC2s, setDisplayedEC2s] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { currentUser, selectedCompany } = useUserContext();
+  const { currentUser, selectedCompany, projectId, accessKey } = useUserContext();
 
   const openDeleteModal = () => setIsDeleteModalOpen(true);
   const closeDeleteModal = () => setIsDeleteModalOpen(false);
@@ -25,13 +25,18 @@ function EC2Table() {
   const fetchEC2AndGCPData = async () => {
     try {
       const [ec2Response, gcpResponse] = await Promise.all([
-        axios.get(
-          `${AWS_API_URL}/ec2/describe?userId=${currentUser.id}&companyName=${selectedCompany}`
-        ),
-        axios.get(
-          `${GCP_API_URL}/vm/describe?projectId=eighth-service-439605-r6&userId=${currentUser.id}`
-        ),
+        accessKey
+          ? axios.get(
+            `${AWS_API_URL}/ec2/describe?userId=${currentUser.id}&companyName=${selectedCompany}`
+            )
+          : Promise.resolve({data: {}}),
+        projectId
+          ? axios.get(
+              `${GCP_API_URL}/vm/describe?projectId=${projectId}&userId=${currentUser.id}`
+            )
+          : Promise.resolve({ data: {} }), // projectId가 없으면 빈 객체를 담은 resolved Promise 반환
       ]);
+      console.log(projectId);
   
       // EC2 데이터 처리
       const processedEC2s =
