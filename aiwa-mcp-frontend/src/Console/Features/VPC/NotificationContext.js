@@ -1,34 +1,37 @@
-import React, { createContext, useContext, useState } from 'react';
-import { NotificationManager, NotificationContainer } from 'react-notifications';
+import React, { createContext, useContext } from 'react';
+import { NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
-const NotificationContext = createContext();
+const NotificationContext = createContext(null);
 
-export const NotificationProvider = ({ children }) => {
-    const notify = (message, type) => {
-        switch (type) {
-            case 'success':
-                NotificationManager.success(message);
-                break;
-            case 'error':
-                NotificationManager.error(message);
-                break;
-            case 'info':
-                NotificationManager.info(message);
-                break;
-            default:
-                break;
-        }
-    };
+export function NotificationProvider({ children }) {
+  const notify = (message, type = 'info', timeout = 3000) => {
+    switch (type) {
+      case 'success':
+        NotificationManager.success(message, 'Success', timeout);
+        break;
+      case 'error':
+        NotificationManager.error(message, 'Error', timeout);
+        break;
+      case 'warning':
+        NotificationManager.warning(message, 'Warning', timeout);
+        break;
+      default:
+        NotificationManager.info(message, 'Info', timeout);
+    }
+  };
 
-    return (
-        <NotificationContext.Provider value={notify}>
-            {children}
-            <NotificationContainer />
-        </NotificationContext.Provider>
-    );
-};
+  return (
+    <NotificationContext.Provider value={notify}>
+      {children}
+    </NotificationContext.Provider>
+  );
+}
 
-export const useNotification = () => {
-    return useContext(NotificationContext);
-};
+export function useNotification() {
+  const context = useContext(NotificationContext);
+  if (context === null) {
+    throw new Error('useNotification must be used within a NotificationProvider');
+  }
+  return context;
+}

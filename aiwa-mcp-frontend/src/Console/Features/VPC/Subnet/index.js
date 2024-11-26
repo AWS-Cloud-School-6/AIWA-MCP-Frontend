@@ -9,8 +9,6 @@ function SubnetRoutes() {
     return (
         <Routes>
             <Route path="/" element={<Subnet />} />
-            <Route path="/aws/create" element={<Subnet_AWS_Create />} />
-            <Route path="/gcp/create" element={<Subnet_GCP_Create />} />
             {/* 여기에 추가해주세요*/}
         </Routes>
     );

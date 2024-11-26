@@ -7,7 +7,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../../UserContext';
-import { AWS_API_URL } from '../../../../../index';
+import { AWS_API_URL, GCP_API_URL } from '../../../../../index';
+import CreateSubnetModal from './CreateSubnetModal';
+import { NotificationManager } from 'react-notifications';
 
 
 
@@ -29,6 +31,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   const { currentUser, selectedCompany } = useUserContext();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   // 리렌더링될 때마다 새로운 함수가 생성되지 않도록 구현
   const addNewSubnet = useCallback((newSubnet) => {
     setAllSubnets(prevSubnets => {
@@ -144,6 +147,36 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     setSelectedSubnets([]);
   };
 
+  const handleCreateSubnet = async (subnetData) => {
+    setIsLoading(true);
+    const apiUrl = subnetData.provider.toLowerCase() === 'aws' ? AWS_API_URL : GCP_API_URL;
+
+    const notificationId = NotificationManager.info('Creating Subnet...', 'Info', 0, null, true);
+
+    try {
+      const response = await axios.post(
+        `${apiUrl}/subnet/create?userId=${currentUser.id}`,
+        {
+          subnetName: subnetData.subnetName,
+          cidrBlock: subnetData.cidrBlock,
+          vpcId: subnetData.vpcId,
+        }
+      );
+      
+      NotificationManager.remove({id: notificationId});
+      NotificationManager.success('Subnet created successfully!', 'Success', 5000, null, true);
+      
+      fetchSubnetData();
+    } catch (error) {
+      console.error(error);
+      NotificationManager.remove({id: notificationId});
+      NotificationManager.error('Error creating Subnet.', 'Error', 5000, null, true);
+    } finally {
+      setIsLoading(false);
+      setIsCreateModalOpen(false);
+    }
+  };
+
   return (
     <section className={styles.dataTable}>
       <header className={styles.tableHeader}>
@@ -172,17 +205,16 @@ function SubnetTable({ customer, onEdit, onDelete }) {
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
           </button>
-          <button className={styles.AddSubnetButton} onClick={() => setIsDropdownOpen((prev) => !prev)} style={{ marginRight: '10px' }}>
-            {/* navigate('/console/Subnet/create')} style={{ marginRight: '10px' }}> */}
+          <button className={styles.AddSubnetButton} onClick={() => setIsCreateModalOpen(true)} style={{ marginRight: '10px' }}>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
             Create Subnet
           </button>
-          {isDropdownOpen && (
+          {/* {isDropdownOpen && (
             <div className={styles.dropdown}>
               <button onClick={() => navigate('/console/subnet/aws/create')} style={{ marginRight: '5px' }} disabled={isLoading}>AWS</button>
               <button onClick={() => navigate('/console/subnet/gcp/create')} style={{ marginRight: '10px' }} disabled={isLoading}>GCP</button>
             </div>
-          )}
+          )} */}
           <ActionButtons
             selectedCount={selectedSubnets.length}
             onEdit={handleEdit}
@@ -207,6 +239,12 @@ function SubnetTable({ customer, onEdit, onDelete }) {
         ))}
       </div>
       <TablePagination />
+      <CreateSubnetModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateSubnet}
+        isLoading={isLoading}
+      />
     </section>
   );
 }

@@ -7,9 +7,12 @@ import { useNavigate } from 'react-router-dom';
 import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
-import { AWS_API_URL } from '../../../../index';
+import { AWS_API_URL, GCP_API_URL } from '../../../../index';
 import DeleteVPCModal from './DeleteVPCModal';
 import 'react-notifications/lib/notifications.css'; // Import notification styles
+import CreateVPCModal from './CreateVPCModal';
+import { useNotification } from "../NotificationContext";
+import { NotificationManager } from 'react-notifications';
 
 const initialCustomers = [
   { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routingTable: "none" },
@@ -27,8 +30,10 @@ function VPCTable() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   // 유저 정보 가져오기
   const { currentUser, selectedCompany } = useUserContext();
+  const notify = useNotification();
 
   const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
@@ -110,6 +115,46 @@ function VPCTable() {
     setSelectedVpcs([]);
   };
 
+  const getApiUrl = (provider) => {
+    return provider.toLowerCase() === 'aws' ? AWS_API_URL : GCP_API_URL;
+  };
+
+  const handleCreateVPC = async (vpcData) => {
+    setIsLoading(true);
+    const apiUrl = getApiUrl(vpcData.provider);
+
+    // 고유한 ID를 가진 알림 생성
+    const notificationId = NotificationManager.info('Creating VPC...', 'Info', 0, null, true);
+
+    try {
+      const response = await axios.post(
+        `${apiUrl}/vpc/create?userId=${currentUser.id}`,
+        {
+          vpcName: vpcData.vpcName,
+          cidrBlock: vpcData.cidrBlock,
+        }
+      );
+      
+      // 진행 중인 알림 제거
+      NotificationManager.remove({id: notificationId});
+      
+      // 성공 알림 (지속 시간을 더 길게 설정)
+      NotificationManager.success('VPC created successfully!', 'Success', 5000, null, true);
+      
+      fetchVPCData();
+    } catch (error) {
+      console.error(error);
+      // 진행 중인 알림 제거
+      NotificationManager.remove({id: notificationId});
+      
+      // 에러 알림 (지속 시간을 더 길게 설정)
+      NotificationManager.error('Error creating VPC.', 'Error', 5000, null, true);
+    } finally {
+      setIsLoading(false);
+      setIsCreateModalOpen(false);
+    }
+  };
+
   return (
     <section className={styles.dataTable}>
       <header className={styles.tableHeader}>
@@ -138,17 +183,16 @@ function VPCTable() {
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
           </button>
-          <button className={styles.AddVPCButton} onClick={() => setIsDropdownOpen((prev) => !prev)} style={{ marginRight: '10px' }}>
-            {/* navigate('/console/vpc/create')} style={{ marginRight: '10px' }}> */}
+          <button className={styles.AddVPCButton} onClick={() => setIsCreateModalOpen(true)} style={{ marginRight: '10px' }}>
             <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3aad782ddd671404b8a4ec3b05999237daff58399b16ed95a8189efedd690970?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841" alt="" className={styles.icon} />
             Create VPC
           </button>
-          {isDropdownOpen && (
+          {/* {isDropdownOpen && (
             <div className={styles.dropdown}>
               <button onClick={() => navigate('/console/vpc/aws/create')} style={{ marginRight: '5px' }} disabled={isLoading}>AWS</button>
               <button onClick={() => navigate('/console/vpc/gcp/create')} style={{ marginRight: '10px' }} disabled={isLoading}>GCP</button>
             </div>
-          )}
+          )} */}
           <ActionButtons
             selectedCount={selectedVpcs.length}
             onEdit={handleEdit}
@@ -181,6 +225,12 @@ function VPCTable() {
           onClose={closeDeleteModal}
         />
       )}
+      <CreateVPCModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateVPC}
+        isLoading={isLoading}
+      />
     </section>
   );
 }
