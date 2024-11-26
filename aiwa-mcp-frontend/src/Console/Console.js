@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Flex, View, Text, Icon, TextField, Button } from '@aws-amplify/ui-react';
 import React from 'react';
 import axios from 'axios';
@@ -15,34 +15,113 @@ function MyPage({ provider }) {
   const [companyName, setCompanyName] = useState('');
   const [projectId, setprojectId] = useState('');
   const [gcpKeyFile, setgcpKeyFile] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
 
   const { currentUser } = useUserContext();
   const refreshPage = () => {
     window.location.reload();
   };
 
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target.result;
+        setgcpKeyFile(content);
+        
+        // Parse JSON and extract project_id
+        try {
+          const jsonContent = JSON.parse(content);
+          if (jsonContent.project_id) {
+            setprojectId(jsonContent.project_id);
+          }
+        } catch (error) {
+          console.error('JSON 파싱 에러:', error);
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      alert("JSON 파일만 업로드 가능합니다.");
+    }
+  }, []);
+
+  const handleFileSelect = useCallback((e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target.result;
+        setgcpKeyFile(content);
+        
+        // Parse JSON and extract project_id
+        try {
+          const jsonContent = JSON.parse(content);
+          if (jsonContent.project_id) {
+            setprojectId(jsonContent.project_id);
+          }
+        } catch (error) {
+          console.error('JSON 파싱 에러:', error);
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      alert("JSON 파일만 업로드 가능합니다.");
+    }
+  }, []);
+
   const handleSubmit = async () => {
     try {
-      let checkCompanyResponse;
+      // 기존 회사 정보 확인
+      let existingKeys = null;
       try {
-        checkCompanyResponse = await axios.get(`${MEMBER_API_URL}/members/${currentUser?.id}/${companyName}`);
-        if (checkCompanyResponse.data.success === true) {
-          alert('이미 존재하는 회사 이름입니다. 다른 이름을 사용해주세요.');
-          return;
-        }
+        const checkCompanyResponse = await axios.get(`${MEMBER_API_URL}/members/${currentUser?.id}/${companyName}`);
+        existingKeys = checkCompanyResponse.data.data.aiwaKeys[0];
       } catch (checkError) { }
 
-      let url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(accessKey || null)}&secretKey=${encodeURIComponent(secretKey || null)}&projectId=${encodeURIComponent(projectId || null)}&gcpKeyFile=${encodeURIComponent(gcpKeyFile || null)}`;
+      // URL 파라미터 설정
+      let finalAccessKey = null;
+      let finalSecretKey = null;
+      let finalProjectId = null;
+      let finalGcpKeyFile = null;
 
-      if (provider === 'AWS') {
-        url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(accessKey)}&secretKey=${encodeURIComponent(secretKey)}&projectId=${encodeURIComponent(null)}&gcpKeyFile=${encodeURIComponent(null)}`;
-      } else if (provider === 'GCP') {
-        url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(null)}&secretKey=${encodeURIComponent(null)}&projectId=${encodeURIComponent(projectId)}&gcpKeyFile=${encodeURIComponent(gcpKeyFile)}`;
+      // 기존 키 정보 유지
+      if (existingKeys) {
+        finalAccessKey = existingKeys.accessKey || null;
+        finalSecretKey = existingKeys.secretKey || null;
+        finalProjectId = existingKeys.projectId || null;
+        finalGcpKeyFile = existingKeys.gcpKeyFile || null;
       }
+
+      // 새로운 키 정보로 업데이트
+      if (provider === 'AWS') {
+        finalAccessKey = accessKey;
+        finalSecretKey = secretKey;
+      } else if (provider === 'GCP') {
+        finalProjectId = projectId;
+        finalGcpKeyFile = gcpKeyFile;
+      }
+
+      const url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(finalAccessKey)}&secretKey=${encodeURIComponent(finalSecretKey)}&projectId=${encodeURIComponent(finalProjectId)}&gcpKeyFile=${encodeURIComponent(finalGcpKeyFile)}`;
 
       const response = await axios.post(url);
       console.log('API 응답:', response.data.msg);
       alert('키 성공적으로 제출');
+      window.location.href = '/console'; // Redirect to console page first
+      window.location.reload(); // Then refresh after redirect
     } catch (error) {
       if (error.response && error.response.status === 500) {
         console.error('서버 내부 오류:', error.response.data);
@@ -90,13 +169,29 @@ function MyPage({ provider }) {
       )}
 
       {provider === 'GCP' && (
-        <TextField
-          label="서비스 계정 키"
-          placeholder="서비스 계정 키 입력"
-          value={gcpKeyFile}
-          onChange={(e) => setgcpKeyFile(e.target.value)}
+        <View
+          backgroundColor={isDragging ? "rgba(0, 0, 0, 0.1)" : "transparent"}
+          padding="1rem"
+          border="2px dashed #ccc"
+          borderRadius="4px"
           marginBottom="1rem"
-        />
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <input
+            type="file"
+            accept="application/json"
+            onChange={handleFileSelect}
+            style={{ marginBottom: '1rem' }}
+          />
+          <Text>또는 JSON 파일을 여기로 드래그하세요</Text>
+          {gcpKeyFile && (
+            <Text color="green" marginTop="0.5rem">
+              ✓ JSON 파일이 업로드되었습니다
+            </Text>
+          )}
+        </View>
       )}
 
       <Button onClick={handleSubmit}>제출</Button>
