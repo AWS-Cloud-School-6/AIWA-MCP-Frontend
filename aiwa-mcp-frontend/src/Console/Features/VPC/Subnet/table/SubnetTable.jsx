@@ -28,7 +28,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     return savedSubnets ? JSON.parse(savedSubnets) : initialCustomers;
   });
   // 유저 정보 가져오기
-  const { currentUser, selectedCompany } = useUserContext();
+  const { currentUser, selectedCompany, projectId, accessKey } = useUserContext();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -47,28 +47,61 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   }, []);
   const fetchSubnetData = async () => {
     try {
-      const response = await axios.get(`${AWS_API_URL}/subnet/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
-      if (response.data.list && response.data.list.length > 0) {
-        const latestSubnets = response.data.list.map((subnet) => ({
-          number: subnet.subnetId || '',
-          name: subnet.tags?.Name || '-',  // 수정된 부분
+      const [awsResponse, gcpResponse] = await Promise.all([
+        accessKey
+          ? axios.get(
+              `${AWS_API_URL}/subnet/describe?userId=${currentUser.id}&companyName=${selectedCompany}`
+            )
+          : Promise.resolve({ data: {} }),
+        projectId
+          ? axios.get(
+              `${GCP_API_URL}/subnet/describe?projectId=${projectId}&userId=${currentUser.id}`
+            )
+          : Promise.resolve({ data: {} }),
+      ]);
+  
+      // AWS Subnet 데이터 처리
+      const processedAWSSubnets =
+        awsResponse.data.list?.map((subnet) => ({
+          type: "AWS", // GCP 데이터임을 구분하기 위해 추가
+          number: subnet.subnetId || "N/A",
+          name: subnet.tags?.Name || "-",
           status: subnet.status || "available",
-          cidr: subnet.cidr || '-',
-          vpcId: subnet.vpcId || '-',
+          cidr: subnet.cidr || "-",
+          vpcId: subnet.vpcId || "-",
+          az: "ap-northeast-2",
           availableip: calculateAvailableIPs(subnet.cidr),
-        }));
-        console.log("subnet 출력: ", latestSubnets);
-        setAllSubnets(latestSubnets);
-        setDisplayedSubnets(latestSubnets);
-        localStorage.setItem('allSubnets', JSON.stringify(latestSubnets));
-      }
+        })) || [];
+  
+      // GCP Subnet 데이터 처리
+      const processedGCPSubnets =
+        gcpResponse.data.list?.map((subnet) => ({
+          type: "GCP", // GCP 데이터임을 구분하기 위해 추가
+          number: subnet.subnetId || "N/A",
+          name: subnet.name || "-",
+          status: subnet.status || "available",
+          cidr: subnet.cidr || "-",
+          vpcId: subnet.vpcId || "-",
+          availableip: calculateAvailableIPs(subnet.cidr),
+          az: "asia-northeast3",
+        })) || [];
+  
+      // AWS와 GCP Subnet 데이터를 통합
+      const allSubnets = [...processedAWSSubnets, ...processedGCPSubnets];
+      console.log("Subnet 데이터: ", allSubnets);
+  
+      setAllSubnets(allSubnets);
+      setDisplayedSubnets(allSubnets);
+      localStorage.setItem("allSubnets", JSON.stringify(allSubnets));
     } catch (error) {
-      console.error("Error fetching Subnet data:", error);
+      console.error("Subnet 데이터를 가져오는 중 오류 발생:", error);
     }
   };
+  
   useEffect(() => {
     fetchSubnetData();
   }, []);
+  
   //Calculate Available IPs
   function calculateAvailableIPs(cidr) {
     // Split the input into base IP and suffix (e.g., "192.168.1.0/24")
