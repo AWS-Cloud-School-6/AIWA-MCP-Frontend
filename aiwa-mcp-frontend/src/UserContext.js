@@ -23,6 +23,7 @@ export const UserProvider = ({ children }) => {
         }
     });
     const [projectId, setProjectId] = useState(null);
+    const [accessKey, setAccessKey] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -44,25 +45,27 @@ export const UserProvider = ({ children }) => {
         }
     }, [selectedCompany]);
 
-    // projectId를 가져오는 useEffect
+    // projectId와 accessKey를 가져오는 useEffect
     useEffect(() => {
-        const fetchProjectId = async () => {
+        const fetchProjectIdAndAccessKey = async () => {
             if (currentUser?.id && selectedCompany) {  // optional chaining 사용
                 try {
                     const response = await axios.get(`${MEMBER_API_URL}/members/${currentUser.id}/${selectedCompany}`);
                     console.log(response.data.data.aiwaKeys[0].projectId);
                     setProjectId(response.data.data.aiwaKeys[0].projectId);
+                    setAccessKey(response.data.data.aiwaKeys[0].accessKey);
                     setCurrentUser(prev => ({
                         ...prev,
-                        projectId: response.data.data.aiwaKeys[0].projectId
+                        projectId: response.data.data.aiwaKeys[0].projectId || null,
+                        accessKey: response.data.data.aiwaKeys[0].accessKey || null
                     }));
                 } catch (error) {
-                    console.error('Error fetching project ID:', error);
+                    console.error('Error fetching project ID and access key:', error);
                 }
             }
         };
 
-        fetchProjectId();
+        fetchProjectIdAndAccessKey();
     }, [currentUser?.id, selectedCompany]);
 
     return (
@@ -72,7 +75,9 @@ export const UserProvider = ({ children }) => {
             selectedCompany,
             setSelectedCompany,
             projectId,
-            setProjectId    
+            setProjectId,
+            accessKey,
+            setAccessKey
         }}>
             {children}
         </UserContext.Provider>
