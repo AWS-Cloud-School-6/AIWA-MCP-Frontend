@@ -8,6 +8,7 @@ import ActionButtons from './ActionButtons';
 import axios from 'axios';
 import { useUserContext } from '../../../../UserContext';
 import { AWS_API_URL } from '../../../../index';
+import { GCP_API_URL } from '../../../../index';
 import DeleteEC2Modal from './DeleteEC2Modal';
 
 function EC2Table() {
@@ -21,33 +22,51 @@ function EC2Table() {
   const openDeleteModal = () => setIsDeleteModalOpen(true);
   const closeDeleteModal = () => setIsDeleteModalOpen(false);
 
-  const fetchEC2Data = async () => {
+  const fetchEC2AndGCPData = async () => {
     try {
-      const response = await axios.get(
-        `${AWS_API_URL}/ec2/describe?userId=${currentUser.id}&companyName=${selectedCompany}`
-      );
-
-      if (response.data.list && response.data.list.length > 0) {
-        const processedEC2s = response.data.list.map((ec2) => ({
-          instanceId: ec2.instanceId || 'N/A', // EC2 인스턴스 ID
-          state: ec2.state || 'Unknown', // 상태
-          name: ec2.tags?.Name || '-', // 태그에서 Name 추출
-          publicIpAddress: ec2.publicIpAddress || 'N/A', // 퍼블릭 IP
-          privateIpAddress: ec2.privateIpAddress || 'N/A' // 프라이빗 IP
-        }));
-
-        console.log("Processed EC2 data:", processedEC2s);
-        setAllEC2s(processedEC2s);
-        setDisplayedEC2s(processedEC2s);
-      }
+      const [ec2Response, gcpResponse] = await Promise.all([
+        axios.get(
+          `${AWS_API_URL}/ec2/describe?userId=${currentUser.id}&companyName=${selectedCompany}`
+        ),
+        axios.get(
+          `${GCP_API_URL}/vm/describe?projectId=eighth-service-439605-r6&userId=${currentUser.id}`
+        ),
+      ]);
+  
+      // EC2 데이터 처리
+      const processedEC2s =
+        ec2Response.data.list?.map((ec2) => ({
+          instanceId: ec2.instanceId || "N/A",
+          state: ec2.state || "Unknown",
+          name: ec2.tags?.["Name"] || "-",
+          publicIpAddress: ec2.publicIpAddress || "N/A",
+          privateIpAddress: ec2.privateIpAddress || "N/A",
+          type: "AWS", // AWS 데이터임을 구분하기 위해 추가
+        })) || [];
+  
+      // GCP 데이터 처리
+      const processedGCPs =
+        gcpResponse.data.list?.map((vm) => ({
+          name: vm.name || "N/A",
+          status: vm.status || "Unknown",
+          internalIp: vm.networkInterfaces[0]?.internalIp || "N/A",
+          externalIp: vm.networkInterfaces[0]?.externalIp || "N/A",
+          type: "GCP", // GCP 데이터임을 구분하기 위해 추가
+        })) || [];
+  
+      // EC2와 GCP 데이터를 통합
+      const allVMs = [...processedEC2s, ...processedGCPs];
+      setAllEC2s(allVMs);
+      setDisplayedEC2s(allVMs);
     } catch (error) {
-      console.error("Error fetching EC2 data:", error);
+      console.error("Error fetching EC2 or GCP data:", error);
     }
   };
-
+  
   useEffect(() => {
-    fetchEC2Data();
+    fetchEC2AndGCPData();
   }, []);
+  
 
   const handleCheckboxChange = (selectedEc2) => {
     setSelectedEc2s((prev) =>
