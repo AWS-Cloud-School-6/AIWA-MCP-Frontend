@@ -65,7 +65,7 @@ function VPCTable() {
         ? gcpResponse.data.list.map((vpc) => ({
             provider: "GCP",
             number: vpc.vpcId || '-',
-            name: vpc.name || '-',
+            name: vpc.vpcName || '-',
             status: "available",
             cidr: vpc.cidr || '-',
             routeTables: vpc.routingTables?.join(', ') || '-',
@@ -141,7 +141,7 @@ function VPCTable() {
     try {
       await axios.post(`${apiUrl}/vpc/create?userId=${currentUser.id}`, {
         vpcName: vpcData.vpcName,
-        cidrBlock: vpcData.cidrBlock,
+        ...(vpcData.provider === 'AWS' && { cidrBlock: vpcData.cidrBlock })
       });
       NotificationManager.success("VPC created successfully!", "Success");
       fetchVPCData();
