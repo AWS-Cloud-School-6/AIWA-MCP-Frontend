@@ -84,6 +84,7 @@ function MyPage({ provider }) {
   }, []);
 
   const handleSubmit = async () => {
+    let response = null;
     try {
       // 기존 회사 정보 확인
       let existingKeys = null;
@@ -106,18 +107,31 @@ function MyPage({ provider }) {
         finalGcpKeyFile = existingKeys.gcpKeyFile || null;
       }
 
+      const url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(finalAccessKey)}&secretKey=${encodeURIComponent(finalSecretKey)}&projectId=${encodeURIComponent(finalProjectId)}`;
+
       // 새로운 키 정보로 업데이트
       if (provider === 'AWS') {
         finalAccessKey = accessKey;
         finalSecretKey = secretKey;
+        response = await axios.post(url);
       } else if (provider === 'GCP') {
         finalProjectId = projectId;
-        finalGcpKeyFile = gcpKeyFile;
+        
+        // FormData 객체 생성
+        const formData = new FormData();
+        
+        // JSON 문자열을 Blob으로 변환하여 파일로 추가
+        const jsonBlob = new Blob([gcpKeyFile], { type: 'application/json' });
+        formData.append('gcpKeyFile', jsonBlob, 'gcpKey.json');
+
+        // FormData와 함께 POST 요청 전송
+        response = await axios.post(url, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
       }
 
-      const url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(finalAccessKey)}&secretKey=${encodeURIComponent(finalSecretKey)}&projectId=${encodeURIComponent(finalProjectId)}&gcpKeyFile=${encodeURIComponent(finalGcpKeyFile)}`;
-
-      const response = await axios.post(url);
       console.log('API 응답:', response.data.msg);
       alert('키 성공적으로 제출');
       window.location.href = '/console'; // Redirect to console page first
