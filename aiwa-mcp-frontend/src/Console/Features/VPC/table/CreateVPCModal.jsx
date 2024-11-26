@@ -16,13 +16,18 @@ export default function CreateVPCModal({ isOpen, onClose, onSubmit, isLoading })
       return;
     }
     
+    const vpcData = {
+      provider: selectedProvider,
+      vpcName,
+      cidrBlock
+    };
+    
+    handleClose();
+    notify(`Creating VPC: ${vpcName}...`, 'info', 0);
+    
     try {
-      await onSubmit({
-        provider: selectedProvider,
-        vpcName,
-        cidrBlock
-      });
-      handleClose();
+      await onSubmit(vpcData);
+      notify(`Successfully created VPC: ${vpcName}`, 'success');
     } catch (error) {
       notify(error.message || 'Failed to create VPC', 'error');
     }

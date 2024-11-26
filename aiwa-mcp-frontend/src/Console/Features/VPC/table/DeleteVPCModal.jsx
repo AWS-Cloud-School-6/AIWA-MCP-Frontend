@@ -3,12 +3,15 @@ import styles from './DeleteVPCModal.module.css';
 import axios from 'axios';
 import { AWS_API_URL } from '../../../../index';
 import { useUserContext } from '../../../../UserContext';
+// import { useNotification } from '../../../../hooks/useNotification';
+import { useNotification } from '../NotificationContext';
 
 function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { // Assuming setSelectedVpcs is passed as a prop
   const { currentUser, selectedCompany } = useUserContext();
   const [vpcs, setVpcs] = useState([]);
   const [currentVPC, setCurrentVPC] = useState(null);
   const [hasSubnets, setHasSubnets] = useState(false);
+  const notify = useNotification();
 
   useEffect(() => {
     if (isOpen) {
@@ -76,20 +79,24 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
     const confirmDelete = window.confirm(`Are you sure you want to delete this VPC?`);
     if (confirmDelete) {
       try {
+        // Show deletion in progress notification with timeout = 0 (won't auto-close)
+        notify('Deleting VPC...', 'info', 0);
+        
         // Make a POST request to delete VPCs
         console.log("selected vpc: ", currentVPC);
-        const response = axios.delete(`${AWS_API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`);
+        const response = await axios.delete(
+          `${AWS_API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`
+        );
 
-        // Optionally handle the response here
-        // console.log("Delete Vpc", response.data.msg);
-
-        // Filter out the deleted VPCs from the local state
-        refreshPage();
+        // Clear the previous notification by showing success notification
+        notify('VPC deleted successfully!', 'success', 3000);
+        onClose(); // Close the modal after successful deletion
+        
       } catch (error) {
         console.error('Error deleting VPCs:', error);
-        // Handle the error appropriately (e.g., show an error message)
+        // Clear the previous notification by showing error notification
+        notify('Failed to delete VPC. Please try again.', 'error', 3000);
       }
-
     }
   };
   const handleSubmit = (e) => {
