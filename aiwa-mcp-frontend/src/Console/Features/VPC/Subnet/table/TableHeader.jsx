@@ -12,7 +12,7 @@ function TableHeader({ onSelectAll, allSelected }) {
           className={styles.checkbox}
         />
       </div>
-      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '7.5%', textAlign: 'center' }}>#</div>
+      <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '7.5%', textAlign: 'center' }}>Provider</div>
       <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '13.5%', textAlign: 'center' }}>Name</div>
       {/* <div className={`${styles.cell} ${styles.descriptionCell}`} style={{ width: '20%' }}>Description</div> */}
       <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '12%', textAlign: 'center' }}>Status</div>
