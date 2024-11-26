@@ -12,8 +12,9 @@ function TableHeader({ onSelectAll, allSelected }) {
           className={styles.checkbox}
         />
       </div>
-      <div className={styles.cell} style={{ width: '25%' }}>Instance ID</div>
-      <div className={styles.cell} style={{ width: '15%' }}>Name</div>
+      <div className={styles.cell} style={{ width: '15%' }}>Provider</div>
+      <div className={styles.cell} style={{ width: '20%' }}>Instance ID</div>
+      <div className={styles.cell} style={{ width: '20%' }}>Name</div>
       <div className={styles.cell} style={{ width: '15%' }}>Status</div>
       <div className={styles.cell} style={{ width: '20%' }}>Public IP</div>
       <div className={styles.cell} style={{ width: '20%' }}>Private IP</div>
