@@ -80,7 +80,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
         gcpResponse.data.list?.map((subnet) => ({
           provider: "GCP", // GCP 데이터임을 구분하기 위해 추가
           number: subnet.subnetId || "N/A",
-          name: subnet.name || "-",
+          name: subnet.subnetName || "-",
           status: subnet.status || "available",
           cidr: subnet.cidr || "-",
           vpcId: subnet.vpcId || "-",
@@ -127,11 +127,23 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   //   setDisplayedSubnets(allSubnets);
   // }, [allSubnets]);
 
-  const handleCheckboxChange = (name) => {
-    setSelectedSubnets(prev =>
-      prev.includes(name) ? prev.filter(subnetname => subnetname !== name) : [...prev, name]
-    );
+  const handleCheckboxChange = (name, provider) => {
+    // 새로운 값은 { name, provider } 객체로 저장
+    setSelectedSubnets(prev => {
+      // 이미 선택된 항목인지 확인
+      const existingSubnet = prev.find(subnet => subnet.name === name);
+      console.log(name,provider);
+      
+      if (existingSubnet) {
+        // 이미 선택된 항목이면 해당 항목을 제거
+        return prev.filter(subnet => !(subnet.name === name));
+      } else {
+        // 선택되지 않은 항목이면 { name, provider } 객체를 배열에 추가
+        return [...prev, { name, provider }];
+      }
+    });
   };
+  
 
   const handleSelectAll = () => {
     if (selectedSubnets.length === displayedSubnets.length) {
@@ -163,7 +175,14 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     if (confirmDelete) {
       try {
         console.log("selected subnet: ", selectedSubnets[0]);
-        const response = axios.delete(`${AWS_API_URL}/subnet/delete?subnetName=${selectedSubnets[0]}&userId=${currentUser.id}`);
+        if(selectedSubnets[0].provider === "AWS"){
+          console.log(AWS_API_URL+"/subnet/delete?subnetName="+selectedSubnets[0].name+"&userId="+currentUser.id);
+          const response = axios.delete(`${AWS_API_URL}/subnet/delete?subnetName=${selectedSubnets[0].name}&userId=${currentUser.id}`);
+        }
+        else if(selectedSubnets[0].provider === "GCP"){
+          console.log(GCP_API_URL+"/subnet/delete?subnetName="+selectedSubnets[0].name+"&userId="+currentUser.id);
+          const response = axios.delete(`${GCP_API_URL}/subnet/delete?subnetName=${selectedSubnets[0].name}&userId=${currentUser.id}`);
+        }
       }
       catch (error) {
         console.error('Error deleting Subnets:', error);
@@ -186,34 +205,45 @@ function SubnetTable({ customer, onEdit, onDelete }) {
 
   const handleCreateSubnet = async (subnetData) => {
     setIsLoading(true);
+  
+    // provider에 따라 API URL을 구분
     const apiUrl = subnetData.provider.toLowerCase() === 'aws' ? AWS_API_URL : GCP_API_URL;
-
+  
+    // 정보 알림 생성
     const notificationId = NotificationManager.info('Creating Subnet...', 'Info', 0, null, true);
-
+  
     try {
-      const response = await axios.post(
-        `${apiUrl}/subnet/create?userId=${currentUser.id}`,
-        {
-          subnetName: subnetData.subnetName,
-          vpcName: subnetData.vpcName,
+      // API 호출
+      await axios.post(`${apiUrl}/subnet/create?userId=${currentUser.id}`, {
+        subnetName: subnetData.subnetName,
+        ...(subnetData.provider.toLowerCase() === 'aws' && {
           cidrBlock: subnetData.cidrBlock,
-          vpcId: subnetData.vpcId,
-        }
-      );
-      
-      NotificationManager.remove({id: notificationId});
+          vpcName: subnetData.vpcName,
+          availabilityZone: subnetData.availabilityZone
+        }),
+        ...(subnetData.provider.toLowerCase() === 'gcp' && {
+          vpcName: subnetData.vpcName,
+          ipCidrRange: subnetData.cidrBlock,
+        }),
+      });
+  
+      // 성공 알림
+      NotificationManager.remove({ id: notificationId });
       NotificationManager.success('Subnet created successfully!', 'Success', 5000, null, true);
-      
+  
+      // Subnet 데이터 갱신
       fetchSubnetData();
     } catch (error) {
       console.error(error);
-      NotificationManager.remove({id: notificationId});
+      // 에러 알림
+      NotificationManager.remove({ id: notificationId });
       NotificationManager.error('Error creating Subnet.', 'Error', 5000, null, true);
     } finally {
       setIsLoading(false);
       setIsCreateModalOpen(false);
     }
   };
+  
 
   return (
     <section className={styles.dataTable}>
@@ -279,7 +309,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
                 customer={subnet}
                 isEven={index % 2 === 1}
                 isSelected={selectedSubnets.includes(subnet.name)}
-                onCheckboxChange={() => handleCheckboxChange(subnet.name)}
+                onCheckboxChange={() => handleCheckboxChange(subnet.name, subnet.provider)}
               />
             ))
           )}
