@@ -255,9 +255,6 @@ export default function CreateEC2Modal({ isOpen, onClose, onSubmit, isLoading })
             subnetName: subnetName,
             securityGroupName: securityGroupName,
             keyPairName: keyPairName,
-            userId: currentUser.id,
-            companyId: selectedCompany.id,
-            projectId: projectId
           }
         : {
             vmName: vmName,
@@ -269,9 +266,6 @@ export default function CreateEC2Modal({ isOpen, onClose, onSubmit, isLoading })
             subnetworkName: subnetworkName,
             diskType: diskType,
             diskSizeGb: diskSizeGb,
-            userId: currentUser.id,
-            companyId: selectedCompany.id,
-            projectId: projectId
           };
 
       // 로딩 상태 시작
