@@ -6,7 +6,7 @@ import NavBar from "../../NavBar/NavBar";
 import SidebarVpc from "./Sidebar/SidebarVpc";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css'; // Import notification styles
-import { useNotification } from './NotificationContext';
+import { useNotification } from '../NotificationContext';
 
 import axios from 'axios';
 import { AWS_API_URL, GCP_API_URL } from "../../../index";
