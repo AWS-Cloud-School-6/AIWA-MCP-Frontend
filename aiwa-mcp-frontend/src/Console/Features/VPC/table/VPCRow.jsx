@@ -5,8 +5,8 @@ import gcpIcon from '../../../../images/gcp_icon.png';
 
 // PROVIDER_ICONS 상수 수정
 const PROVIDER_ICONS = {
-  "AWS": awsIcon,
-  "GCP": gcpIcon
+  AWS: awsIcon,
+  GCP: gcpIcon,
 };
 
 function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
@@ -19,19 +19,24 @@ function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
     <div className={`${styles.tableRow} ${rowClass}`}>
       {/* Checkbox: 7% */}
       <div className={`${styles.cell} ${styles.checkboxCell}`} style={{ width: '7%' }}>
-        <input type="checkbox" checked={isSelected} onChange={onCheckboxChange} className={styles.checkbox} />
-      </div>
-      
-      <div className={styles.cell} style={{ width: '8%' }}>
-      <div className={styles.cell}>
-          <img 
-            src={PROVIDER_ICONS[customer.provider]} 
-            alt={`${customer.provider} icon`}
-            className={styles.providerIcon}
-          />
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={onCheckboxChange}
+          className={styles.checkbox}
+        />
       </div>
 
-      {/* Name: 10% (수정됨) */}
+      {/* Provider Icon: 8% */}
+      <div className={`${styles.cell}`} style={{ width: '8%' }}>
+        <img
+          src={PROVIDER_ICONS[customer.provider]}
+          alt={`${customer.provider} icon`}
+          className={styles.providerIcon}
+        />
+      </div>
+
+      {/* Name: 10% */}
       <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '10%' }}>
         {customer.name}
       </div>
@@ -41,7 +46,7 @@ function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
         <div className={styles.customerNumber}>{customer.number}</div>
       </div>
 
-      {/* Status: 13% */}
+      {/* Status: 15% */}
       <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '15%' }}>
         <span className={`${styles.tag} ${styles[customer.status.toLowerCase()]}`}>
           {customer.status}
@@ -58,33 +63,44 @@ function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
 
       {/* Routing Table: 20% */}
       <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '20%' }}>
-        <div style={{ 
-          maxWidth: '100%',
-          wordBreak: 'break-all',
-          wordWrap: 'break-word'
-        }}>
-          {customer.routeTables ? 
+        <div
+          style={{
+            maxWidth: '100%',
+            wordBreak: 'break-word',
+            wordWrap: 'break-word',
+          }}
+        >
+          {customer.routeTables ? (
             <>
-              {customer.routeTables.split(', ').slice(0, isExpanded ? undefined : MAX_VISIBLE_ROUTES).map((route, index) => (
-                <div key={index} style={{
-                  wordBreak: 'break-all',
-                  wordWrap: 'break-word',
-                  maxWidth: '100%'
-                }}>
-                  {route}
-                </div>
-              ))}
+              {customer.routeTables
+                .split(', ')
+                .slice(0, isExpanded ? undefined : MAX_VISIBLE_ROUTES)
+                .map((route, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      wordBreak: 'break-word',
+                      wordWrap: 'break-word',
+                      maxWidth: '100%',
+                    }}
+                  >
+                    {route}
+                  </div>
+                ))}
               {customer.routeTables.split(', ').length > MAX_VISIBLE_ROUTES && (
-                <button 
+                <button
                   onClick={() => setIsExpanded(!isExpanded)}
                   className={styles.expandButton}
                 >
-                  {isExpanded ? '접기' : `...더보기 (${customer.routeTables.split(', ').length - MAX_VISIBLE_ROUTES})`}
+                  {isExpanded
+                    ? '접기'
+                    : `...더보기 (${customer.routeTables.split(', ').length - MAX_VISIBLE_ROUTES})`}
                 </button>
               )}
             </>
-            : '-'
-          }
+          ) : (
+            '-'
+          )}
         </div>
       </div>
     </div>
