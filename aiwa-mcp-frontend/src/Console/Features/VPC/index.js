@@ -6,7 +6,7 @@ import InternetGateway from './InternetGateway/InternetGateway';
 import NatGateway from './NatGateway/Nat';
 import RouteTable from './RouteTable/RouteTable';
 
-import { NotificationProvider } from './NotificationContext'; // Import the Notification Provider
+import { NotificationProvider } from '../NotificationContext'; // Import the Notification Provider
 import { NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
