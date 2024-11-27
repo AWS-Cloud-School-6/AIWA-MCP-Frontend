@@ -3,15 +3,16 @@ import styles from './DeleteVPCModal.module.css';
 import axios from 'axios';
 import { AWS_API_URL, GCP_API_URL } from '../../../../index';
 import { useUserContext } from '../../../../UserContext';
-// import { useNotification } from '../../../../hooks/useNotification';
 import { useNotification } from '../NotificationContext';
+import { fetchVPCData } from '../VPC';
+import { currentUser, selectedCompany, projectId } from '../../../../UserContext';
 
-function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { // Assuming setSelectedVpcs is passed as a prop
-  const { currentUser, selectedCompany } = useUserContext();
+function DeleteVPCModal({ isOpen, onClose, selectedVpcs }) { // Assuming setSelectedVpcs is passed as a prop
+  const { currentUser, selectedCompany, projectId } = useUserContext();
   const [vpcs, setVpcs] = useState([]);
   const [currentVPC, setCurrentVPC] = useState(null);
   const [hasSubnets, setHasSubnets] = useState(false);
-  const notify = useNotification();
+  const notificationService = useNotification();
 
   useEffect(() => {
     if (isOpen) {
@@ -20,44 +21,47 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
         console.log("Selected VPCs:", selectedVpcs[0]);
         setCurrentVPC(selectedVpcs[0]);
         setHasSubnets(selectedVpcs[0].subnet && selectedVpcs[0].subnet.length > 0);
-        console.log("Hello1234", hasSubnets)
       } else {
-        fetchVPCData(); // Fetch data if none are selected
+        fetchVPCData({
+          currentUser,
+          selectedCompany,
+          projectId 
+        }); // Fetch data if none are selected
       }
     }
   }, [isOpen, selectedVpcs]);
 
-  const fetchVPCData = async () => {
-    try {
-      const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
-      if (response.data.list && response.data.list.length > 0) {
-        const fetchedVPCs = response.data.list.map((vpc) => ({
-          number: vpc.vpcId || '',
-          name: vpc.tags.Name || '-',
-          status: vpc.status || "available",
-          cidr: vpc.cidr || '-',
-          routingTable: vpc.routeTables && vpc.routeTables.length > 0
-            ? vpc.routeTables.map(rt => rt.routeTableId).join(', ')
-            : '-',
-          subnet: vpc.subnets
-        }));
+  // const fetchVPCData = async () => {
+  //   try {
+  //     const response = await axios.get(`${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
+  //     if (response.data.list && response.data.list.length > 0) {
+  //       const fetchedVPCs = response.data.list.map((vpc) => ({
+  //         number: vpc.vpcId || '',
+  //         name: vpc.tags.Name || '-',
+  //         status: vpc.status || "available",
+  //         cidr: vpc.cidr || '-',
+  //         routingTable: vpc.routeTables && vpc.routeTables.length > 0
+  //           ? vpc.routeTables.map(rt => rt.routeTableId).join(', ')
+  //           : '-',
+  //         subnet: vpc.subnets
+  //       }));
 
-        // Find the matched VPC
+  //       // Find the matched VPC
 
-        const matchedVPC = fetchedVPCs.find(vpc => vpc.number === currentVPC.number);
+  //       const matchedVPC = fetchedVPCs.find(vpc => vpc.number === currentVPC.number);
 
-        if (matchedVPC) {
-          setCurrentVPC(matchedVPC); // Also set the current VPC
-          setHasSubnets(matchedVPC.subnet && matchedVPC.subnet.length > 0); // Update subnet check
-        } else {
-          console.log("No matching VPC found in fetched data.");
-        }
+  //       if (matchedVPC) {
+  //         setCurrentVPC(matchedVPC); // Also set the current VPC
+  //         setHasSubnets(matchedVPC.subnet && matchedVPC.subnet.length > 0); // Update subnet check
+  //       } else {
+  //         console.log("No matching VPC found in fetched data.");
+  //       }
 
-      }
-    } catch (error) {
-      console.error("Error fetching VPC data:", error);
-    }
-  };
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching VPC data:", error);
+  //   }
+  // };
 
   const subnetDelete = async (subnetId) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete this subnet?`);
@@ -66,7 +70,6 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
         const response = await axios.delete(`${AWS_API_URL}/subnet/delete?subnetName=${currentVPC.subnet[0].tags.Name}&userId=${currentUser.id}`);
         console.log("Subnet deleted successfully:", response.data);
         // Re-fetch VPC data after deletion
-        await fetchVPCData(); // This will also check for matching VPCs
       } catch (error) {
         console.error('Error deleting Subnet:', error);
       }
@@ -77,26 +80,40 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
   };
   const handleVPCDelete = async () => {
     const confirmDelete = window.confirm(`Are you sure you want to delete this VPC?`);
-    if (confirmDelete) {
-      try {
-        // Show deletion in progress notification with timeout = 0 (won't auto-close)
-        notify('Deleting VPC...', 'info', 0);
-        
-        // Make a POST request to delete VPCs
-        console.log("selected vpc: ", currentVPC);
-        const response = await axios.delete(
-          `${currentVPC.provider === 'AWS' ? AWS_API_URL : GCP_API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`
-        );
+    if (!confirmDelete) return;
 
-        // Clear the previous notification by showing success notification
-        notify('VPC deleted successfully!', 'success', 3000);
-        onClose(); // Close the modal after successful deletion
-        
-      } catch (error) {
-        console.error('Error deleting VPCs:', error);
-        // Clear the previous notification by showing error notification
-        notify('Failed to delete VPC. Please try again.', 'error', 3000);
+    let loadingNotification;
+    try {
+      loadingNotification = notificationService.notify('Deleting VPC...', 'loading');
+      
+      await axios.delete(
+        `${currentVPC.provider === 'AWS' ? AWS_API_URL : GCP_API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`
+      );
+      
+      if (loadingNotification) {
+        loadingNotification.close();
       }
+
+      notificationService.notify('VPC deleted successfully!', 'success', 3000);
+      
+      // VPC 데이터를 다시 불러오기 전에 모달을 닫음
+      onClose();
+      
+      // 약간의 지연 후 데이터 새로고침
+      setTimeout(async () => {
+        await fetchVPCData({
+          currentUser,
+          selectedCompany,
+          projectId
+        });
+      }, 500);
+      
+    } catch (error) {
+      if (loadingNotification) {
+        loadingNotification.close();
+      }
+      console.error('Error deleting VPCs:', error);
+      notificationService.notify('Failed to delete VPC. Please try again.', 'error', 3000);
     }
   };
   
@@ -130,7 +147,11 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
                       <span style={{ marginLeft: '10px' }}>{subnet.tags.Name || 'Unnamed'}</span>
                       <button
                         type="button"
-                        onClick={fetchVPCData}
+                          onClick={() => fetchVPCData({
+                          currentUser,
+                          selectedCompany,
+                          projectId
+                        })}
                         className={styles.filterButton} style={{ marginLeft: '100px' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
                           <path d="M23 4v6h-6" />

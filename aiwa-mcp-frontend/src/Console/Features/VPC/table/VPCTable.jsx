@@ -12,6 +12,7 @@ import DeleteVPCModal from './DeleteVPCModal';
 import 'react-notifications/lib/notifications.css';
 import CreateVPCModal from './CreateVPCModal';
 import { NotificationManager } from 'react-notifications';
+import { fetchVPCData } from '../VPC';
 
 const initialCustomers = [
   { id: 1, name: "Subin", number: "12345678", description: "VPC 사용 가능 상태", status: "available", cidr: "10.0.0.0/16", cidrv6: "2001:db8::/64", routeTables: "none" },
@@ -31,58 +32,21 @@ function VPCTable() {
   const { currentUser, selectedCompany, projectId } = useUserContext();
   const [isDataLoading, setIsDataLoading] = useState(true);
 
-  const fetchVPCData = async () => {
+  const handleFetchVPCData = async () => {
     setIsDataLoading(true);
-    
     try {
-      // AWS와 GCP 요청을 병렬로 실행
-      const awsUrl = `${AWS_API_URL}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`;
-      const awsPromise = axios.get(awsUrl);
+      const vpcData = await fetchVPCData({
+        currentUser,
+        selectedCompany,
+        projectId
+      });
       
-      let gcpPromise = Promise.resolve({ data: { list: [] } });
-      if (projectId && projectId !== 'undefined' && projectId !== 'null') {
-        const gcpUrl = `${GCP_API_URL}/vpc/describe?projectId=${projectId}&userId=${currentUser.id}&companyName=${selectedCompany}`;
-        gcpPromise = axios.get(gcpUrl);
-      }
-
-      // 병렬로 데이터 가져오기
-      const [awsResponse, gcpResponse] = await Promise.all([awsPromise, gcpPromise]);
-
-      // AWS VPC 처리
-      const awsVPCs = awsResponse.data.list
-        ? awsResponse.data.list.map((vpc) => ({
-            provider: "AWS",
-            number: vpc.vpcId || '',
-            name: vpc.tags?.Name || '-',
-            status: vpc.status || "available",
-            cidr: vpc.cidr || '-',
-            routeTables: vpc.routeTables?.map(rt => rt.routeTableId).join(', ') || '-',
-          }))
-        : [];
-
-      // GCP VPC 처리
-      const gcpVPCs = gcpResponse.data.list
-        ? gcpResponse.data.list.map((vpc) => ({
-            provider: "GCP",
-            number: vpc.vpcId || '-',
-            name: vpc.vpcName || '-',
-            status: "available",
-            cidr: vpc.cidr || '-',
-            routeTables: vpc.routingTables?.join(', ') || '-',
-          }))
-        : [];
-
-      const combinedVPCs = [...awsVPCs, ...gcpVPCs];
-      
-      // 데이터가 있으면 실제 데이터를, 없으면 초기 데이터를 사용
-      const finalVPCs = combinedVPCs.length > 0 ? combinedVPCs : initialCustomers;
-      
+      const finalVPCs = vpcData.length > 0 ? vpcData : initialCustomers;
       setAllVPCs(finalVPCs);
       setDisplayedVPCs(finalVPCs);
       localStorage.setItem('allVPCs', JSON.stringify(finalVPCs));
-
     } catch (error) {
-      console.error("Error in fetchVPCData:", error);
+      console.error("Error fetching VPC data:", error);
       setAllVPCs(initialCustomers);
       setDisplayedVPCs(initialCustomers);
     } finally {
@@ -91,7 +55,7 @@ function VPCTable() {
   };
 
   useEffect(() => {
-    fetchVPCData();
+    handleFetchVPCData();
   }, []);
 
   const handleCheckboxChange = (selectedVpc) => {
@@ -145,7 +109,7 @@ function VPCTable() {
         ...(vpcData.provider === 'GCP' && { description: `Create VPC ${vpcData.vpcName}` })
       });
       NotificationManager.success("VPC created successfully!", "Success");
-      fetchVPCData();
+      handleFetchVPCData();
     } catch (error) {
       NotificationManager.error("Error creating VPC.", "Error");
     } finally {
@@ -174,7 +138,7 @@ function VPCTable() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button onClick={fetchVPCData} className={styles.filterButton} style={{
+          <button onClick={handleFetchVPCData} className={styles.filterButton} style={{
             display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '10px'
           }}>
             <svg xmlns="http://www.w3.org/2000/svg" className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', padding: '0', margin: '0' }}>

@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { useNotification } from '../NotificationContext';
 import styles from './CreateVPCModal.module.css';
+import { useUserContext } from '../../../../UserContext';
+import { fetchVPCData } from '../VPC';
 
 export default function CreateVPCModal({ isOpen, onClose, onSubmit, isLoading }) {
   const notify = useNotification();
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [vpcName, setVpcName] = useState('');
   const [cidrBlock, setCidrBlock] = useState('');
+  const { currentUser, selectedCompany, projectId } = useUserContext();
+  const notificationService = useNotification();
 
   if (!isOpen) return null;
+
+  const refreshPage = async () => {
+    window.location.reload()
+  };
+  
 
   const handleSubmit = async () => {
     if (selectedProvider === 'AWS' && (!vpcName || !cidrBlock)) {
@@ -26,13 +35,25 @@ export default function CreateVPCModal({ isOpen, onClose, onSubmit, isLoading })
     };
     
     handleClose();
-    notify(`Creating VPC: ${vpcName}...`, 'info', 0);
-    
+    let loadingNotification;
     try {
+      loadingNotification = notificationService.notify(`Creating VPC: ${vpcName}...`, 'loading');
+      
       await onSubmit(vpcData);
-      notify(`Successfully created VPC: ${vpcName}`, 'success');
+      notificationService.notify(`Successfully created VPC: ${vpcName}`, 'success', 3000);
+      
+      await fetchVPCData({
+        currentUser,
+        selectedCompany,
+        projectId
+      });
     } catch (error) {
-      notify(error.message || 'Failed to create VPC', 'error');
+      notificationService.notify(error.message || 'Failed to create VPC', 'error', 3000);
+      console.error("Error creating/fetching VPC:", error);
+    } finally {
+      if (loadingNotification) {
+        loadingNotification.close();
+      }
     }
   };
 
