@@ -12,7 +12,7 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
   const [cidrBlock, setCidrBlock] = useState('');
   const [selectedVPC, setSelectedVPC] = useState('non-selected');
   const [availableVPCs, setAvailableVPCs] = useState([]);
-  const { currentUser, selectedCompany } = useUserContext();
+  const { currentUser, selectedCompany, projectId } = useUserContext();
   const [selectedAZ, setSelectedAZ] = useState('non-selected');
 
   // AWS Availability Zones
@@ -25,13 +25,14 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
 
 
   const getApiUrl = (provider) => {
-    return provider.toLowerCase() === 'aws' ? AWS_API_URL : GCP_API_URL;
+    return provider.toLowerCase() === 'aws' ? AWS_API_URL + "/vpc/describe?userId=" + currentUser.id + "&companyName=" + selectedCompany
+      : GCP_API_URL + "/vpc/describe?projectId=" + projectId + "&userId=" + currentUser.id;
   };
 
   const fetchVPCs = async () => {
     try {
       const apiUrl = getApiUrl(selectedProvider);
-      const response = await axios.get(`${apiUrl}/vpc/describe?userId=${currentUser.id}&companyName=${selectedCompany}`);
+      const response = await axios.get(`${apiUrl}`);
       if (response.data.list) {
         setAvailableVPCs(response.data.list);
       }
@@ -47,21 +48,23 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
   };
 
   const handleSubmit = () => {
-    if (!subnetName || !cidrBlock || selectedVPC === 'non-selected' || selectedAZ === 'non-selected') {
+    if (!subnetName || !cidrBlock || selectedVPC === 'non-selected' || 
+       (selectedProvider === 'AWS' && selectedAZ === 'non-selected')) {
       notify('VPC, Availability Zone, Subnet 이름과 CIDR 블록을 모두 입력해주세요.', 'warning');
       return;
     }
-
+  
     const newSubnet = {
       provider: selectedProvider,
       subnetName,
       cidrBlock,
       vpcName: selectedVPC,
-      availabilityZone: selectedAZ
+      availabilityZone: selectedProvider === 'AWS' ? selectedAZ : null // GCP일 때는 AZ를 null로 설정
     };
-
+  
     onSubmit(newSubnet);
   };
+  
 
   const handleBack = () => {
     setSelectedProvider(null);
@@ -81,18 +84,18 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <button className={styles.closeButton} onClick={handleClose}>×</button>
-        
+
         {!selectedProvider ? (
           <div className={styles.providerSelection}>
             <h2>Select Cloud Provider</h2>
             <div className={styles.providerButtons}>
-              <button 
+              <button
                 onClick={() => setSelectedProvider('AWS')}
                 className={styles.providerButton}
               >
                 AWS
               </button>
-              <button 
+              <button
                 onClick={() => setSelectedProvider('GCP')}
                 className={styles.providerButton}
               >
@@ -134,13 +137,22 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
                     style={{ flex: 1 }}
                   >
                     <option value="non-selected">Select VPC</option>
-                    {availableVPCs.map((vpc) => (
-                      <option key={vpc.vpcId} value={vpc.tags.Name}>
-                        VPC ID: {vpc.vpcId} - {vpc.tags.Name || 'Unnamed'}
-                      </option>
-                    ))}
+                    {selectedProvider === 'AWS' && (
+                      availableVPCs.map((vpc) => (
+                        <option key={vpc.vpcId} value={vpc.tags.Name}>
+                          VPC ID: {vpc.vpcId} - {vpc.tags.Name || 'Unnamed'}
+                        </option>
+                      ))
+                    )}
+                    {selectedProvider === 'GCP' && (
+                      availableVPCs.map((vpc) => (
+                        <option key={vpc.vpcId} value={vpc.vpcName}>
+                          VPC ID: {vpc.vpcId} - {vpc.vpcName || 'Unnamed'}
+                        </option>
+                      ))
+                    )}
                   </select>
-                  <button 
+                  <button
                     onClick={handleRefreshVPCs}
                     className={styles.refreshButton}
                   >
@@ -161,23 +173,25 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
                 </div>
               </div>
             </div>
-            <div className={styles.formGroup}>
-              <label>Availability Zone</label>
-              <select
-                value={selectedAZ}
-                onChange={(e) => setSelectedAZ(e.target.value)}
-                className={styles.input}
-              >
-                <option value="non-selected">Select Availability Zone</option>
-                {availabilityZones.map((az) => (
-                  <option key={az} value={az}>
-                    {az}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {selectedProvider === 'AWS' && (
+              <div className={styles.formGroup}>
+                <label>Availability Zone</label>
+                <select
+                  value={selectedAZ}
+                  onChange={(e) => setSelectedAZ(e.target.value)}
+                  className={styles.input}
+                >
+                  <option value="non-selected">Select Availability Zone</option>
+                  {availabilityZones.map((az) => (
+                    <option key={az} value={az}>
+                      {az}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className={styles.buttonGroup}>
-              <button 
+              <button
                 onClick={handleBack}
                 className={styles.backButton}
               >
@@ -186,7 +200,13 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
               <button
                 onClick={handleSubmit}
                 className={styles.submitButton}
-                disabled={!subnetName || !cidrBlock || selectedVPC === 'non-selected' || selectedAZ === 'non-selected' || isLoading}
+                disabled={
+                  !subnetName ||
+                  !cidrBlock ||
+                  selectedVPC === 'non-selected' ||
+                  (selectedProvider === 'AWS' && selectedAZ === 'non-selected') ||
+                  isLoading
+                }
               >
                 {isLoading ? 'Creating...' : 'Create Subnet'}
               </button>
