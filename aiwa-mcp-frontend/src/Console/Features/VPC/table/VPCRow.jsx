@@ -22,8 +22,8 @@ function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
         <input type="checkbox" checked={isSelected} onChange={onCheckboxChange} className={styles.checkbox} />
       </div>
       
-      {/* Provider: 10% */}
       <div className={styles.cell} style={{ width: '8%' }}>
+      <div className={styles.cell}>
           <img 
             src={PROVIDER_ICONS[customer.provider]} 
             alt={`${customer.provider} icon`}
