@@ -23,9 +23,6 @@ export default function CreateSubnetModal({ isOpen, onClose, onSubmit, isLoading
     "ap-northeast-2d"
   ];
 
-  useEffect(() => {
-    fetchVPCs();
-  }, []);
 
   const getApiUrl = (provider) => {
     return provider.toLowerCase() === 'aws' ? AWS_API_URL : GCP_API_URL;

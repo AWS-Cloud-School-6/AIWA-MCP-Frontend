@@ -22,33 +22,33 @@ function VPCRow({ customer, isEven, isSelected, onCheckboxChange }) {
         <input type="checkbox" checked={isSelected} onChange={onCheckboxChange} className={styles.checkbox} />
       </div>
       
-      <div className={styles.cell}>
+      {/* Provider: 10% */}
+      <div className={styles.cell} style={{ width: '8%' }}>
           <img 
             src={PROVIDER_ICONS[customer.provider]} 
             alt={`${customer.provider} icon`}
             className={styles.providerIcon}
           />
-          {/* {customer.provider} */}
       </div>
 
-      {/* Name: 5% */}
+      {/* Name: 10% (수정됨) */}
       <div className={`${styles.cell} ${styles.idCell}`} style={{ width: '10%' }}>
         {customer.name}
       </div>
 
-      {/* VPC-ID: 30% */}
+      {/* VPC-ID: 20% */}
       <div className={`${styles.cell} ${styles.nameCell}`} style={{ width: '20%' }}>
         <div className={styles.customerNumber}>{customer.number}</div>
       </div>
 
-      {/* Status: 10% */}
-      <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '13%' }}>
+      {/* Status: 13% */}
+      <div className={`${styles.cell} ${styles.statusCell}`} style={{ width: '15%' }}>
         <span className={`${styles.tag} ${styles[customer.status.toLowerCase()]}`}>
           {customer.status}
         </span>
       </div>
 
-      {/* CIDR: 25% */}
+      {/* CIDR: 20% */}
       <div className={`${styles.cell} ${styles.cidrCell}`} style={{ width: '20%' }}>
         <div>
           <div className={styles.cidr}>{customer.cidr}</div>

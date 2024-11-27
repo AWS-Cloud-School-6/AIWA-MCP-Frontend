@@ -1,6 +1,6 @@
 .dataTable {
   max-width: none; /* 테이블 너비 제한을 제거 */
-  width: 80%; /* 부모 컨테이너의 전체 너비를 차지 */
+  width: 100%; /* 부모 컨테이너의 전체 너비를 차지 */
   margin: 0; /* 여백 제거 */
   border-radius: 8px;
   background: var(--White, #fff);
@@ -173,12 +173,12 @@
 }
 
 .statusCell {
-  width: 15%; /* Status 열의 너비 */
+  width: 10%; /* Status 열의 너비 */
   flex-shrink: 0;
 }
 
 .cidrCell {
-  width: 150px;
+  width: 20%;
   /* CIDR 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
 }

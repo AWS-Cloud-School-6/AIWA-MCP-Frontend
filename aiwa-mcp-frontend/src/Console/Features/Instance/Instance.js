@@ -12,7 +12,7 @@ function Instance() {
                 <SidebarEc2 />
                 <Flex direction="column" style={{ width: '100%', padding: '20px' }}>
                     <Flex justifyContent="space-between" alignItems="center" marginBottom="20px">
-                        <Heading level={4}>EC2 List</Heading>
+                        <Heading level={4}>Instance List</Heading>
                     </Flex>
                     <EC2Table />
                 </Flex>
