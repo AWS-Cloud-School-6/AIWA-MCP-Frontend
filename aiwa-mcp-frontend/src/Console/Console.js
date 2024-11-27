@@ -239,6 +239,7 @@ function Console({ overrides }) {
     { path: "/console/instances/securitygroup", label: "Security Group" },
     { path: "/console/vpc/natgateway", label: "NAT Gateway" },
     { path: "/console/instances", label: "EC2" },
+    { path: "/console/migration", label: "Migration" },
   ];
 
   return (
@@ -265,4 +266,5 @@ function Console({ overrides }) {
   );
 }
 
+export { MyPage };
 export default Console;

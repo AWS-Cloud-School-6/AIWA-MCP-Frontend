@@ -4,8 +4,7 @@ import UserProfile from './UserProfile';
 import NavigationLink from './NavigationLink';
 import { useUserContext } from '../../UserContext';
 import axios from 'axios'; // axios를 사용하여 API 요청을 보냅니다. 필요하다면 설치해주세요.
-import { AWS_API_URL } from '../..';
-import { MEMBER_API_URL } from '../..';
+import { AWS_API_URL, GCP_API_URL, MEMBER_API_URL } from '../..';
 
 function SidebarConsole({ onSelectProvider }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

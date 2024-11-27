@@ -61,6 +61,7 @@ function VPC({ VPCCreating }) {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <NavBar />
+      <NotificationContainer />
       <Flex direction="row" style={{ flex: 1, overflow: 'hidden' }}>
         <SidebarVpc />
         <Flex direction="column" style={{ width: '100%', padding: '20px', overflow: 'auto' }}>
@@ -70,7 +71,7 @@ function VPC({ VPCCreating }) {
           <VPCTable />
         </Flex>
       </Flex>
-      <NotificationContainer />
+
     </div>
   );
 }
