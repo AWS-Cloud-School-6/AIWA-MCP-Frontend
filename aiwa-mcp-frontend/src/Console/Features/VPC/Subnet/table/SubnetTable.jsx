@@ -32,6 +32,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isTableLoading, setIsTableLoading] = useState(true);
   // 리렌더링될 때마다 새로운 함수가 생성되지 않도록 구현
   const addNewSubnet = useCallback((newSubnet) => {
     setAllSubnets(prevSubnets => {
@@ -46,6 +47,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
     });
   }, []);
   const fetchSubnetData = async () => {
+    setIsTableLoading(true);
     try {
       const [awsResponse, gcpResponse] = await Promise.all([
         accessKey
@@ -63,7 +65,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
       // AWS Subnet 데이터 처리
       const processedAWSSubnets =
         awsResponse.data.list?.map((subnet) => ({
-          type: "AWS", // GCP 데이터임을 구분하기 위해 추가
+          provider: "AWS", // GCP 데이터임을 구분하기 위해 추가
           number: subnet.subnetId || "N/A",
           name: subnet.tags?.Name || "-",
           status: subnet.status || "available",
@@ -76,7 +78,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
       // GCP Subnet 데이터 처리
       const processedGCPSubnets =
         gcpResponse.data.list?.map((subnet) => ({
-          type: "GCP", // GCP 데이터임을 구분하기 위해 추가
+          provider: "GCP", // GCP 데이터임을 구분하기 위해 추가
           number: subnet.subnetId || "N/A",
           name: subnet.name || "-",
           status: subnet.status || "available",
@@ -95,6 +97,8 @@ function SubnetTable({ customer, onEdit, onDelete }) {
       localStorage.setItem("allSubnets", JSON.stringify(allSubnets));
     } catch (error) {
       console.error("Subnet 데이터를 가져오는 중 오류 발생:", error);
+    } finally {
+      setIsTableLoading(false);
     }
   };
   
@@ -191,6 +195,7 @@ function SubnetTable({ customer, onEdit, onDelete }) {
         `${apiUrl}/subnet/create?userId=${currentUser.id}`,
         {
           subnetName: subnetData.subnetName,
+          vpcName: subnetData.vpcName,
           cidrBlock: subnetData.cidrBlock,
           vpcId: subnetData.vpcId,
         }
@@ -256,20 +261,29 @@ function SubnetTable({ customer, onEdit, onDelete }) {
           />
         </div>
       </header>
-      <div className={styles.scrollableTable}>
-        <TableHeader
-          onSelectAll={handleSelectAll}
-          allSelected={selectedSubnets.length === displayedSubnets.length && displayedSubnets.length > 0}
-        />
-        {displayedSubnets.map((subnet, index) => (
-          <SubnetRow
-            key={subnet.number}
-            customer={subnet}
-            isEven={index % 2 === 1}
-            isSelected={selectedSubnets.includes(subnet.name)}
-            onCheckboxChange={() => handleCheckboxChange(subnet.name)}
+
+      <div className={styles.tableWrapper}>
+        <div className={styles.scrollableTable}>
+          <TableHeader
+            onSelectAll={handleSelectAll}
+            allSelected={selectedSubnets.length === displayedSubnets.length && displayedSubnets.length > 0}
           />
-        ))}
+          {isTableLoading ? (
+            <div className={styles.loadingContainer}>
+              <p>Loading subnets...</p>
+            </div>
+          ) : (
+            displayedSubnets.map((subnet, index) => (
+              <SubnetRow
+                key={subnet.number}
+                customer={subnet}
+                isEven={index % 2 === 1}
+                isSelected={selectedSubnets.includes(subnet.name)}
+                onCheckboxChange={() => handleCheckboxChange(subnet.name)}
+              />
+            ))
+          )}
+        </div>
       </div>
       <TablePagination />
       <CreateSubnetModal

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './DeleteVPCModal.module.css';
 import axios from 'axios';
-import { AWS_API_URL } from '../../../../index';
+import { AWS_API_URL, GCP_API_URL } from '../../../../index';
 import { useUserContext } from '../../../../UserContext';
 // import { useNotification } from '../../../../hooks/useNotification';
 import { useNotification } from '../NotificationContext';
@@ -85,7 +85,7 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
         // Make a POST request to delete VPCs
         console.log("selected vpc: ", currentVPC);
         const response = await axios.delete(
-          `${AWS_API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`
+          `${currentVPC.provider === 'AWS' ? AWS_API_URL : GCP_API_URL}/vpc/delete?vpcName=${currentVPC.name}&userId=${currentUser.id}`
         );
 
         // Clear the previous notification by showing success notification
@@ -99,6 +99,7 @@ function DeleteVPCModal({ isOpen, onClose, selectedVpcs, setSelectedVpcs }) { //
       }
     }
   };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add functionality to delete the VPC

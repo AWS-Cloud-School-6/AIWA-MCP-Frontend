@@ -15,15 +15,6 @@ const SidebarVpc = () => {
     { icon: 'https://cdn.builder.io/api/v1/image/assets/TEMP/3a05d5423bb457cad8c1809adec5f15ee3afa9d267f87f2747fd523ed146ebcf?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841', label: 'Nat Gateways', to: '/console/vpc/natgateway' },
   ];
 
-  const securityLinks = [
-    { icon: 'https://cdn.builder.io/api/v1/image/assets/TEMP/85a9fab6c170da55803188d333ca0065bf9f0b257cabea638d1d459cd3e32119?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841', label: 'NACL' },
-    { icon: 'https://cdn.builder.io/api/v1/image/assets/TEMP/3a05d5423bb457cad8c1809adec5f15ee3afa9d267f87f2747fd523ed146ebcf?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841', label: 'Security Group'}
-  ];
-
-  const settingsLinks = [
-    { icon: 'https://cdn.builder.io/api/v1/image/assets/TEMP/c43c1f12c1f95349db14ba4298fa5faf344c1e64930460ea19730f667bfb7cca?placeholderIfAbsent=true&apiKey=0aa29cf27c604eac9ac8e5102203c841', label: 'Settings', hasChevron: true }
-  ];
-
 
   return (
     <aside className={styles.sidebarVpc}>
@@ -42,11 +33,6 @@ const SidebarVpc = () => {
 
       <div className={styles.divider} />
 
-      <NavigationSection title="security" links={securityLinks} />
-
-      <div className={styles.divider} />
-
-      <NavigationSection title="settings" links={settingsLinks} />
       </div>
     </aside>
   );

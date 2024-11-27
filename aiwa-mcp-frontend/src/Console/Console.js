@@ -112,11 +112,15 @@ function MyPage({ provider }) {
         finalProjectId = projectId;
       }
 
-      const url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${encodeURIComponent(currentUser?.id)}&companyName=${encodeURIComponent(companyName)}&accessKey=${encodeURIComponent(finalAccessKey)}&secretKey=${encodeURIComponent(finalSecretKey)}&projectId=${encodeURIComponent(finalProjectId)}`;
-
+      // AWS인 경우 먼저 키 값 설정
       if (provider === 'AWS') {
         finalAccessKey = accessKey;
         finalSecretKey = secretKey;
+      }
+
+      const url = `${MEMBER_API_URL}/members/add-aws-gcp-key?email=${currentUser?.id}&companyName=${encodeURIComponent(companyName)}&accessKey=${finalAccessKey}&secretKey=${finalSecretKey}&projectId=${finalProjectId}`;
+
+      if (provider === 'AWS') {
         response = await axios.post(url);
       } else if (provider === 'GCP') {
         // FormData 객체 생성

@@ -6,6 +6,16 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  display: flex;
+  position: relative;
+  border-collapse: collapse; /* Ensure borders are collapsed to prevent gaps */
 }
 
 .scrollableTable {
@@ -160,7 +170,7 @@
 }
 
 .nameCell {
-  width: 200px;
+  width: 250px;
   /* Name 열의 너비를 늘립니다 */
   flex-shrink: 0;
 }
@@ -178,7 +188,7 @@
 }
 
 .vpcCell {
-  width: 150px;
+  width: 200px;
   /* VPC 열의 너비를 약간 늘립니다 */
   flex-shrink: 0;
 }
@@ -419,4 +429,19 @@
   align-items: center;
   width: 100%;
   border-bottom: 1px solid #e0e0e0;
+}
+
+.providerIcon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  width: 100%;
 }
