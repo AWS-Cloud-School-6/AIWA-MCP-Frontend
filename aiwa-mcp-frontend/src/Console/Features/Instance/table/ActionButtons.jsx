@@ -6,12 +6,7 @@ function ActionButtons({ selectedCount, onEdit, onDelete }) {
 
   return (
     <div className={styles.actionButtons} style={{ display: 'flex', flexDirection: 'row' }}>
-      { (
-        <button onClick={onEdit} className={styles.EC2Button} style={{ marginRight: '10px' }}>
-          Create
-        </button>
-      )}
-      <button onClick={onDelete} className={styles.EC2Button}>
+      <button onClick={onDelete} disabled={selectedCount !== 1} className={styles.AddVPCButton}>
         Delete
       </button>
     </div>

@@ -3,7 +3,7 @@ import styles from './DeleteVPCModal.module.css';
 import axios from 'axios';
 import { AWS_API_URL, GCP_API_URL } from '../../../../index';
 import { useUserContext } from '../../../../UserContext';
-import { useNotification } from '../NotificationContext';
+import { useNotification } from '../../NotificationContext';
 import { fetchVPCData } from '../VPC';
 import { currentUser, selectedCompany, projectId } from '../../../../UserContext';
 

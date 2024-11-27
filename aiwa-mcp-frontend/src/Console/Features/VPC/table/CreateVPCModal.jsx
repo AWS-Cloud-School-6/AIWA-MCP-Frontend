@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNotification } from '../NotificationContext';
+import { useNotification } from '../../NotificationContext';
 import styles from './CreateVPCModal.module.css';
 import { useUserContext } from '../../../../UserContext';
 import { fetchVPCData } from '../VPC';
@@ -21,18 +21,29 @@ export default function CreateVPCModal({ isOpen, onClose, onSubmit, isLoading })
 
   const handleSubmit = async () => {
     if (selectedProvider === 'AWS' && (!vpcName || !cidrBlock)) {
-      notify('Please fill in VPC name and CIDR block', 'warning');
+      notificationService.notify('Please fill in VPC name and CIDR block', 'warning');
       return;
     } else if (selectedProvider === 'GCP' && !vpcName) {
-      notify('Please fill in VPC name', 'warning'); 
+      notificationService.notify('Please fill in VPC name', 'warning'); 
       return;
     }
     
-    const vpcData = {
-      provider: selectedProvider,
-      vpcName,
-      cidrBlock
-    };
+    const vpcData = selectedProvider === 'AWS' 
+      ? {
+          provider: selectedProvider,
+          vpcName: vpcName,
+          cidrBlock: cidrBlock,
+          userId: currentUser.id,
+          companyId: selectedCompany.id,
+          projectId: projectId
+        }
+      : {
+          provider: selectedProvider,
+          vpcName: vpcName,
+          userId: currentUser.id,
+          companyId: selectedCompany.id,
+          projectId: projectId
+        };
     
     handleClose();
     let loadingNotification;
