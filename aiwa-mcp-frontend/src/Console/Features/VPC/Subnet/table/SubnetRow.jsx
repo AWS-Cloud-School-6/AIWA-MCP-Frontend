@@ -25,7 +25,7 @@ function SubnetRow({ customer, isEven, isSelected, onCheckboxChange }) {
           className={styles.checkbox}
         />
       </div>
-      <div className={styles.cell} style={{ width: '6.4%', textAlign: 'center' }}>
+      <div className={`${styles.cell}  ${styles.idCell}`} style={{width: '6.4%', textAlign: 'center'}}>
           <img 
             src={PROVIDER_ICONS[customer.provider]} 
             alt={`${customer.provider} icon`}
@@ -51,7 +51,7 @@ function SubnetRow({ customer, isEven, isSelected, onCheckboxChange }) {
       <div className={`${styles.cell} ${styles.availableipCell}`} style={{ width: '10%', textAlign: 'center' }}>
         {customer.availableip}
       </div>
-      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '20%', textAlign: 'center' }}>
+      <div className={`${styles.cell} ${styles.routingTableCell}`} style={{ width: '15%', textAlign: 'center' }}>
         {customer.az || '-'}
       </div>
     </div>
